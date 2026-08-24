@@ -12,6 +12,6 @@
    en este dispositivo, sin cuentas ni sincronización.
    ============================================================ */
 window.APP_CONFIG = {
-  url:  "",
-  key:  ""
+  url:  "https://oysxzbbnodmxqaknsirb.supabase.co",
+  key:  "sb_publishable_AxIrX-u6Au_4SF5GI7aiFw_Mo9bvJxY"
 };
