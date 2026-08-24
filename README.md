@@ -9,7 +9,7 @@ notificaciones y la sincronización.
 ### 1. Ponle tu marca
 
 ```bash
-cd "/Users/alejandromacaya/plantilla-app"
+cd "/Users/alejandromacaya/Desktop/FRACTALE"
 python3 personalizar.py --nombre "Mi Marca" --logo ~/Desktop/mi-logo.png
 ```
 
