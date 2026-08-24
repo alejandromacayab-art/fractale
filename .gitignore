@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+push/subscriptions.json
+index.backup.html
+push/.vapid.json
+push/CLAVES-SECRETAS.txt

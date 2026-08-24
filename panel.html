@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1521">
+<title>Panel · Fractale</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="estilos.css">
+<style>
+.wrap{max-width:1100px}
+.tabla{width:100%;border-collapse:collapse}
+.tabla th{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);
+  text-align:left;padding:0 10px 10px;font-weight:800;white-space:nowrap}
+.tabla td{padding:12px 10px;border-top:1px solid var(--line);font-size:14px;vertical-align:middle}
+.tabla tbody tr{cursor:pointer}
+.tabla tbody tr:hover{background:var(--card2)}
+.who{display:flex;align-items:center;gap:10px;min-width:0}
+.ava{width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;
+  font-weight:800;font-size:14px;background:var(--card2);border:1px solid var(--line)}
+.who b{display:block;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:11.5px;color:var(--tx3)}
+.num{font-weight:700;font-variant-numeric:tabular-nums}
+.sub{font-size:11px;color:var(--tx3)}
+.scroll{overflow-x:auto}
+.volver{font-size:13px;font-weight:700;color:var(--accent);padding:8px 0;display:inline-block}
+.dcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px;box-shadow:var(--glow);margin-bottom:10px}
+.dhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.dhead b{font-size:14px}
+.dhead .pill{margin-left:auto;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;
+  background:var(--card2);border:1px solid var(--line);color:var(--tx2)}
+.ex{font-size:12.5px;color:var(--tx2);padding:3px 0}
+.ex b{color:var(--tx)}
+.vivo{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;
+  padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);
+  color:var(--tx3);white-space:nowrap}
+.vivo .punto{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex:none}
+.vivo.on{border-color:#22e07a55;background:#22e07a12;color:#4ade80}
+.vivo.on .punto{background:#22e07a;animation:latido 2s ease-in-out infinite}
+@keyframes latido{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+@media(prefers-reduced-motion:reduce){.vivo.on .punto{animation:none}}
+tbody tr.cambio{animation:destello 2.2s ease-out}
+@keyframes destello{0%{background:#22e07a2e}100%{background:transparent}}
+@media(max-width:640px){ .ocultar-movil{display:none} .vivo span:last-child{display:none} .vivo{padding:6px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hbar">
+      <div class="brand">
+        <img src="assets/symbol-dark.png" alt="" class="lg-dark" aria-hidden="true">
+        <img src="assets/symbol-light.png" alt="" class="lg-light" aria-hidden="true">
+        <span class="wm">Panel<b>Fractale</b></span>
+      </div>
+      <div class="spacer"></div>
+      <span class="vivo" id="vivo"><span class="punto"></span><span id="vivoTxt">conectando…</span></span>
+      <a class="iconbtn" href="index.html" title="Mi registro" style="text-decoration:none">◎</a>
+      <button class="iconbtn" id="themeBtn" title="Tema">☀️</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <div class="empty" id="cargando">Cargando…</div>
+</main>
+
+<!-- acceso -->
+<div id="login" class="hidden" style="position:fixed;inset:0;z-index:300;background:var(--bg);
+     display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:380px;text-align:center">
+    <img src="assets/logo-dark.png" alt="Fractale" style="width:190px;max-width:60%;margin:0 auto 22px;display:block">
+    <div id="p1">
+      <h2 style="margin:0 0 6px;font-size:20px;letter-spacing:-.03em">Panel del entrenador</h2>
+      <p style="margin:0 0 20px;color:var(--tx2);font-size:13.5px">Entra con tu correo y contraseña.</p>
+      <label class="f" style="text-align:left"><span>Correo</span>
+        <input class="inp" id="mail" type="email" autocomplete="username" placeholder="tu@correo.com"></label>
+      <label class="f" style="text-align:left"><span>Contraseña</span>
+        <input class="inp" id="pass" type="password" autocomplete="current-password" placeholder="••••••••"></label>
+      <button class="btn" id="go">Entrar</button>
+      <a href="index.html" style="display:block;margin-top:14px;font-size:12.5px;color:var(--tx3)">Ir a la app</a>
+    </div>
+  </div>
+</div>
+
+<!-- invitar -->
+<div class="modal" id="invModal">
+  <div class="sheet">
+    <h3>Enlace de registro</h3>
+    <p class="sub">Cualquiera con este enlace puede crear su cuenta y aparecerá aquí.</p>
+    <div class="code" style="margin-bottom:14px" id="enlaceReg">TU-DIRECCION-AQUI</div>
+    <button class="btn" id="copiarEnlace">Copiar enlace</button>
+    <p class="sub" style="margin:22px 0 8px">También puedes dejar el nombre puesto de antemano,
+      para que llegue ya identificado.</p>
+    <label class="f"><span>Correo</span><input class="inp" id="invMail" type="email" placeholder="deportista@correo.com"></label>
+    <label class="f"><span>Nombre (opcional)</span><input class="inp" id="invName" placeholder="Cómo lo llamas"></label>
+    <button class="btn ghost" id="invSave">Reservar nombre</button>
+    <button class="btn ghost" style="margin-top:8px" id="invClose">Cerrar</button>
+    <div id="invList" style="margin-top:18px"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="nube.js"></script>
+<script src="panel.js"></script>
+</body>
+</html>

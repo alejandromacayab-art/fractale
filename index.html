@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0E11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Fractale · Registro personal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Fractale">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hbar">
+      <div class="brand">
+        <img src="assets/symbol-dark.png" alt="" class="lg-dark" aria-hidden="true">
+        <img src="assets/symbol-light.png" alt="" class="lg-light" aria-hidden="true">
+        <span class="wm"><b>Fractale</b></span>
+      </div>
+      <div class="spacer"></div>
+      <button class="iconbtn" id="bellBtn" title="Recordatorios">🔔</button>
+      <button class="iconbtn" id="themeBtn" title="Tema">☀️</button>
+    </div>
+    <div class="datebar" id="datebar">
+      <button class="nav" id="prevD">‹</button>
+      <div class="dlabel"><b id="dTitle">Hoy</b><span id="dSub"></span></div>
+      <button class="nav" id="nextD">›</button>
+      <button class="today-btn" id="todayBtn">Hoy</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= HOY ================= -->
+  <div id="view-hoy">
+    <div id="permBanner" class="banner hidden">
+      <div style="font-size:20px">🔔</div>
+      <div class="t"><b>Activa los recordatorios</b>Te aviso durante el día para completar tus círculos.</div>
+      <button id="permYes">Activar</button>
+      <button class="x" id="permNo">✕</button>
+    </div>
+
+    <div class="hero">
+      <div class="ring">
+        <svg width="92" height="92">
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#22e07a"/><stop offset="100%" stop-color="#38bdf8"/>
+          </linearGradient></defs>
+          <circle cx="46" cy="46" r="38" fill="none" stroke="var(--line)" stroke-width="9"/>
+          <circle id="ringFg" cx="46" cy="46" r="38" fill="none" stroke="url(#g1)" stroke-width="9"
+                  stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="238.8"
+                  style="transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1)"/>
+        </svg>
+        <div class="val" id="ringVal">0%</div>
+      </div>
+      <div class="hero-info">
+        <h2 id="heroTitle">Empecemos el día</h2>
+        <p id="heroSub">0 de 0 hábitos completados</p>
+        <div class="chips" id="heroChips"></div>
+      </div>
+    </div>
+
+    <section>
+      <div class="stitle">😴 Al despertar</div>
+      <div class="sleepcard" id="sleepCard"></div>
+    </section>
+
+    <section>
+      <div class="stitle">Hábitos del día</div>
+      <div class="grid" id="cards"></div>
+    </section>
+
+    <section>
+      <div class="stitle">🍽️ Comidas</div>
+      <div class="panel" id="meals"></div>
+    </section>
+
+    <section>
+      <div class="stitle">📝 Notas del día</div>
+      <div class="panel">
+        <textarea id="note" class="inp" rows="3" placeholder="¿Cómo te sentiste hoy? Energía, ánimo, entrenamiento…" style="resize:vertical"></textarea>
+        <div class="row" style="margin-top:11px">
+          <span style="font-size:12px;color:var(--tx3);font-weight:700">Ánimo del día</span>
+          <div class="stepper" id="mood" style="gap:6px"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= HISTORIAL ================= -->
+  <div id="view-hist" class="hidden">
+    <section>
+      <div class="stitle">Últimos 30 días</div>
+      <div class="panel" id="histList"></div>
+    </section>
+  </div>
+
+  <!-- ================= PROGRESO ================= -->
+  <div id="view-stats" class="hidden">
+    <section>
+      <div class="stitle">Resumen</div>
+      <div class="stats" id="statBoxes"></div>
+    </section>
+    <section>
+      <div class="stitle">🏋️ Entrenamiento · últimos 30 días</div>
+      <div class="panel" id="trainBox"></div>
+    </section>
+    <section>
+      <div class="stitle">🍔 Alimentación · últimos 30 días</div>
+      <div class="panel" id="foodBox"></div>
+    </section>
+    <section>
+      <div class="stitle">Cumplimiento · últimos 14 días</div>
+      <div class="panel"><div class="chart" id="chart14"></div></div>
+    </section>
+    <section>
+      <div class="stitle">😴 Calidad de sueño · últimos 14 días</div>
+      <div class="panel"><div class="chart" id="chartSleep"></div>
+        <div class="hlbl" id="sleepAvg"></div></div>
+    </section>
+    <section>
+      <div class="stitle">Mapa de constancia · 12 semanas</div>
+      <div class="panel">
+        <div class="heat" id="heat"></div>
+        <div class="hlbl"><span>Cada columna = 1 semana</span><span style="flex:1"></span><span>menos</span>
+          <b style="background:var(--line)"></b>
+          <b style="background:color-mix(in srgb,var(--accent) 30%,var(--line))"></b>
+          <b style="background:color-mix(in srgb,var(--accent) 60%,var(--line))"></b>
+          <b style="background:var(--accent)"></b><span>más</span></div>
+      </div>
+    </section>
+    <section>
+      <div class="stitle">Por hábito · últimos 30 días</div>
+      <div class="panel" id="perHabit"></div>
+    </section>
+  </div>
+
+  <!-- ================= AJUSTES ================= -->
+  <div id="view-set" class="hidden">
+    <section>
+      <div class="stitle">☁️ Sincronización entre dispositivos</div>
+      <div class="panel" id="syncPanel"></div>
+    </section>
+    <section>
+      <div class="stitle">📲 App en el celular</div>
+      <div class="panel" id="installPanel"></div>
+    </section>
+    <section>
+      <div class="stitle">🔔 Recordatorios</div>
+      <div class="panel" id="remPanel"></div>
+    </section>
+    <section>
+      <div class="stitle">😴 Check-in al despertar</div>
+      <div class="panel" id="wakePanel"></div>
+    </section>
+    <section>
+      <div class="stitle">🍔 Límites de comida chatarra</div>
+      <div class="panel" id="junkPanel"></div>
+    </section>
+    <section>
+      <div class="stitle">Mis hábitos</div>
+      <div class="panel" id="habitList"></div>
+      <button class="btn" style="margin-top:12px" id="addHabit">+ Nuevo hábito</button>
+    </section>
+    <section>
+      <div class="stitle">Datos</div>
+      <div class="panel">
+        <button class="btn ghost" id="expBtn">⬇︎ Exportar copia de seguridad (.json)</button>
+        <button class="btn ghost" style="margin-top:9px" id="impBtn">⬆︎ Importar copia de seguridad</button>
+        <input type="file" id="impFile" accept="application/json" class="hidden">
+        <button class="btn danger" style="margin-top:9px" id="wipeBtn">Borrar todos los datos</button>
+        <p style="font-size:12px;color:var(--tx3);margin:12px 0 0">
+          Todo se guarda solo en este navegador. Nada se envía a internet.
+          Exporta de vez en cuando para no perder tu historial.
+        </p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<nav class="tabs">
+  <button data-v="hoy" class="on"><i>◎</i>Hoy</button>
+  <button data-v="hist"><i>▤</i>Historial</button>
+  <button data-v="stats"><i>◑</i>Progreso</button>
+  <button data-v="set"><i>⚙</i>Ajustes</button>
+</nav>
+
+<!-- ===== Modal hábito ===== -->
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h3 id="mTitle">Nuevo hábito</h3>
+    <p class="sub">Define qué quieres registrar y su meta diaria.</p>
+    <label class="f"><span>Nombre</span><input class="inp" id="fName" placeholder="Ej: Tomar agua"></label>
+    <label class="f"><span>Icono</span><div class="epick" id="fEmoji"></div></label>
+    <label class="f"><span>Color</span><div class="cpick" id="fColor"></div></label>
+    <label class="f"><span>Tipo de registro</span>
+      <select class="inp" id="fType">
+        <option value="check">Sí / No — lo hice o no</option>
+        <option value="count">Cantidad — sumar de a poco (vasos, series…)</option>
+        <option value="amount">Medida — número libre (km, min, kg…)</option>
+        <option value="workout">Entrenamiento — ejercicios, series y kg</option>
+        <option value="food">Alimentación — grupos priorizados y chatarra</option>
+        <option value="activity">Actividad física — deportes y minutos</option>
+      </select>
+    </label>
+    <div class="two" id="goalWrap">
+      <label class="f"><span>Meta diaria</span><input class="inp" id="fGoal" type="number" step="0.1" min="0" value="1"></label>
+      <label class="f"><span>Unidad</span><input class="inp" id="fUnit" placeholder="vasos, km, min"></label>
+    </div>
+    <label class="f" id="stepWrap"><span>Cada toque suma</span><input class="inp" id="fStep" type="number" step="0.1" min="0.1" value="1"></label>
+    <button class="btn" id="fSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="fCancel">Cancelar</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="fDel">Eliminar hábito</button>
+  </div>
+</div>
+
+<!-- ===== Modal check-in de sueño ===== -->
+<div class="modal" id="sleepModal">
+  <div class="sheet">
+    <h3 id="skTitle">Buenos días ☀️</h3>
+    <p class="sub" id="skSub">Registra cómo dormiste para calcular tu puntuación de sueño.</p>
+
+    <label class="f"><span>¿Cuántas horas dormiste?</span>
+      <div class="hours">
+        <b id="skHrsLbl">7.5 h</b>
+        <span style="font-size:12px;color:var(--tx3)" id="skHrsHint"></span>
+        <div class="stepper">
+          <button class="sbtn" id="skMinus">−</button>
+          <button class="sbtn plus" id="skPlus" style="--a:#a78bfa">+</button>
+        </div>
+      </div>
+    </label>
+
+    <label class="f"><span>Calidad del sueño</span>
+      <div class="scale" id="skQual"></div>
+    </label>
+
+    <label class="f"><span>¿Cómo te sientes al despertar?</span>
+      <div class="scale" id="skFeel"></div>
+    </label>
+
+    <div class="panel" style="padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
+      <div class="sl-score" id="skPreview">–</div>
+      <div class="sl-t"><b id="skVerdict">Completa los datos</b>
+        <span id="skTip">Tu puntuación combina horas, calidad y energía al despertar.</span></div>
+    </div>
+
+    <button class="btn grape" id="skSave">Guardar check-in</button>
+    <button class="btn ghost" style="margin-top:8px" id="skCancel">Ahora no</button>
+  </div>
+</div>
+
+<!-- ===== Modal entrenamiento ===== -->
+<div class="modal" id="wkModal">
+  <div class="sheet">
+    <h3>🏋️ Entrenamiento</h3>
+    <p class="sub" id="wkSub">Anota ejercicios, peso, repeticiones y series.</p>
+    <div class="total">
+      <div><b id="wkTotal">0 kg</b><span>Volumen total de la sesión</span></div>
+      <div class="side" id="wkSide">0 ejercicios<br>0 series</div>
+    </div>
+    <div id="wkList"></div>
+    <button class="btn ghost" id="wkAdd">+ Añadir ejercicio</button>
+    <datalist id="exPresets"></datalist>
+    <label class="f" style="margin-top:14px"><span>Notas de la sesión</span>
+      <textarea class="inp" id="wkNote" rows="2" placeholder="Sensaciones, dolores, PRs…" style="resize:vertical"></textarea></label>
+    <button class="btn" id="wkSave">Guardar entrenamiento</button>
+    <button class="btn ghost" style="margin-top:8px" id="wkClose">Cerrar</button>
+  </div>
+</div>
+
+<!-- ===== Modal actividad física ===== -->
+<div class="modal" id="acModal">
+  <div class="sheet">
+    <h3>🏃 Actividad física</h3>
+    <p class="sub">Elige qué hiciste hoy y anota los minutos de cada una.</p>
+    <div class="total">
+      <div><b id="acTotal">0 min</b><span>Total del día</span></div>
+      <div class="side" id="acSide">Meta: 60 min</div>
+    </div>
+    <label class="f"><span>¿Qué hiciste?</span>
+      <div class="tags" id="acPick"></div>
+    </label>
+    <div class="panel" id="acList" style="padding:6px 14px;margin-bottom:14px"></div>
+    <button class="btn" id="acSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="acClose">Cerrar</button>
+  </div>
+</div>
+
+<!-- ===== Modal alimentación ===== -->
+<div class="modal" id="fdModal">
+  <div class="sheet">
+    <h3>🥗 Alimentación del día</h3>
+    <p class="sub">Marca qué priorizaste y registra si comiste chatarra.</p>
+
+    <label class="f"><span>Alimentos que prioricé hoy</span>
+      <div class="tags" id="fdGroups"></div>
+      <div class="mini-lbl"><span id="fdGroupsN">0 grupos</span><span>Meta: 3 grupos</span></div>
+    </label>
+
+    <label class="f"><span>Comida chatarra de hoy</span>
+      <div class="tags" id="fdJunkPick"></div>
+    </label>
+    <div class="panel" id="fdJunkList" style="padding:6px 14px;margin-bottom:14px"></div>
+
+    <div id="fdRisk"></div>
+
+    <label class="f"><span>Notas de alimentación</span>
+      <textarea class="inp" id="fdNote" rows="2" placeholder="Cómo comiste, antojos, horarios…" style="resize:vertical"></textarea></label>
+    <button class="btn" id="fdSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="fdClose">Cerrar</button>
+  </div>
+</div>
+
+<!-- ===== Pantalla de acceso ===== -->
+<div id="login" class="hidden" style="position:fixed;inset:0;z-index:300;background:var(--bg);
+     display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto">
+  <div style="width:100%;max-width:380px">
+    <img src="assets/logo-dark.png" alt="Fractale" style="width:190px;max-width:60%;margin:0 auto 22px;display:block">
+
+    <p id="lgVer" style="text-align:center;color:var(--tx3);font-size:11.5px;margin:0 0 14px"></p>
+    <div id="lgEntrar">
+      <h2 style="margin:0 0 6px;font-size:20px;letter-spacing:-.03em;text-align:center">Entra a tu registro</h2>
+      <p style="margin:0 0 20px;color:var(--tx2);font-size:13.5px;text-align:center">
+        Con tu correo y tu contraseña.</p>
+      <label class="f"><span>Correo</span>
+        <input class="inp" id="lgMail" type="email" inputmode="email" autocomplete="username" placeholder="tu@correo.com"></label>
+      <label class="f"><span>Contraseña</span>
+        <input class="inp" id="lgPass" type="password" autocomplete="current-password" placeholder="••••••••"></label>
+      <button class="btn" id="lgGo">Entrar</button>
+      <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:12.5px">
+        <button id="lgIrCrear" style="color:var(--accent);font-weight:700">Crear mi cuenta</button>
+        <button id="lgOlvide" style="color:var(--tx3)">Olvidé mi contraseña</button>
+      </div>
+    </div>
+
+    <div id="lgCrear" class="hidden">
+      <h2 style="margin:0 0 6px;font-size:20px;letter-spacing:-.03em;text-align:center">Crea tu cuenta</h2>
+      <p style="margin:0 0 20px;color:var(--tx2);font-size:13.5px;text-align:center">
+        Lleva tu registro de entrenamiento, alimentación y sueño.</p>
+      <label class="f"><span>Tu nombre</span>
+        <input class="inp" id="crName" autocomplete="name" placeholder="Cómo quieres que te llame"></label>
+      <label class="f"><span>Correo</span>
+        <input class="inp" id="crMail" type="email" inputmode="email" autocomplete="username" placeholder="tu@correo.com"></label>
+      <label class="f"><span>Contraseña</span>
+        <input class="inp" id="crPass" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"></label>
+      <label class="f"><span>Repite la contraseña</span>
+        <input class="inp" id="crPass2" type="password" autocomplete="new-password" placeholder="••••••••"></label>
+      <button class="btn" id="crGo">Crear cuenta y entrar</button>
+      <button class="btn ghost" style="margin-top:8px" id="crVolver">Ya tengo cuenta</button>
+      <p style="margin:16px 0 0;color:var(--tx3);font-size:11.5px;line-height:1.6;text-align:center">
+        Al crear tu cuenta aceptas que Fractale vea tus registros para hacer tu
+        seguimiento. Puedes pedir que se borren cuando quieras.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script src="nube.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   ESTADO
+   ============================================================ */
+const KEY = "wellness.v1";
+
+/* ============================================================
+   PWA · notificaciones al celular
+   Pega aquí la clave PÚBLICA que genera `cd push && npm run keys`.
+   Sin ella la app funciona igual, pero los avisos solo llegan
+   mientras la app esté abierta.
+   ============================================================ */
+const APP_VERSION = "2026.08.24-16";
+const PUSH_PUBLIC_KEY = "";
+const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
+const DEF_HABITS = [
+  {id:"agua",   name:"Tomar agua",  emoji:"💧", type:"count",  goal:8,   unit:"vasos", step:1,    color:"#38bdf8"},
+  {id:"entren", name:"Entrenar",    emoji:"🏋️", type:"workout",goal:1,   unit:"",      step:1,    color:"#22e07a"},
+  {id:"activi", name:"Actividad física", emoji:"🏃", type:"activity", goal:60, unit:"min", step:5, color:"#f97316"},
+  {id:"caminar",name:"Caminar",     emoji:"🚶", type:"amount", goal:8000,unit:"pasos", step:1000, color:"#fbbf24"},
+  {id:"comida", name:"Comer sano",  emoji:"🥗", type:"food",   goal:3,   unit:"grupos",step:1,    color:"#2dd4bf"},
+  {id:"leer",   name:"Leer",        emoji:"📖", type:"amount", goal:10,  unit:"páginas",step:2,   color:"#a78bfa"},
+  {id:"personal",name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#fb7185"},
+  {id:"pantall",name:"Sin pantallas de noche", emoji:"📵", type:"check", goal:1, unit:"", step:1, color:"#e879f9"}
+];
+const MEALS = ["Desayuno","Almuerzo","Cena","Snacks"];
+const EMOJIS = ["💧","🏋️","🏃","🚶","🥗","😴","🧘","🤸","🚴","🏊","📖","☀️","💊","🧴","🚭","🍎","☕️","🥦","⚖️","🧠","📵","✍️","🎯","❤️"];
+const DEF_SETTINGS = {
+  rem:{on:false, from:"08:00", to:"22:00", every:120, lastAt:0},
+  wake:{on:true, goalHours:8, lastAsked:""},
+  screens:{on:true, at:"21:00", lastFired:""},
+  junk:{dayWarn:2, dayRisk:3, weekWarn:3, weekRisk:5}
+};
+
+/* Grupos de alimentos que se pueden priorizar en el día */
+const FOOD_GROUPS = [
+  {k:"proteina",  e:"🍗", l:"Proteína"},
+  {k:"verduras",  e:"🥦", l:"Verduras"},
+  {k:"frutas",    e:"🍎", l:"Frutas"},
+  {k:"integrales",e:"🌾", l:"Integrales"},
+  {k:"legumbres", e:"🫘", l:"Legumbres"},
+  {k:"grasas",    e:"🥑", l:"Grasas buenas"},
+  {k:"lacteos",   e:"🥛", l:"Lácteos"},
+  {k:"hidrata",   e:"💧", l:"Hidratación"}
+];
+/* Comida chatarra: cada ítem cuenta como 1 porción */
+const JUNK_ITEMS = [
+  {e:"🍔", l:"Comida rápida"}, {e:"🍟", l:"Frituras"},
+  {e:"🍕", l:"Pizza"},         {e:"🥤", l:"Bebida azucarada"},
+  {e:"🍫", l:"Dulces"},        {e:"🍪", l:"Snacks/galletas"},
+  {e:"🍺", l:"Alcohol"},       {e:"🍦", l:"Postre/helado"}
+];
+/* Deportes y actividades para el registro diario */
+const ACTIVIDADES = [
+  {k:"correr",   e:"🏃", l:"Correr"},      {k:"caminar",  e:"🚶", l:"Caminar"},
+  {k:"ciclismo", e:"🚴", l:"Ciclismo"},    {k:"natacion", e:"🏊", l:"Natación"},
+  {k:"trekking", e:"🥾", l:"Trekking"},    {k:"futbol",   e:"⚽️", l:"Fútbol"},
+  {k:"basquet",  e:"🏀", l:"Básquetbol"},  {k:"tenis",    e:"🎾", l:"Tenis"},
+  {k:"padel",    e:"🎾", l:"Pádel"},       {k:"volei",    e:"🏐", l:"Vóleibol"},
+  {k:"boxeo",    e:"🥊", l:"Boxeo"},       {k:"escalada", e:"🧗", l:"Escalada"},
+  {k:"remo",     e:"🚣", l:"Remo"},        {k:"baile",    e:"💃", l:"Baile"},
+  {k:"yoga",     e:"🧘", l:"Yoga"},        {k:"funcional",e:"🤸", l:"Funcional"},
+  {k:"golf",     e:"⛳️", l:"Golf"},        {k:"otra",     e:"⭐️", l:"Otra"}
+];
+const actNombre = k => ACTIVIDADES.find(a=>a.k===k) || {e:"⭐️", l:k};
+/* En estas la distancia dice tanto como el tiempo */
+const CON_KM = new Set(["correr","caminar","ciclismo","natacion","trekking","remo"]);
+/* Cada actividad se guarda como {min, km}; los registros antiguos eran solo un número */
+const actMin = v => (v && typeof v === "object") ? (Number(v.min)||0) : (Number(v)||0);
+const actKm  = v => (v && typeof v === "object") ? (Number(v.km)||0)  : 0;
+const actNorm = v => (v && typeof v === "object") ? v : {min:Number(v)||0, km:0};
+
+/* Ejercicios sugeridos para autocompletar */
+const EX_PRESETS = ["Sentadilla","Press banca","Peso muerto","Dominadas","Remo con barra","Press militar",
+  "Curl bíceps","Extensión tríceps","Prensa","Zancadas","Elevaciones laterales","Fondos","Hip thrust",
+  "Jalón al pecho","Abdominales","Gemelos"];
+
+let S = load();
+let cur = todayKey();
+let editing = null;
+let sk = {h:7.5, q:0, f:0};
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      d.habits ||= []; d.logs ||= {};
+      const vAntes = d.v || 0;
+      /* Renombra o reconfigura un hábito ya existente. Vive fuera de los bloques
+         de migración porque todos lo usan. */
+      const mv = (oldId, patch)=>{
+        const h = d.habits.find(x=>x.id===oldId); if(!h) return;
+        Object.assign(h, patch);
+        if(patch.id && patch.id!==oldId)
+          Object.values(d.logs).forEach(l=>{ if(l.values) delete l.values[oldId]; });
+      };
+      if(!(d.v >= 2)){ d.theme = "dark"; d.v = 2; }   // migración: la app pasa a fondo negro
+      if(d.v < 3){                                     // migración: entrenamiento, comida y hábitos nuevos
+        mv("entren", {type:"workout", goal:1, unit:""});
+        mv("comida", {type:"food", goal:3, unit:"grupos", step:1});
+        mv("medit",  {id:"leer", name:"Leer", emoji:"📖", type:"amount", goal:10, unit:"páginas", step:2, color:"#a78bfa"});
+        mv("estirar",{id:"personal", name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#fb7185"});
+        d.v = 3;
+      }
+      if(d.v < 4){                                     // correr pasa a actividad física
+        mv("correr", {id:"activi", name:"Actividad física", emoji:"🏃",
+                      type:"activity", goal:60, unit:"min", step:5, color:"#f97316"});
+        d.v = 4;
+      }
+      d.theme ||= "dark";
+      d.settings = Object.assign({}, DEF_SETTINGS, d.settings||{});
+      d.settings.rem  = Object.assign({}, DEF_SETTINGS.rem,  d.settings.rem||{});
+      d.settings.wake = Object.assign({}, DEF_SETTINGS.wake, d.settings.wake||{});
+      d.settings.screens = Object.assign({}, DEF_SETTINGS.screens, d.settings.screens||{});
+      d.settings.junk = Object.assign({}, DEF_SETTINGS.junk, d.settings.junk||{});
+      d.habits.forEach((h,i)=> h.color ||= COLORS[i % COLORS.length]);
+      /* Si acabamos de migrar, la lista nueva tiene que ganarle a la que está en
+         la nube. Sin esto, al sincronizar volvían los hábitos viejos. */
+      if((d.v||0) > vAntes) d.metaMt = Date.now();
+      return d;
+    }
+  }catch(e){
+    console.error("No se pudo leer el estado guardado:", e);
+    /* Antes esto descartaba TODO y arrancaba de cero. Ahora intentamos rescatar
+       los datos tal cual estaban, aunque la migración haya fallado. */
+    try{
+      const crudo = JSON.parse(localStorage.getItem(KEY));
+      if(crudo && crudo.habits && crudo.logs){
+        crudo.settings = Object.assign({}, DEF_SETTINGS, crudo.settings||{});
+        crudo.settings.rem  = Object.assign({}, DEF_SETTINGS.rem,  crudo.settings.rem||{});
+        crudo.settings.wake = Object.assign({}, DEF_SETTINGS.wake, crudo.settings.wake||{});
+        crudo.settings.screens = Object.assign({}, DEF_SETTINGS.screens, crudo.settings.screens||{});
+        crudo.settings.junk = Object.assign({}, DEF_SETTINGS.junk, crudo.settings.junk||{});
+        crudo.theme ||= "dark";
+        return crudo;
+      }
+    }catch(e2){}
+  }
+  return {v:4, habits: DEF_HABITS.map(h=>({...h})), logs:{}, theme:"dark",
+          settings: JSON.parse(JSON.stringify(DEF_SETTINGS))};
+}
+/* Firmas para detectar qué cambió de verdad: solo entonces movemos la marca de
+   tiempo, para que al fusionar dos dispositivos nunca gane una versión vacía. */
+const _sig = {};
+const sigOf = o => { const {mt, ...r} = o||{}; return JSON.stringify(r); };
+function touch(){
+  const now = Date.now();
+  const meta = JSON.stringify({h:S.habits, s:S.settings, t:S.theme});
+  if(_sig.meta !== undefined && _sig.meta !== meta) S.metaMt = now;
+  _sig.meta = meta;
+  const l = S.logs[cur];
+  if(l){
+    const d = sigOf(l);
+    if(_sig[cur] !== undefined && _sig[cur] !== d) l.mt = now;
+    _sig[cur] = d;
+  }
+}
+const save = () => {
+  touch();
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast("No se pudo guardar"); }
+  if(typeof mirrorState === "function") mirrorState();
+  if(typeof syncSoon === "function") syncSoon();
+};
+
+/* ---------- fechas ---------- */
+function todayKey(d=new Date()){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function parseKey(k){ const [y,m,d]=k.split("-").map(Number); return new Date(y,m-1,d); }
+function shift(k,n){ const d=parseKey(k); d.setDate(d.getDate()+n); return todayKey(d); }
+function dayLog(k){
+  const l = (S.logs[k] ||= {values:{}, meals:{}, note:"", mood:0, sleep:null});
+  l.workout ||= {ex:[]};
+  l.food ||= {groups:[], junk:[], note:""};
+  l.actividad ||= {items:{}};
+  return l;
+}
+
+const fmt = n => Number.isInteger(n) ? String(n) : String(Math.round(n*10)/10);
+const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
+function progress(h,v){ const g=Number(h.goal)||1; return clamp((Number(v)||0)/g,0,1); }
+function isDone(h,v){ return progress(h,v) >= 1; }
+
+function dayPct(k){
+  const l = S.logs[k]; if(!l || !S.habits.length) return 0;
+  let s=0; S.habits.forEach(h=> s += progress(h, l.values?.[h.id]||0));
+  return s / S.habits.length;
+}
+function streak(h){
+  let n=0, k=todayKey();
+  if(!isDone(h, S.logs[k]?.values?.[h.id]||0)) k = shift(k,-1);
+  while(isDone(h, S.logs[k]?.values?.[h.id]||0)){ n++; k = shift(k,-1); }
+  return n;
+}
+function toast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800);
+}
+const shutModals = ()=> document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open"));
+const cap = s => String(s).charAt(0).toUpperCase()+String(s).slice(1);
+function esc(s){ return String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function slug(s){
+  return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"")
+          .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "h";
+}
+
+/* Pone al día una lista de hábitos venga de donde venga: del dispositivo
+   o de la nube. Devuelve true si tuvo que cambiar algo. */
+const CAMBIOS_HABITOS = [
+  ["entren",  {type:"workout", goal:1, unit:""}],
+  ["comida",  {type:"food", goal:3, unit:"grupos", step:1}],
+  ["medit",   {id:"leer", name:"Leer", emoji:"📖", type:"amount", goal:10, unit:"páginas", step:2, color:"#a78bfa"}],
+  ["estirar", {id:"personal", name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#fb7185"}],
+  ["correr",  {id:"activi", name:"Actividad física", emoji:"🏃", type:"activity", goal:60, unit:"min", step:5, color:"#f97316"}]
+];
+function arreglarHabitos(lista){
+  if(!Array.isArray(lista)) return false;
+  let cambio = false;
+  CAMBIOS_HABITOS.forEach(([id, patch])=>{
+    const h = lista.find(x=>x && x.id === id);
+    if(!h) return;
+    if(Object.entries(patch).some(([k,v])=> h[k] !== v)){ Object.assign(h, patch); cambio = true; }
+  });
+  return cambio;
+}
+
+/* ============================================================
+   PUNTUACIÓN DE SUEÑO
+   ============================================================ */
+function sleepScore({hours,quality,feel}){
+  const ideal = Number(S.settings.wake.goalHours)||8;
+  const h = clamp(Number(hours)||0, 0, 14);
+  const hs = clamp(1 - Math.abs(h-ideal)/ideal, 0, 1);   // 1 = exactamente la meta
+  const qs = (clamp(quality,1,5)-1)/4;
+  const fs = (clamp(feel,1,5)-1)/4;
+  return Math.round(100*(0.40*hs + 0.35*qs + 0.25*fs));
+}
+function scoreVerdict(s){
+  if(s>=85) return {t:"Sueño excelente", c:"#22e07a"};
+  if(s>=70) return {t:"Buen descanso",   c:"#38bdf8"};
+  if(s>=50) return {t:"Descanso regular",c:"#fbbf24"};
+  if(s>0)   return {t:"Dormiste poco",   c:"#fb7185"};
+  return {t:"Sin registro", c:"#6f7b8c"};
+}
+const QUAL = [{e:"😖",l:"Pésima"},{e:"😕",l:"Mala"},{e:"😐",l:"Normal"},{e:"🙂",l:"Buena"},{e:"😴",l:"Óptima"}];
+const FEEL = [{e:"🥱",l:"Agotado"},{e:"😪",l:"Cansado"},{e:"😐",l:"Neutral"},{e:"🙂",l:"Bien"},{e:"⚡️",l:"Full"}];
+
+/* ============================================================
+   NOTIFICACIONES / RECORDATORIOS
+   ============================================================ */
+let swReg = null;
+
+function notifSupported(){ return "Notification" in window; }
+
+/* En iOS solo se pueden mostrar notificaciones desde el service worker */
+async function showNotif(title, opts){
+  try{
+    const reg = swReg || (navigator.serviceWorker && await navigator.serviceWorker.ready);
+    if(reg && reg.showNotification){ await reg.showNotification(title, opts); return true; }
+  }catch(e){}
+  try{ const n = new Notification(title, opts); n.onclick=()=>{window.focus(); n.close();}; return true; }
+  catch(e){ return false; }
+}
+
+/* ---------- registro del service worker ---------- */
+async function initSW(){
+  if(!("serviceWorker" in navigator)) return;
+  if(location.protocol === "file:") return;      // file:// no admite service workers
+  try{
+    // si ya había una versión corriendo, al activarse la nueva recargamos una vez
+    let recargando = false;
+    navigator.serviceWorker.addEventListener("controllerchange", ()=>{
+      if(recargando || !navigator.serviceWorker.controller) return;
+      recargando = true;
+      try{ sessionStorage.setItem("recienActualizada", "1"); }catch(e){}
+      location.reload();
+    });
+    swReg = await navigator.serviceWorker.register("sw.js", {scope:"./", updateViaCache:"none"});
+    await navigator.serviceWorker.ready;
+    swReg.update().catch(()=>{});
+    // y buscamos actualizaciones cada vez que vuelves a la app
+    document.addEventListener("visibilitychange", ()=>{
+      if(document.visibilityState === "visible" && swReg) swReg.update().catch(()=>{});
+    });
+    renderInstall && renderInstall();
+  }catch(e){ console.warn("SW no registrado:", e); }
+}
+
+/* ---------- espejo del día en IndexedDB, para que el push sea específico ---------- */
+function idb(){
+  return new Promise((res,rej)=>{
+    const rq = indexedDB.open("bienestar-state", 1);
+    rq.onupgradeneeded = ()=> rq.result.createObjectStore("kv");
+    rq.onsuccess = ()=> res(rq.result);
+    rq.onerror   = ()=> rej(rq.error);
+  });
+}
+async function mirrorState(){
+  try{
+    const t = todayKey(), l = dayLog(t);
+    const p = pendingSummary();
+    const hp = S.habits.find(h=>h.id==="pantall" || /pantalla/i.test(h.name));
+    const data = {
+      date: t,
+      pct: Math.round(dayPct(t)*100),
+      pending: p ? p.n : 0,
+      detail: p ? p.detalle : "",
+      screensDone: hp ? isDone(hp, l.values[hp.id]||0) : false
+    };
+    const db = await idb();
+    db.transaction("kv","readwrite").objectStore("kv").put(data, "today");
+  }catch(e){}
+}
+
+/* ---------- suscripción push ---------- */
+const b64ToU8 = b64 => {
+  const pad = "=".repeat((4 - b64.length % 4) % 4);
+  const raw = atob((b64 + pad).replace(/-/g,"+").replace(/_/g,"/"));
+  return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+};
+function pushReady(){ return !!(PUSH_PUBLIC_KEY && swReg && swReg.pushManager); }
+
+async function getSub(){
+  if(!swReg || !swReg.pushManager) return null;
+  try{ return await swReg.pushManager.getSubscription(); }catch(e){ return null; }
+}
+async function subscribePush(){
+  if(!PUSH_PUBLIC_KEY){ toast("Falta configurar la clave del servidor"); return null; }
+  const ok = await askNotifPermission();
+  if(!ok) return null;
+  try{
+    const sub = await swReg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: b64ToU8(PUSH_PUBLIC_KEY)
+    });
+    S.settings.rem.on = true; save();
+    toast("📲 Alertas del celular activadas");
+    return sub;
+  }catch(e){
+    toast("No se pudo suscribir: "+(e.message||e));
+    return null;
+  }
+}
+function notifState(){ return notifSupported() ? Notification.permission : "unsupported"; }
+
+async function askNotifPermission(){
+  if(!notifSupported()){ toast("Este navegador no soporta notificaciones"); return false; }
+  if(Notification.permission === "granted") return true;
+  if(Notification.permission === "denied"){
+    toast("Bloqueadas: actívalas en los ajustes del navegador"); return false;
+  }
+  const p = await Notification.requestPermission();
+  if(p === "granted"){ toast("🔔 Recordatorios activados"); return true; }
+  toast("Permiso no concedido"); return false;
+}
+
+function hm(str){ const [h,m]=String(str||"0:0").split(":").map(Number); return (h||0)*60+(m||0); }
+function nowMin(){ const d=new Date(); return d.getHours()*60+d.getMinutes(); }
+function inWindow(){
+  const r=S.settings.rem, n=nowMin(), a=hm(r.from), b=hm(r.to);
+  return a<=b ? (n>=a && n<=b) : (n>=a || n<=b);   // soporta ventanas que cruzan medianoche
+}
+
+function pendingSummary(){
+  const l = dayLog(todayKey());
+  const pend = S.habits.filter(h=>!isDone(h, l.values[h.id]||0));
+  if(!pend.length) return null;
+  const pct = Math.round(dayPct(todayKey())*100);
+  const top = pend
+    .map(h=>({h, falta: Math.max(0,(Number(h.goal)||1)-(Number(l.values[h.id])||0))}))
+    .sort((a,b)=> progress(b.h, l.values[b.h.id]||0) - progress(a.h, l.values[a.h.id]||0));
+  const first = top[0];
+  const detalle = first.h.type==="check"
+    ? `${first.h.emoji} ${first.h.name}`
+    : `${first.h.emoji} te faltan ${fmt(first.falta)} ${first.h.unit||""}`.trim();
+  return {pct, n:pend.length, detalle, pend};
+}
+
+function fireReminder(manual){
+  const p = pendingSummary();
+  if(!p && !manual){ return false; }
+  const title = p ? `Vas ${p.pct}% del día 🏋️` : "¡Día completo! 🎉";
+  const body  = p ? `${p.detalle}. Te quedan ${p.n} hábito${p.n>1?"s":""} por cerrar.`
+                  : "Completaste todos tus círculos de hoy.";
+  if(notifState()==="granted"){
+    showNotif(title, {body, icon:"icons/icon-192.png", badge:"icons/icon-192.png", tag:"bienestar-dia", renotify:true});
+  }else{
+    toast(title+" · "+body);
+  }
+  return true;
+}
+function iconDataUrl(){
+  return "data:image/svg+xml,"+encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#000"/><text x="50" y="72" font-size="62" text-anchor="middle">🏋️</text></svg>`);
+}
+
+function remTick(){
+  const r = S.settings.rem;
+  if(!r.on) return;
+  if(!inWindow()) return;
+  // si el navegador bloqueó las notificaciones, igual avisamos dentro de la app
+  const gap = Math.max(15, Number(r.every)||120)*60000;
+  if(Date.now() - (r.lastAt||0) < gap) return;
+  if(fireReminder(false)){ r.lastAt = Date.now(); save(); }
+  else { r.lastAt = Date.now(); save(); }   // día completo: no insistir hasta el próximo tramo
+}
+setInterval(()=>{ remTick(); screensTick(); }, 60000);
+
+/* ============================================================
+   VISTA · HOY
+   ============================================================ */
+const DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+
+function renderDate(){
+  const d = parseKey(cur), t = todayKey(), y = shift(t,-1);
+  let title;
+  if(cur===t) title="Hoy"; else if(cur===y) title="Ayer";
+  else title = DIAS[d.getDay()][0].toUpperCase()+DIAS[d.getDay()].slice(1);
+  document.getElementById("dTitle").textContent = title;
+  document.getElementById("dSub").textContent = `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
+  document.getElementById("nextD").style.visibility = cur>=t ? "hidden":"visible";
+  document.getElementById("todayBtn").style.visibility = cur===t ? "hidden":"visible";
+}
+
+function renderHero(){
+  const l = dayLog(cur);
+  const done = S.habits.filter(h=>isDone(h,l.values[h.id]||0)).length;
+  const pct = Math.round(dayPct(cur)*100);
+  const C = 2*Math.PI*38;
+  document.getElementById("ringFg").style.strokeDashoffset = C*(1-pct/100);
+  document.getElementById("ringVal").textContent = pct+"%";
+  const msg = pct===0?"Empecemos el día":pct<40?"Buen arranque":pct<75?"Vas muy bien":pct<100?"Casi lo logras":"¡Día completo! 🎉";
+  document.getElementById("heroTitle").textContent = msg;
+  document.getElementById("heroSub").textContent = `${done} de ${S.habits.length} hábitos completados`;
+
+  const chips = [];
+  if(l.sleep) chips.push(`<span class="chip sleep">😴 Sueño ${l.sleep.score}</span>`);
+  S.habits.map(h=>({h,n:streak(h)})).filter(x=>x.n>1).sort((a,b)=>b.n-a.n).slice(0,2)
+    .forEach(x=>chips.push(`<span class="chip hot">${x.h.emoji} ${x.n} días 🔥</span>`));
+  if(!chips.length) chips.push(`<span class="chip">Completa un hábito 2 días seguidos para iniciar una racha</span>`);
+  document.getElementById("heroChips").innerHTML = chips.join("");
+}
+
+function renderSleepCard(){
+  const l = dayLog(cur), s = l.sleep, box = document.getElementById("sleepCard");
+  if(!s){
+    box.innerHTML = `
+      <div class="sl-top">
+        <div class="sl-score" style="font-size:26px">😴</div>
+        <div class="sl-t"><b>Sin check-in de sueño</b>
+          <span>${cur===todayKey()?"Registra cómo dormiste anoche":"No registraste este día"}</span></div>
+      </div>
+      <button class="sl-cta" id="openSleep">Hacer check-in de sueño</button>`;
+  }else{
+    const v = scoreVerdict(s.score);
+    box.innerHTML = `
+      <div class="sl-top">
+        <div class="sl-score" style="color:${v.c};border-color:${v.c}55;background:${v.c}18">${s.score}</div>
+        <div class="sl-t"><b>${v.t}</b><span>Puntuación de sueño sobre 100</span></div>
+      </div>
+      <div class="sl-meta">
+        <div><b>${fmt(s.hours)} h</b><span>Dormidas</span></div>
+        <div><b>${QUAL[s.quality-1].e} ${QUAL[s.quality-1].l}</b><span>Calidad</span></div>
+        <div><b>${FEEL[s.feel-1].e} ${FEEL[s.feel-1].l}</b><span>Energía</span></div>
+      </div>
+      <button class="sl-cta" id="openSleep" style="background:var(--card2);color:var(--tx);border:1px solid var(--line)">Editar check-in</button>`;
+  }
+  document.getElementById("openSleep").onclick = ()=>openSleep(false);
+}
+
+function renderCards(){
+  const l = dayLog(cur), box = document.getElementById("cards");
+  if(!S.habits.length){ box.innerHTML = `<div class="empty">No tienes hábitos todavía.<br>Créalos en <b>Ajustes</b>.</div>`; return; }
+  box.innerHTML = S.habits.map(h=>{
+    const v = l.values[h.id]||0, p = progress(h,v), done = p>=1, st = streak(h);
+    let body;
+    if(h.type==="activity"){ body = actividadCardBody(h,l); }
+    else if(h.type==="workout"){ body = workoutCardBody(h,l); }
+    else if(h.type==="food"){ body = foodCardBody(h,l); }
+    else if(h.type==="check"){
+      body = `<div class="row"><div class="hval">${done?"Hecho":"Pendiente"}</div>
+        <button class="toggle ${done?'on':''}" data-t="${h.id}">${done?"✓":"○"}</button></div>`;
+    }else{
+      const dots = h.type==="count" && h.goal<=12
+        ? `<div class="dots">${Array.from({length:Math.round(h.goal)},(_,i)=>
+            `<div class="dot ${v>=i+1?'f':(v>i?'p':'')}"></div>`).join("")}</div>` : "";
+      body = `<div class="row">
+          <div class="hval">${fmt(v)}<small>/ ${fmt(h.goal)} ${esc(h.unit||"")}</small></div>
+          <div class="stepper">
+            <button class="sbtn" data-m="${h.id}">−</button>
+            <button class="sbtn plus" data-p="${h.id}">+</button>
+          </div>
+        </div>${dots}`;
+    }
+    return `<div class="hcard ${done?'done':''}" data-card="${h.id}" style="--a:${h.color||'#22e07a'}">
+      <div class="hh">
+        <div class="emoji">${h.emoji}</div>
+        <div style="min-width:0"><div class="hname">${esc(h.name)}</div>
+             <div class="hgoal">${h.type==="check"?"Meta: hacerlo":h.type==="workout"?"Sesión de fuerza":"Meta: "+fmt(h.goal)+" "+esc(h.unit||"")}</div></div>
+        <div class="streak ${st>1?'on':''}">${st>1?"🔥 "+st:""}</div>
+      </div>
+      ${body}
+      <div class="bar" style="width:${p*100}%"></div>
+    </div>`;
+  }).join("");
+
+  box.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>bump(b.dataset.p,+1));
+  box.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>bump(b.dataset.m,-1));
+  box.querySelectorAll("[data-ac]").forEach(b=>b.onclick=()=>openActividad());
+  box.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>openWorkout());
+  box.querySelectorAll("[data-fd]").forEach(b=>b.onclick=()=>openFood());
+  box.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
+    const lg=dayLog(cur), h=S.habits.find(x=>x.id===b.dataset.t);
+    const was = !!lg.values[h.id];
+    lg.values[h.id] = was?0:1; save();
+    refrescarTarjeta(h.id);
+    if(!was) celebrate(h);
+  });
+}
+
+function bump(id,dir){
+  const h = S.habits.find(x=>x.id===id); if(!h) return;
+  const l = dayLog(cur), step = Number(h.step)||1;
+  let v = (Number(l.values[id])||0) + dir*step;
+  v = Math.max(0, Math.round(v*100)/100);
+  const was = isDone(h, l.values[id]||0);
+  l.values[id] = v; save();
+  refrescarTarjeta(id);                       // solo esta tarjeta, sin rehacer la lista
+  if(!was && isDone(h,v)) celebrate(h);
+}
+
+/* Actualiza una tarjeta en su sitio. Redibujar la lista entera movía los
+   botones bajo el dedo y hacía que un toque cayera en el hábito de al lado. */
+function refrescarTarjeta(id){
+  const h = S.habits.find(x=>x.id===id); if(!h) return;
+  const card = document.querySelector(`[data-card="${id}"]`); if(!card) return;
+  const l = dayLog(cur), v = l.values[id]||0, p = progress(h,v), done = p>=1;
+
+  card.classList.toggle("done", done);
+  const bar = card.querySelector(".bar"); if(bar) bar.style.width = (p*100)+"%";
+
+  const val = card.querySelector(".hval");
+  if(h.type === "check"){
+    if(val) val.textContent = done ? "Hecho" : "Pendiente";
+    const t = card.querySelector(".toggle");
+    if(t){ t.classList.toggle("on", done); t.textContent = done ? "✓" : "○"; }
+  }else if(h.type !== "workout" && h.type !== "food"){
+    if(val) val.innerHTML = `${fmt(v)}<small>/ ${fmt(h.goal)} ${esc(h.unit||"")}</small>`;
+    card.querySelectorAll(".dot").forEach((d,i)=>{
+      d.className = "dot" + (v >= i+1 ? " f" : (v > i ? " p" : ""));
+    });
+  }
+  const st = streak(h), sEl = card.querySelector(".streak");
+  if(sEl){ sEl.className = "streak" + (st>1 ? " on" : ""); sEl.textContent = st>1 ? "🔥 "+st : ""; }
+  renderHero();
+}
+function celebrate(h){
+  toast(`${h.emoji} ${h.name} · meta cumplida`);
+  if(dayPct(cur)>=0.999 && cur===todayKey()){
+    setTimeout(()=>{
+      toast("🎉 ¡Cerraste todos los círculos de hoy!");
+      if(notifState()==="granted" && S.settings.rem.on)
+        showNotif("¡Día completo! 🎉", {body:"Cerraste todos tus círculos de hoy.", icon:"icons/icon-192.png", tag:"bienestar-dia"});
+    }, 1900);
+  }
+}
+
+function renderMeals(){
+  const l = dayLog(cur);
+  document.getElementById("meals").innerHTML = MEALS.map(m=>
+    `<div class="meal"><div class="mtag">${m}</div>
+      <textarea data-meal="${m}" placeholder="¿Qué comiste?">${esc(l.meals[m]||"")}</textarea></div>`).join("");
+  document.querySelectorAll("[data-meal]").forEach(t=>{
+    autosize(t);
+    t.oninput = ()=>{ autosize(t); dayLog(cur).meals[t.dataset.meal]=t.value; save(); };
+  });
+}
+function autosize(t){ t.style.height="auto"; t.style.height=Math.max(38,t.scrollHeight)+"px"; }
+
+function renderMood(){
+  const l = dayLog(cur), faces=["😞","😕","😐","🙂","😄"], box = document.getElementById("mood");
+  if(!box.children.length){
+    box.innerHTML = faces.map((f,i)=>`<button class="sbtn" data-mood="${i+1}">${f}</button>`).join("");
+    box.querySelectorAll("[data-mood]").forEach(b=>b.onclick=()=>{
+      const lg = dayLog(cur), n = +b.dataset.mood;
+      lg.mood = lg.mood === n ? 0 : n; save(); marcarAnimo();
+    });
+  }
+  marcarAnimo();
+  const n = document.getElementById("note");
+  n.value = l.note||"";
+  n.oninput = ()=>{ dayLog(cur).note = n.value; save(); };
+}
+function marcarAnimo(){
+  const m = dayLog(cur).mood;
+  document.querySelectorAll("[data-mood]").forEach(b=>{
+    const on = +b.dataset.mood === m;
+    b.style.background = on ? "var(--accent2)" : "";
+    b.style.borderColor = on ? "var(--accent)" : "";
+  });
+}
+
+function renderToday(){ renderDate(); renderHero(); renderSleepCard(); renderCards(); }
+
+/* ============================================================
+   CHECK-IN DE SUEÑO
+   ============================================================ */
+function openSleep(auto){
+  shutModals();
+  const l = dayLog(cur), s = l.sleep;
+  sk = s ? {h:s.hours, q:s.quality, f:s.feel} : {h:Number(S.settings.wake.goalHours)||8, q:0, f:0};
+  const d = parseKey(cur);
+  document.getElementById("skTitle").textContent = auto ? "Buenos días ☀️" : "Check-in de sueño";
+  document.getElementById("skSub").textContent = cur===todayKey()
+    ? "¿Cómo dormiste anoche? Esto calcula tu puntuación de sueño."
+    : `Registro del ${d.getDate()} ${MESES[d.getMonth()]}.`;
+  drawScales(); updateSkPreview();
+  document.getElementById("sleepModal").classList.add("open");
+}
+function drawScales(){
+  document.getElementById("skHrsLbl").textContent = fmt(sk.h)+" h";
+  const ideal = Number(S.settings.wake.goalHours)||8;
+  const diff = Math.round((sk.h-ideal)*10)/10;
+  document.getElementById("skHrsHint").textContent =
+    diff===0 ? "justo tu meta" : diff>0 ? `+${fmt(diff)} h sobre tu meta` : `${fmt(diff)} h bajo tu meta`;
+  const qBox = document.getElementById("skQual"), fBox = document.getElementById("skFeel");
+  if(!qBox.children.length){
+    qBox.innerHTML = QUAL.map((o,i)=>`<button data-q="${i+1}">${o.e}<small>${o.l}</small></button>`).join("");
+    fBox.innerHTML = FEEL.map((o,i)=>`<button data-f="${i+1}">${o.e}<small>${o.l}</small></button>`).join("");
+    qBox.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ sk.q=+b.dataset.q; marcarEscalas(); updateSkPreview(); });
+    fBox.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ sk.f=+b.dataset.f; marcarEscalas(); updateSkPreview(); });
+  }
+  marcarEscalas();
+}
+/* Solo cambia la marca: el contenido no se rehace, así el dedo nunca
+   toca un botón que se movió mientras lo pulsabas. */
+function marcarEscalas(){
+  document.querySelectorAll("[data-q]").forEach(b=>b.classList.toggle("on", +b.dataset.q === sk.q));
+  document.querySelectorAll("[data-f]").forEach(b=>b.classList.toggle("on", +b.dataset.f === sk.f));
+}
+function updateSkPreview(){
+  const ok = sk.q && sk.f;
+  const sc = ok ? sleepScore({hours:sk.h, quality:sk.q, feel:sk.f}) : 0;
+  const v = scoreVerdict(ok?sc:0);
+  const el = document.getElementById("skPreview");
+  el.textContent = ok ? sc : "–";
+  el.style.color = v.c; el.style.borderColor = v.c+"55"; el.style.background = v.c+"18";
+  document.getElementById("skVerdict").textContent = ok ? v.t : "Completa los datos";
+  document.getElementById("skTip").textContent = ok
+    ? tipFor(sc, sk) : "Tu puntuación combina horas, calidad y energía al despertar.";
+}
+function tipFor(sc, x){
+  const ideal = Number(S.settings.wake.goalHours)||8;
+  if(x.h < ideal-1.5) return "Dormiste menos de tu meta: intenta acostarte 30 min antes.";
+  if(x.h > ideal+2)   return "Dormiste de más; a veces cansa igual que dormir poco.";
+  if(x.q<=2)          return "Sueño interrumpido: cuida cafeína y pantallas de noche.";
+  if(sc>=85)          return "Excelente. Repite lo que hiciste anoche.";
+  return "Buen descanso, mantén el horario constante.";
+}
+function ponHoras(d){
+  sk.h = clamp(Math.round((sk.h + d)*10)/10, 0, 14);
+  document.getElementById("skHrsLbl").textContent = fmt(sk.h)+" h";
+  const ideal = Number(S.settings.wake.goalHours)||8, dif = Math.round((sk.h-ideal)*10)/10;
+  document.getElementById("skHrsHint").textContent =
+    dif===0 ? "justo tu meta" : dif>0 ? `+${fmt(dif)} h sobre tu meta` : `${fmt(dif)} h bajo tu meta`;
+  updateSkPreview();
+}
+document.getElementById("skPlus").onclick  = ()=>ponHoras(+0.5);
+document.getElementById("skMinus").onclick = ()=>ponHoras(-0.5);
+document.getElementById("skCancel").onclick = ()=>{
+  S.settings.wake.lastAsked = todayKey(); save();
+  document.getElementById("sleepModal").classList.remove("open");
+};
+document.getElementById("skSave").onclick = ()=>{
+  if(!sk.q || !sk.f){ toast("Elige calidad y cómo te sientes"); return; }
+  const rec = {hours:sk.h, quality:sk.q, feel:sk.f, score:sleepScore({hours:sk.h,quality:sk.q,feel:sk.f}), at:Date.now()};
+  dayLog(cur).sleep = rec;
+  const hd = S.habits.find(h=>h.id==="dormir");
+  if(hd) dayLog(cur).values[hd.id] = sk.h;      // sincroniza con el hábito "Dormir" si existe
+  S.settings.wake.lastAsked = todayKey();
+  save();
+  document.getElementById("sleepModal").classList.remove("open");
+  renderToday();
+  toast(`😴 Puntuación de sueño: ${rec.score}`);
+};
+
+function maybeAskSleep(){
+  const w = S.settings.wake;
+  if(!w.on) return;
+  const t = todayKey();
+  if(w.lastAsked === t) return;
+  if(S.logs[t]?.sleep) return;
+  const h = new Date().getHours();
+  if(h < 4 || h > 13) return;                    // solo por la mañana
+  cur = t; renderAll();
+  setTimeout(()=>openSleep(true), 450);
+}
+
+/* ============================================================
+   HISTORIAL
+   ============================================================ */
+function renderHist(){
+  const rows=[]; let k=todayKey();
+  for(let i=0;i<30;i++){ rows.push(k); k=shift(k,-1); }
+  document.getElementById("histList").innerHTML = rows.map(d=>{
+    const p = Math.round(dayPct(d)*100), dt = parseKey(d), l = S.logs[d];
+    const mood = l?.mood ? " "+["","😞","😕","😐","🙂","😄"][l.mood] : "";
+    const slp  = l?.sleep ? ` <span style="color:#a5b4fc;font-weight:700">😴${l.sleep.score}</span>` : "";
+    const vol  = wkVolume(l?.workout);
+    const trn  = vol ? ` <span style="color:#4ade80;font-weight:700">🏋️${kg(vol)}</span>` : "";
+    const jk   = junkCount(d) ? ` <span style="color:#fb7185;font-weight:700">🍔${junkCount(d)}</span>` : "";
+    return `<div class="hist" data-go="${d}">
+      <div class="hd">${cap(DIAS[dt.getDay()].slice(0,3))} ${dt.getDate()} ${MESES[dt.getMonth()]}${mood}${slp}${trn}${jk}</div>
+      <div class="hp"><i style="width:${p}%"></i></div><div class="hn">${p}%</div></div>`;
+  }).join("");
+  document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>{
+    cur = el.dataset.go; go("hoy"); renderAll(); window.scrollTo({top:0,behavior:"smooth"});
+  });
+}
+
+/* ============================================================
+   PROGRESO
+   ============================================================ */
+function renderStats(){
+  const days=[]; let k=todayKey();
+  for(let i=0;i<30;i++){ days.push(k); k=shift(k,-1); }
+  const avg30 = Math.round(days.reduce((s,d)=>s+dayPct(d),0)/30*100);
+  const perfect = days.filter(d=>dayPct(d)>=0.999).length;
+  const sleeps = days.map(d=>S.logs[d]?.sleep).filter(Boolean);
+  const avgSleep = sleeps.length ? Math.round(sleeps.reduce((a,s)=>a+s.score,0)/sleeps.length) : 0;
+  const avgHrs = sleeps.length ? Math.round(sleeps.reduce((a,s)=>a+s.hours,0)/sleeps.length*10)/10 : 0;
+  const totKg = days.reduce((a,d)=>a+wkVolume(S.logs[d]?.workout), 0);
+  const jw = junkWeek(todayKey());
+  let gstreak=0, kk=todayKey();
+  if(dayPct(kk)===0) kk=shift(kk,-1);
+  while(dayPct(kk)>0){ gstreak++; kk=shift(kk,-1); }
+
+  document.getElementById("statBoxes").innerHTML = `
+    <div class="stat"><b>${avg30}%</b><span>Promedio 30 días</span></div>
+    <div class="stat"><b>${gstreak}</b><span>Días seguidos activo</span></div>
+    <div class="stat"><b>${perfect}</b><span>Días perfectos</span></div>
+    <div class="stat"><b style="color:#a5b4fc">${avgSleep||"–"}</b><span>Sueño promedio</span></div>
+    <div class="stat"><b>${kg(totKg)}</b><span>Kg movidos · 30 días</span></div>
+    <div class="stat"><b style="color:${RISK[riskLevel(junkCount(todayKey()), jw)].c}">${jw}</b><span>Chatarra · 7 días</span></div>`;
+
+  const sesiones = days.filter(d=>wkVolume(S.logs[d]?.workout)>0);
+  const mejor = sesiones.length ? Math.max(...sesiones.map(d=>wkVolume(S.logs[d].workout))) : 0;
+  document.getElementById("trainBox").innerHTML = sesiones.length ? `
+    <div class="total" style="margin:0 0 12px">
+      <div><b>${kg(totKg)} kg</b><span>Volumen total en 30 días</span></div>
+      <div class="side">${sesiones.length} ${sesiones.length===1?"sesión":"sesiones"}<br>${kg(totKg/sesiones.length)} kg promedio</div>
+    </div>
+    <div class="hist" style="cursor:default"><div class="hd">🏆 Mejor sesión</div>
+      <div class="hp"><i style="width:100%"></i></div><div class="hn">${kg(mejor)} kg</div></div>
+    <div class="hist" style="cursor:default"><div class="hd">📅 Frecuencia</div>
+      <div class="hp"><i style="width:${Math.min(100,sesiones.length/12*100)}%"></i></div>
+      <div class="hn">${(sesiones.length/30*7).toFixed(1)}/sem</div></div>`
+    : `<div class="empty">Aún no registras entrenamientos con peso.</div>`;
+
+  const j30 = days.reduce((a,d)=>a+junkCount(d),0);
+  const dias0 = days.filter(d=>junkCount(d)===0).length;
+  const R = RISK[riskLevel(junkCount(todayKey()), jw)];
+  const topJunk = {};
+  days.forEach(d=>(S.logs[d]?.food?.junk||[]).forEach(x=>topJunk[x.e+" "+x.l]=(topJunk[x.e+" "+x.l]||0)+x.n));
+  const rank = Object.entries(topJunk).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  document.getElementById("foodBox").innerHTML = `
+    <div class="risk ${R.cls}" style="margin:0 0 12px">
+      <div class="lv" style="background:${R.c}1f">${R.e}</div>
+      <div><b style="color:${R.c}">${R.t}</b>
+        <span>${jw} porciones en los últimos 7 días · límite de riesgo ${S.settings.junk.weekRisk}</span></div>
+    </div>
+    <div class="hist" style="cursor:default"><div class="hd">🧼 Días limpios</div>
+      <div class="hp"><i style="width:${dias0/30*100}%"></i></div><div class="hn">${dias0}/30</div></div>
+    <div class="hist" style="cursor:default"><div class="hd">🍔 Total 30 días</div>
+      <div class="hp"><i style="width:${Math.min(100,j30/(S.settings.junk.weekRisk*4)*100)}%;background:${R.c}"></i></div>
+      <div class="hn">${j30}</div></div>
+    ${rank.length?`<div style="font-size:12px;color:var(--tx3);margin-top:10px">Lo que más repites: ${rank.map(([k,v])=>`${k} ×${v}`).join(" · ")}</div>`:""}`;
+
+  const last14 = days.slice(0,14).reverse();
+  document.getElementById("chart14").innerHTML = last14.map(d=>{
+    const p = dayPct(d), dt = parseKey(d);
+    return `<div class="cb" title="${d} · ${Math.round(p*100)}%">
+      <div class="cbar ${p===0?'empty':''}" style="height:${Math.max(3,p*100)}%"></div>
+      <div class="cbl">${dt.getDate()}</div></div>`;
+  }).join("");
+
+  document.getElementById("chartSleep").innerHTML = last14.map(d=>{
+    const s = S.logs[d]?.sleep, dt = parseKey(d), v = s? s.score : 0;
+    return `<div class="cb" title="${d}${s?` · ${s.score} · ${fmt(s.hours)}h`:" · sin registro"}">
+      <div class="cbar sleep ${v===0?'empty':''}" style="height:${Math.max(3,v)}%"></div>
+      <div class="cbl">${dt.getDate()}</div></div>`;
+  }).join("");
+  document.getElementById("sleepAvg").innerHTML = sleeps.length
+    ? `<span>Promedio: <b style="width:auto;color:#a5b4fc;background:none">${avgSleep}/100</b> · ${fmt(avgHrs)} h por noche · ${sleeps.length} registros</span>`
+    : `<span>Aún sin check-ins de sueño registrados.</span>`;
+
+  const cells=[]; const end=parseKey(todayKey());
+  const off=(end.getDay()+6)%7;
+  const start=new Date(end); start.setDate(end.getDate()-off-7*11);
+  for(let i=0;i<84;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const key=todayKey(d), p=dayPct(key);
+    const lvl = d>end ? "" : p===0?0 : p<.35?1 : p<.7?2 : p<.999?3 : 4;
+    cells.push(`<div class="hcell" data-l="${lvl}" title="${key} · ${Math.round(p*100)}%" style="${d>end?'opacity:.2':''}"></div>`);
+  }
+  document.getElementById("heat").innerHTML = cells.join("");
+
+  document.getElementById("perHabit").innerHTML = S.habits.length ? S.habits.map(h=>{
+    const s = days.reduce((a,d)=>a+progress(h,S.logs[d]?.values?.[h.id]||0),0);
+    const pct = Math.round(s/30*100);
+    const tot = days.reduce((a,d)=>a+(Number(S.logs[d]?.values?.[h.id])||0),0);
+    return `<div class="hist" style="cursor:default">
+        <div class="hd">${h.emoji} ${esc(h.name)}</div>
+        <div class="hp"><i style="width:${Math.min(100,pct)}%;background:${h.color}"></i></div>
+        <div class="hn">${pct}%</div></div>
+      <div style="font-size:11.5px;color:var(--tx3);margin:-6px 0 8px 0">
+        Total: ${fmt(Math.round(tot*10)/10)} ${esc(h.unit||(h.type==="check"?"días":""))} · racha 🔥 ${streak(h)}</div>`;
+  }).join("") : `<div class="empty">Sin hábitos.</div>`;
+}
+
+/* ============================================================
+   AJUSTES
+   ============================================================ */
+function renderRem(){
+  const r = S.settings.rem, c = S.settings.screens, st = notifState();
+  const estado = st==="granted" ? `<span style="color:var(--accent)">permitidas ✓</span>`
+    : st==="denied" ? `<span style="color:#f87171">bloqueadas en el navegador</span>`
+    : st==="unsupported" ? `<span style="color:#f87171">no soportadas aquí</span>`
+    : `<span style="color:#fbbf24">falta dar permiso</span>`;
+  document.getElementById("remPanel").innerHTML = `
+    <div class="sw">
+      <div class="t"><b>Avisos durante el día</b><span>Notificaciones: ${estado}</span></div>
+      <div class="knob ${r.on?'on':''}" id="remToggle"></div>
+    </div>
+    <div id="remOpts" class="${r.on?'':'hidden'}">
+      <div class="two" style="margin-top:12px">
+        <label class="f"><span>Desde</span><input class="inp" type="time" id="remFrom" value="${r.from}"></label>
+        <label class="f"><span>Hasta</span><input class="inp" type="time" id="remTo" value="${r.to}"></label>
+      </div>
+      <label class="f"><span>Recordar cada</span>
+        <select class="inp" id="remEvery">
+          ${[{m:30,l:"30 minutos"},{m:60,l:"1 hora"},{m:90,l:"1 hora y media"},{m:120,l:"2 horas"},{m:180,l:"3 horas"},{m:240,l:"4 horas"}]
+              .map(o=>`<option value="${o.m}" ${r.every==o.m?"selected":""}>${o.l}</option>`).join("")}
+        </select></label>
+      <button class="btn ghost" id="remTest">Probar notificación ahora</button>
+      <p style="font-size:12px;color:var(--tx3);margin:12px 0 0">
+        Los avisos se envían mientras la app esté abierta (aunque sea en una pestaña de fondo).
+        Solo llegan si aún te quedan hábitos pendientes.</p>
+    </div>
+    <div class="sw" style="border-top:1px solid var(--line);margin-top:14px">
+      <div class="t"><b>🌙 Aviso de pantallas</b><span>Te recuerda empezar a dejar las pantallas de noche</span></div>
+      <div class="knob ${c.on?'on':''}" id="scrToggle"></div>
+    </div>
+    <label class="f ${c.on?'':'hidden'}" style="margin-top:12px"><span>Hora del aviso</span>
+      <input class="inp" type="time" id="scrAt" value="${c.at}"></label>`;
+  document.getElementById("remToggle").onclick = async ()=>{
+    if(!r.on){
+      const ok = await askNotifPermission();
+      r.on = true; r.lastAt = Date.now();
+      if(!ok) toast("Se avisará dentro de la app");
+    }else r.on = false;
+    save(); renderRem(); renderBanner();
+  };
+  if(r.on){
+    document.getElementById("remFrom").onchange = e=>{ r.from=e.target.value; save(); };
+    document.getElementById("remTo").onchange   = e=>{ r.to=e.target.value; save(); };
+    document.getElementById("remEvery").onchange= e=>{ r.every=+e.target.value; r.lastAt=Date.now(); save(); };
+    document.getElementById("remTest").onclick  = async ()=>{ await askNotifPermission(); fireReminder(true); renderRem(); };
+  }
+  document.getElementById("scrToggle").onclick = async ()=>{
+    if(!c.on) await askNotifPermission();
+    c.on = !c.on; save(); renderRem();
+  };
+  if(c.on) document.getElementById("scrAt").onchange = e=>{ c.at = e.target.value; c.lastFired=""; save(); toast("Aviso de pantallas a las "+c.at); };
+}
+
+function renderWake(){
+  const w = S.settings.wake;
+  document.getElementById("wakePanel").innerHTML = `
+    <div class="sw">
+      <div class="t"><b>Preguntar al despertar</b><span>Abre el check-in la primera vez que entres en la mañana (4:00–13:00)</span></div>
+      <div class="knob ${w.on?'on':''}" id="wakeToggle"></div>
+    </div>
+    <label class="f" style="margin-top:12px"><span>Meta de horas de sueño</span>
+      <input class="inp" type="number" step="0.5" min="4" max="12" id="wakeGoal" value="${w.goalHours}"></label>
+    <button class="btn grape" id="wakeNow">Hacer check-in ahora</button>
+    <p style="font-size:12px;color:var(--tx3);margin:12px 0 0">
+      La puntuación de sueño (0–100) combina horas dormidas frente a tu meta (40%),
+      calidad percibida (35%) y cómo te sientes al despertar (25%).</p>`;
+  document.getElementById("wakeToggle").onclick = ()=>{ w.on=!w.on; save(); renderWake(); };
+  document.getElementById("wakeGoal").onchange = e=>{ w.goalHours = clamp(Number(e.target.value)||8,4,12); save(); renderWake(); renderToday(); };
+  document.getElementById("wakeNow").onclick = ()=>{ cur=todayKey(); renderAll(); openSleep(false); };
+}
+
+function renderHabits(){
+  const box = document.getElementById("habitList");
+  box.innerHTML = S.habits.length ? S.habits.map((h,i)=>`
+    <div class="hrow">
+      <div class="m" style="border-color:${h.color}55;background:${h.color}18">${h.emoji}</div>
+      <div class="t"><b>${esc(h.name)}</b>
+        <span>${h.type==="check"?"Sí / No":h.type==="workout"?"Entrenamiento con series y kg":"Meta "+fmt(h.goal)+" "+esc(h.unit||"")}</span></div>
+      <button class="mini" data-up="${i}" ${i===0?"disabled style=opacity:.3":""}>↑</button>
+      <button class="mini" data-ed="${h.id}">Editar</button>
+    </div>`).join("") : `<div class="empty">Aún no hay hábitos.</div>`;
+  box.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>openModal(b.dataset.ed));
+  box.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.up; [S.habits[i-1],S.habits[i]]=[S.habits[i],S.habits[i-1]]; save(); renderHabits();
+  });
+}
+function renderJunk(){
+  const j = S.settings.junk;
+  document.getElementById("junkPanel").innerHTML = `
+    <p style="font-size:13px;color:var(--tx2);margin:0 0 14px">
+      Una <b>porción</b> = una comida o bebida chatarra (un combo, una bebida azucarada, un postre…).
+      Cuando superes estos números la app te marca <b style="color:#fbbf24">precaución</b> o
+      <b style="color:#fb7185">riesgo</b> en la tarjeta de alimentación.</p>
+    <div class="two">
+      <label class="f"><span>Precaución · día</span><input class="inp" type="number" min="1" max="10" id="jDW" value="${j.dayWarn}"></label>
+      <label class="f"><span>Riesgo · día</span><input class="inp" type="number" min="1" max="10" id="jDR" value="${j.dayRisk}"></label>
+    </div>
+    <div class="two">
+      <label class="f"><span>Precaución · 7 días</span><input class="inp" type="number" min="1" max="30" id="jWW" value="${j.weekWarn}"></label>
+      <label class="f"><span>Riesgo · 7 días</span><input class="inp" type="number" min="1" max="30" id="jWR" value="${j.weekRisk}"></label>
+    </div>
+    <p style="font-size:12px;color:var(--tx3);margin:2px 0 0">
+      Valores sugeridos: hasta 2 porciones por semana se considera ocasional; de 3 a 4 conviene vigilarlo;
+      5 o más en una semana (o 3 en un mismo día) ya es un patrón de riesgo. Ajústalos a tu criterio.</p>`;
+  const set=(id,k,min,max)=>document.getElementById(id).onchange=e=>{
+    j[k]=clamp(Math.round(Number(e.target.value)||min),min,max); save(); renderJunk(); renderToday(); };
+  set("jDW","dayWarn",1,10); set("jDR","dayRisk",1,10);
+  set("jWW","weekWarn",1,30); set("jWR","weekRisk",1,30);
+}
+async function renderInstall(){
+  const box = document.getElementById("installPanel");
+  if(!box) return;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const swOK = !!swReg;
+  const sub = await getSub();
+
+  if(location.protocol === "file:"){
+    box.innerHTML = `
+      <div class="risk rk-warn" style="margin:0 0 12px">
+        <div class="lv" style="background:#fbbf241f">📁</div>
+        <div><b style="color:#fbbf24">Abriste el archivo directamente</b>
+          <span>Para instalarla en el celular y recibir alertas, la app tiene que estar publicada en una dirección https.</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--tx2);margin:0">Sigue los pasos del archivo <b>README.md</b> que está junto a esta app.</p>`;
+    return;
+  }
+
+  const estado = standalone
+    ? `<div class="risk rk-ok" style="margin:0 0 14px"><div class="lv" style="background:#22e07a1f">✅</div>
+         <div><b style="color:#22e07a">Instalada en el dispositivo</b><span>Estás usando la app en modo pantalla completa.</span></div></div>`
+    : `<div class="risk rk-warn" style="margin:0 0 14px"><div class="lv" style="background:#fbbf241f">📲</div>
+         <div><b style="color:#fbbf24">Aún no está instalada</b>
+           <span>${isIOS
+             ? "En iPhone las alertas solo funcionan si la agregas a la pantalla de inicio."
+             : "Instálala para recibir alertas y abrirla como una app."}</span></div></div>`;
+
+  const pasos = isIOS
+    ? `<ol class="steps">
+         <li>Abre esta página en <b>Safari</b> (no sirve Chrome en iPhone).</li>
+         <li>Toca el botón <b>Compartir</b> ⬆︎ de abajo.</li>
+         <li>Elige <b>Agregar a pantalla de inicio</b>.</li>
+         <li>Abre la app desde el icono de Fractale y vuelve aquí a activar las alertas.</li>
+       </ol>`
+    : `<ol class="steps">
+         <li>Toca el menú <b>⋮</b> del navegador.</li>
+         <li>Elige <b>Instalar aplicación</b> o <b>Agregar a pantalla principal</b>.</li>
+         <li>Abre la app desde el icono de Fractale y activa las alertas.</li>
+       </ol>`;
+
+  const pushBlock = !PUSH_PUBLIC_KEY
+    ? `<div class="risk rk-warn" style="margin:14px 0 0"><div class="lv" style="background:#fbbf241f">🔑</div>
+         <div><b style="color:#fbbf24">Servidor de alertas sin configurar</b>
+           <span>Falta pegar la clave pública VAPID en index.html. Está explicado en el README.</span></div></div>`
+    : sub
+      ? `<div class="risk rk-ok" style="margin:14px 0 0"><div class="lv" style="background:#22e07a1f">🔔</div>
+           <div><b style="color:#22e07a">Alertas del celular activas</b>
+             <span>Llegan aunque la app esté cerrada.</span></div></div>
+         <button class="btn ghost" style="margin-top:10px" id="copySub">Copiar suscripción (para el servidor)</button>
+         <button class="btn danger" style="margin-top:8px" id="unsub">Desactivar alertas del celular</button>
+         <div class="code" id="subCode">${esc(JSON.stringify(sub))}</div>`
+      : `<button class="btn" style="margin-top:14px" id="doSub" ${swOK?"":"disabled style=opacity:.4"}>
+           🔔 Activar alertas en este dispositivo</button>
+         <p style="font-size:12px;color:var(--tx3);margin:10px 0 0">
+           ${swOK ? "Después de activarlas, copia la suscripción y pégala como secreto en el repositorio."
+                  : "Esperando al service worker… recarga la página si no aparece."}</p>`;
+
+  const pie = `<p style="font-size:11.5px;color:var(--tx3);margin:16px 0 0;text-align:center">
+      Fractale · versión ${APP_VERSION}${swOK?" · sin conexión disponible":""}
+      <br><button id="forceUpd" style="color:var(--accent);font-weight:700;font-size:11.5px;padding:6px">
+        Buscar actualización</button></p>`;
+  box.innerHTML = estado + (standalone ? "" : pasos) + pushBlock + pie;
+  const fu = document.getElementById("forceUpd");
+  if(fu) fu.onclick = async ()=>{
+    toast("Buscando actualización…");
+    try{
+      const ks = await caches.keys();
+      await Promise.all(ks.map(k=>caches.delete(k)));
+      if(swReg) await swReg.update();
+    }catch(e){}
+    setTimeout(()=>location.reload(true), 700);
+  };
+
+  const cp = document.getElementById("copySub");
+  if(cp) cp.onclick = async ()=>{
+    const txt = document.getElementById("subCode").textContent;
+    try{ await navigator.clipboard.writeText(txt); toast("Suscripción copiada"); }
+    catch(e){ toast("Selecciona y copia el texto de abajo"); }
+  };
+  const un = document.getElementById("unsub");
+  if(un) un.onclick = async ()=>{
+    const sb = await getSub();
+    if(sb) await sb.unsubscribe();
+    toast("Alertas del celular desactivadas"); renderInstall();
+  };
+  const ds = document.getElementById("doSub");
+  if(ds) ds.onclick = async ()=>{ await subscribePush(); renderInstall(); renderRem(); };
+}
+
+function renderSyncPanel(){
+  const box = document.getElementById("syncPanel");
+  if(!box) return;
+
+  if(!nubeOn()){
+    box.innerHTML = `
+      <div class="risk rk-warn" style="margin:0">
+        <div class="lv" style="background:#fbbf241f">📵</div>
+        <div><b style="color:#fbbf24">Sin conectar</b>
+          <span>Tus datos están solo en este dispositivo. Falta configurar la base de datos
+          en <b>config.js</b>.</span></div>
+      </div>`;
+    return;
+  }
+
+  if(!sesionUsuario){
+    box.innerHTML = `<div class="empty">Entra con tu correo para sincronizar.</div>`;
+    return;
+  }
+
+  const R = syncErr ? RISK[2] : RISK[0];
+  const correo = sesionUsuario.user?.email || "";
+  const esCoach = perfil && perfil.rol === "coach";
+  box.innerHTML = `
+    <div class="risk ${R.cls}" style="margin:0 0 14px">
+      <div class="lv" style="background:${R.c}1f">${syncErr ? "⚠️" : "☁️"}</div>
+      <div><b style="color:${R.c}">${syncErr ? "Con problemas" : "Sincronizado"}</b>
+        <span>${syncErr ? esc(syncErr) : "Última vez " + hace(ultimaSync)}</span></div>
+    </div>
+    <div class="hrow">
+      <div class="m">${esCoach ? "🏋️" : "👤"}</div>
+      <div class="t"><b>${esc(perfil?.nombre || correo)}</b>
+        <span>${esc(correo)}${esCoach ? " · entrenador" : ""}</span></div>
+    </div>
+    ${esCoach ? `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:12px"
+        href="panel.html">Abrir el panel de deportistas</a>` : ""}
+    <button class="btn ghost" style="margin-top:${esCoach?8:12}px" id="syncGo">Sincronizar ahora</button>
+    <button class="btn ghost" style="margin-top:8px" id="claveBtn">🔑 Poner o cambiar mi contraseña</button>
+    <div id="claveBox" class="hidden" style="margin-top:10px">
+      <label class="f"><span>Contraseña nueva</span>
+        <input class="inp" id="clave1" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"></label>
+      <label class="f"><span>Repítela</span>
+        <input class="inp" id="clave2" type="password" autocomplete="new-password" placeholder="••••••••"></label>
+      <button class="btn" id="claveOk">Guardar contraseña</button>
+    </div>
+    <button class="btn ghost" style="margin-top:8px" id="syncOut">Cerrar sesión</button>
+    <p style="font-size:12px;color:var(--tx3);margin:12px 0 0">
+      Tus registros se guardan en tu cuenta y aparecen en cualquier dispositivo donde entres
+      con este correo. Se sincroniza sola al abrir la app, al volver a ella y tras cada cambio.</p>`;
+
+  document.getElementById("syncGo").onclick = ()=>syncNow(true);
+  document.getElementById("claveBtn").onclick = ()=>
+    document.getElementById("claveBox").classList.toggle("hidden");
+  document.getElementById("claveOk").onclick = async ()=>{
+    const a = document.getElementById("clave1").value, b = document.getElementById("clave2").value;
+    if(a.length < 8){ toast("Necesita al menos 8 caracteres"); return; }
+    if(a !== b){ toast("Las contraseñas no coinciden"); return; }
+    try{
+      await Nube.cambiarClave(a);
+      document.getElementById("clave1").value = ""; document.getElementById("clave2").value = "";
+      document.getElementById("claveBox").classList.add("hidden");
+      toast("Contraseña guardada. Ya puedes entrar con ella.");
+    }catch(e){ toast(e.message); }
+  };
+  document.getElementById("syncOut").onclick = async ()=>{
+    if(!confirm("Se cerrará la sesión en este dispositivo. Tus datos siguen en tu cuenta. ¿Continuar?")) return;
+    await Nube.salir(); sesionUsuario = null; perfil = null;
+    mostrarLogin(true);
+  };
+}
+function renderSettings(){ renderSyncPanel(); renderInstall(); renderRem(); renderWake(); renderJunk(); renderHabits(); }
+
+/* ============================================================
+   MODAL HÁBITO
+   ============================================================ */
+function openModal(id){
+  shutModals();
+  editing = id ? S.habits.find(h=>h.id===id) : null;
+  const h = editing || {name:"",emoji:"🎯",type:"check",goal:1,unit:"",step:1,color:COLORS[S.habits.length%COLORS.length]};
+  document.getElementById("mTitle").textContent = editing? "Editar hábito":"Nuevo hábito";
+  fName.value=h.name; fType.value=h.type; fGoal.value=h.goal; fUnit.value=h.unit||""; fStep.value=h.step||1;
+  document.getElementById("fEmoji").innerHTML = EMOJIS.map(e=>
+    `<button data-e="${e}" class="${e===h.emoji?'on':''}">${e}</button>`).join("");
+  document.getElementById("fColor").innerHTML = COLORS.map(c=>
+    `<button data-c="${c}" class="${c===h.color?'on':''}" style="background:${c}"></button>`).join("");
+  document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("[data-e]").forEach(x=>x.classList.remove("on")); b.classList.add("on"); });
+  document.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("[data-c]").forEach(x=>x.classList.remove("on")); b.classList.add("on"); });
+  document.getElementById("fDel").classList.toggle("hidden", !editing);
+  typeUI();
+  document.getElementById("modal").classList.add("open");
+}
+function typeUI(){
+  const t = fType.value;
+  if(t==="workout"||t==="food"||t==="activity"){
+    document.getElementById("stepWrap").classList.add("hidden");
+    document.getElementById("goalWrap").classList.toggle("hidden", t==="workout");
+    if(t==="activity") document.getElementById("goalWrap").classList.remove("hidden");
+    return;
+  }
+  document.getElementById("stepWrap").classList.toggle("hidden", t==="check");
+  document.getElementById("goalWrap").classList.toggle("hidden", t==="check");
+}
+function closeModal(){ document.getElementById("modal").classList.remove("open"); }
+
+/* ============================================================
+   ENTRENAMIENTO
+   ============================================================ */
+const num = v => { const n = parseFloat(String(v).replace(",",".")); return isFinite(n)&&n>0 ? n : 0; };
+const exVolume = ex => (ex.sets||[]).reduce((a,s)=> a + num(s.w)*num(s.r), 0);
+const wkVolume = w => (w?.ex||[]).reduce((a,e)=> a + exVolume(e), 0);
+const wkSets   = w => (w?.ex||[]).reduce((a,e)=> a + (e.sets||[]).filter(s=>num(s.w)&&num(s.r)).length, 0);
+const wkExN    = w => (w?.ex||[]).filter(e=>exVolume(e)>0).length;
+const kg = n => Math.round(n).toLocaleString("es-CL");
+
+function workoutCardBody(h,l){
+  const w = l.workout, v = wkVolume(w);
+  return `<div class="row">
+      <div class="hval">${v?kg(v):"0"}<small>kg de volumen</small></div>
+      <button class="toggle ${v>0?'on':''}" data-wk="1">${v>0?"✓":"+"}</button>
+    </div>
+    <div class="hgoal" style="margin-top:8px">${v>0
+      ? `${wkExN(w)} ejercicio${wkExN(w)===1?"":"s"} · ${wkSets(w)} serie${wkSets(w)===1?"":"s"}`
+      : "Sin entrenamiento registrado"}</div>
+    <button class="cardbtn" data-wk="1">${v>0?"Editar sesión":"Registrar entrenamiento"}</button>`;
+}
+
+function openWorkout(){
+  shutModals();
+  const d = parseKey(cur);
+  document.getElementById("wkSub").textContent =
+    cur===todayKey() ? "Anota ejercicios, peso, repeticiones y series."
+                     : `Sesión del ${d.getDate()} ${MESES[d.getMonth()]}.`;
+  document.getElementById("exPresets").innerHTML = EX_PRESETS.map(e=>`<option value="${e}">`).join("");
+  document.getElementById("wkNote").value = dayLog(cur).workout.note||"";
+  if(!dayLog(cur).workout.ex.length) addExercise(true);
+  renderExercises();
+  document.getElementById("wkModal").classList.add("open");
+}
+function addExercise(silent){
+  dayLog(cur).workout.ex.push({name:"", sets:[{w:"",r:""}]});
+  if(!silent) renderExercises();
+}
+function renderExercises(){
+  const w = dayLog(cur).workout;
+  document.getElementById("wkList").innerHTML = w.ex.map((e,i)=>`
+    <div class="exbox">
+      <div class="exhead">
+        <span style="font-size:16px">💪</span>
+        <input list="exPresets" data-exn="${i}" value="${esc(e.name)}" placeholder="Nombre del ejercicio">
+        <button class="exdel" data-exdel="${i}">✕</button>
+      </div>
+      ${(e.sets||[]).map((st,j)=>`
+        <div class="setrow">
+          <div class="setn">${j+1}</div>
+          <div class="fld"><input inputmode="decimal" data-w="${i}.${j}" value="${esc(st.w)}" placeholder="0"><span>kg</span></div>
+          <div class="fld"><input inputmode="numeric" data-r="${i}.${j}" value="${esc(st.r)}" placeholder="0"><span>reps</span></div>
+          <div class="eq" data-eq="${i}.${j}">${num(st.w)&&num(st.r)?kg(num(st.w)*num(st.r))+" kg":""}</div>
+          <button class="exdel" data-sdel="${i}.${j}">✕</button>
+        </div>`).join("")}
+      <div class="exfoot">
+        <button class="addset" data-adds="${i}">+ Serie</button>
+        <div class="exsub" data-sub="${i}">${exVolume(e)?kg(exVolume(e))+" kg":""}</div>
+      </div>
+    </div>`).join("");
+
+  const L = document.getElementById("wkList");
+  L.querySelectorAll("[data-exn]").forEach(inp=>inp.oninput=()=>{
+    w.ex[+inp.dataset.exn].name = inp.value; save();
+  });
+  L.querySelectorAll("[data-w],[data-r]").forEach(inp=>inp.oninput=()=>{
+    const key = inp.dataset.w!==undefined ? "w":"r";
+    const [i,j] = (inp.dataset.w ?? inp.dataset.r).split(".").map(Number);
+    w.ex[i].sets[j][key] = inp.value;
+    const st = w.ex[i].sets[j];
+    L.querySelector(`[data-eq="${i}.${j}"]`).textContent = num(st.w)&&num(st.r) ? kg(num(st.w)*num(st.r))+" kg" : "";
+    L.querySelector(`[data-sub="${i}"]`).textContent = exVolume(w.ex[i]) ? kg(exVolume(w.ex[i]))+" kg" : "";
+    updateWkTotal(); save();
+  });
+  L.querySelectorAll("[data-adds]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.adds, prev = w.ex[i].sets[w.ex[i].sets.length-1];
+    w.ex[i].sets.push({w:prev?prev.w:"", r:prev?prev.r:""});   // repite la última serie
+    save(); renderExercises();
+  });
+  L.querySelectorAll("[data-sdel]").forEach(b=>b.onclick=()=>{
+    const [i,j]=b.dataset.sdel.split(".").map(Number);
+    w.ex[i].sets.splice(j,1);
+    if(!w.ex[i].sets.length) w.ex[i].sets.push({w:"",r:""});
+    save(); renderExercises();
+  });
+  L.querySelectorAll("[data-exdel]").forEach(b=>b.onclick=()=>{
+    w.ex.splice(+b.dataset.exdel,1); save(); renderExercises();
+  });
+  updateWkTotal();
+}
+function updateWkTotal(){
+  const w = dayLog(cur).workout, v = wkVolume(w);
+  document.getElementById("wkTotal").textContent = kg(v)+" kg";
+  document.getElementById("wkSide").innerHTML =
+    `${wkExN(w)} ejercicio${wkExN(w)===1?"":"s"}<br>${wkSets(w)} serie${wkSets(w)===1?"":"s"}`;
+}
+function saveWorkout(){
+  const l = dayLog(cur), w = l.workout;
+  w.note = document.getElementById("wkNote").value;
+  w.ex = w.ex.filter(e => e.name.trim() || exVolume(e)>0);
+  w.volume = wkVolume(w);
+  const hw = S.habits.find(h=>h.type==="workout");
+  if(hw) l.values[hw.id] = w.volume>0 ? 1 : 0;
+  save();
+  document.getElementById("wkModal").classList.remove("open");
+  renderToday();
+  if(w.volume>0) toast(`🏋️ ${kg(w.volume)} kg movidos en la sesión`);
+}
+
+/* ============================================================
+   ACTIVIDAD FÍSICA
+   ============================================================ */
+const acTotal   = l => Object.values(l?.actividad?.items || {}).reduce((a,v)=>a+actMin(v), 0);
+const acTotalKm = l => Object.values(l?.actividad?.items || {}).reduce((a,v)=>a+actKm(v), 0);
+
+function actividadCardBody(h,l){
+  const t = acTotal(l), ks = Object.keys(l.actividad.items||{}).filter(k=>actMin(l.actividad.items[k])>0 || actKm(l.actividad.items[k])>0);
+  return `<div class="row">
+      <div class="hval">${t}<small>/ ${fmt(h.goal)} min</small></div>
+      <button class="toggle ${t>=h.goal?'on':''}" data-ac="1">${t>=h.goal?"✓":"+"}</button>
+    </div>
+    <div class="hgoal" style="margin-top:8px">${ks.length
+      ? ks.map(k=>{ const v = l.actividad.items[k];
+          return `${actNombre(k).e} ${actNombre(k).l} ${actMin(v)}′${actKm(v)?` · ${fmt(actKm(v))} km`:""}`;
+        }).join(" · ")
+      : "Sin actividad registrada"}</div>
+    <button class="cardbtn" data-ac="1">${t ? "Editar actividad" : "Registrar actividad"}</button>`;
+}
+
+function openActividad(){
+  shutModals();
+  const h = S.habits.find(x=>x.type==="activity");
+  document.getElementById("acSide").textContent = `Meta: ${fmt(h?.goal||60)} min`;
+  const box = document.getElementById("acPick");
+  if(!box.children.length){
+    box.innerHTML = ACTIVIDADES.map(a=>`<button class="tag" data-a="${a.k}">${a.e} ${a.l}</button>`).join("");
+    box.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{
+      const it = dayLog(cur).actividad.items, k = b.dataset.a;
+      if(k in it){ delete it[k]; b.classList.remove("on"); }
+      else { it[k] = {min:30, km:0}; b.classList.add("on"); }   // arranca en 30, tú lo ajustas
+      syncActividad(); listaActividad();
+    });
+  }
+  marcarActividades();
+  listaActividad();
+  document.getElementById("acModal").classList.add("open");
+}
+function marcarActividades(){
+  const it = dayLog(cur).actividad.items;
+  document.querySelectorAll("[data-a]").forEach(b=>b.classList.toggle("on", b.dataset.a in it));
+}
+function listaActividad(){
+  const it = dayLog(cur).actividad.items, ks = Object.keys(it);
+  document.getElementById("acList").innerHTML = ks.length
+    ? ks.map(k=>{
+        const a = actNombre(k), v = actNorm(it[k]);
+        return `<div class="actrow">
+          <div class="cab"><span style="font-size:18px">${a.e}</span><b>${esc(a.l)}</b></div>
+          <div class="campos">
+            <div class="grupo">
+              <button class="sbtn" data-am="${k}">−</button>
+              <input inputmode="numeric" data-amin="${k}" value="${v.min}">
+              <span class="u">min</span>
+              <button class="sbtn plus" data-ap="${k}" style="--a:#f97316">+</button>
+            </div>
+            ${CON_KM.has(k) ? `<div class="grupo km">
+              <input inputmode="decimal" data-akm="${k}" value="${v.km||""}" placeholder="0">
+              <span class="u">km</span></div>` : ""}
+          </div>
+        </div>`; }).join("")
+    : `<div class="empty" style="padding:16px">Elige una actividad de arriba</div>`;
+
+  const L = document.getElementById("acList");
+  L.querySelectorAll("[data-amin]").forEach(inp=>inp.oninput=()=>{
+    const it2 = dayLog(cur).actividad.items, k = inp.dataset.amin;
+    it2[k] = actNorm(it2[k]);
+    it2[k].min = Math.max(0, Math.min(600, parseInt(inp.value.replace(/\D/g,"")) || 0));
+    syncActividad();
+  });
+  L.querySelectorAll("[data-akm]").forEach(inp=>inp.oninput=()=>{
+    const it2 = dayLog(cur).actividad.items, k = inp.dataset.akm;
+    it2[k] = actNorm(it2[k]);
+    const n = parseFloat(inp.value.replace(",",".").replace(/[^\d.]/g,""));
+    it2[k].km = Math.max(0, Math.min(500, isFinite(n) ? n : 0));
+    syncActividad();
+  });
+  L.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>ajustaMin(b.dataset.ap, +5));
+  L.querySelectorAll("[data-am]").forEach(b=>b.onclick=()=>ajustaMin(b.dataset.am, -5));
+  totalActividad();
+}
+function ajustaMin(k, d){
+  const it = dayLog(cur).actividad.items;
+  it[k] = actNorm(it[k]);
+  it[k].min = Math.max(0, Math.min(600, it[k].min + d));
+  const inp = document.querySelector(`[data-amin="${k}"]`);
+  if(inp) inp.value = it[k].min;
+  syncActividad();
+}
+function totalActividad(){
+  const l = dayLog(cur), km = acTotalKm(l);
+  document.getElementById("acTotal").textContent = acTotal(l) + " min";
+  const h = S.habits.find(x=>x.type==="activity");
+  document.getElementById("acSide").innerHTML =
+    `Meta: ${fmt(h?.goal||60)} min` + (km ? `<br>${fmt(Math.round(km*10)/10)} km recorridos` : "");
+}
+function syncActividad(){
+  const l = dayLog(cur), h = S.habits.find(x=>x.type==="activity");
+  if(h) l.values[h.id] = acTotal(l);
+  totalActividad();
+  save();
+}
+
+/* ============================================================
+   ALIMENTACIÓN · prioridades y comida chatarra
+   ============================================================ */
+const junkCount = k => (S.logs[k]?.food?.junk||[]).reduce((a,j)=>a+(j.n||1),0);
+function junkWeek(endKey){
+  let t=0, k=endKey;
+  for(let i=0;i<7;i++){ t += junkCount(k); k = shift(k,-1); }
+  return t;
+}
+function riskLevel(day, week){
+  const j = S.settings.junk;
+  if(day >= j.dayRisk || week >= j.weekRisk) return 2;
+  if(day >= j.dayWarn || week >= j.weekWarn) return 1;
+  return 0;
+}
+const RISK = [
+  {cls:"rk-ok",   bd:"bd-ok",   e:"✅", t:"En control",  c:"#22e07a"},
+  {cls:"rk-warn", bd:"bd-warn", e:"⚠️", t:"Precaución",  c:"#fbbf24"},
+  {cls:"rk-bad",  bd:"bd-bad",  e:"🚨", t:"Zona de riesgo", c:"#fb7185"}
+];
+
+function foodCardBody(h,l){
+  const g = (l.food.groups||[]).length;
+  const d = junkCount(cur), w = junkWeek(cur), lv = riskLevel(d,w), R = RISK[lv];
+  return `<div class="row">
+      <div class="hval">${g}<small>/ ${h.goal} grupos</small></div>
+      <span class="badge ${R.bd}" style="margin-left:auto">${R.e} ${d} chatarra hoy</span>
+    </div>
+    <div class="hgoal" style="margin-top:8px">${g? (l.food.groups.map(k=>FOOD_GROUPS.find(f=>f.k===k)?.e||"").join(" ")) : "Sin alimentos priorizados"} · ${w} en 7 días</div>
+    <button class="cardbtn" data-fd="1">Registrar alimentación</button>`;
+}
+
+function openFood(){
+  shutModals();
+  drawFood();
+  document.getElementById("fdNote").value = dayLog(cur).food.note||"";
+  document.getElementById("fdModal").classList.add("open");
+}
+function drawFood(){
+  const f = dayLog(cur).food;
+  const gBox = document.getElementById("fdGroups"), jBox = document.getElementById("fdJunkPick");
+
+  if(!gBox.children.length){
+    gBox.innerHTML = FOOD_GROUPS.map(g=>`<button class="tag" data-g="${g.k}">${g.e} ${g.l}</button>`).join("");
+    jBox.innerHTML = JUNK_ITEMS.map(j=>`<button class="tag junk" data-j="${esc(j.l)}" data-je="${j.e}">${j.e} ${j.l}</button>`).join("");
+    gBox.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{
+      const k = b.dataset.g, i = f.groups.indexOf(k);
+      i < 0 ? f.groups.push(k) : f.groups.splice(i,1);
+      b.classList.toggle("on", i < 0);                 // solo este botón cambia
+      contarGrupos(); syncFood();
+    });
+    jBox.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{
+      const it = f.junk.find(x=>x.l === b.dataset.j);
+      it ? it.n++ : f.junk.push({l:b.dataset.j, e:b.dataset.je, n:1});
+      syncFood(); listaChatarra(); drawRisk();
+    });
+  }
+  gBox.querySelectorAll("[data-g]").forEach(b=>b.classList.toggle("on", f.groups.includes(b.dataset.g)));
+  contarGrupos(); listaChatarra(); drawRisk();
+}
+
+function contarGrupos(){
+  const n = dayLog(cur).food.groups.length;
+  document.getElementById("fdGroupsN").textContent = `${n} grupo${n===1?"":"s"}`;
+}
+
+function listaChatarra(){
+  const f = dayLog(cur).food;
+  document.getElementById("fdJunkList").innerHTML = f.junk.length
+    ? f.junk.map((j,i)=>`<div class="jrow">
+        <span style="font-size:17px">${j.e}</span>
+        <div class="n">${esc(j.l)}</div>
+        <div class="stepper">
+          <button class="sbtn" data-jm="${i}">−</button>
+          <div style="min-width:26px;text-align:center;font-weight:800" data-jn="${i}">${j.n}</div>
+          <button class="sbtn" data-jp="${i}">+</button>
+        </div></div>`).join("")
+    : `<div class="empty" style="padding:16px">Sin comida chatarra hoy 🎉</div>`;
+  document.querySelectorAll("[data-jp]").forEach(b=>b.onclick=()=>{
+    const i = +b.dataset.jp; f.junk[i].n++;
+    document.querySelector(`[data-jn="${i}"]`).textContent = f.junk[i].n;   // sin rehacer la fila
+    syncFood(); drawRisk(); });
+  document.querySelectorAll("[data-jm]").forEach(b=>b.onclick=()=>{
+    const i = +b.dataset.jm; f.junk[i].n--;
+    if(f.junk[i].n <= 0){ f.junk.splice(i,1); syncFood(); listaChatarra(); drawRisk(); return; }
+    document.querySelector(`[data-jn="${i}"]`).textContent = f.junk[i].n;
+    syncFood(); drawRisk(); });
+}
+
+function drawRisk(){
+  const j = S.settings.junk;
+  const d = junkCount(cur), w = junkWeek(cur), lv = riskLevel(d,w), R = RISK[lv];
+  const pctD = Math.min(100, d/j.dayRisk*100), pctW = Math.min(100, w/j.weekRisk*100);
+  const msg = lv===2
+      ? "Estás comiendo chatarra por sobre tu límite. Vale la pena frenar y planificar las comidas de los próximos días."
+      : lv===1 ? "Vas justo en el límite. Cuida los próximos días para no pasarte."
+               : "Vas bien: la chatarra está dentro de lo que te propusiste.";
+  document.getElementById("fdRisk").innerHTML = `
+    <div class="risk ${R.cls}">
+      <div class="lv" style="background:${R.c}1f">${R.e}</div>
+      <div><b style="color:${R.c}">${R.t}</b><span>${msg}</span></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="meter"><i style="width:${pctD}%;background:${R.c}"></i></div>
+      <div class="mini-lbl"><span>Hoy: ${d} ${d===1?"porción":"porciones"}</span><span>límite ${j.dayRisk}</span></div>
+      <div class="meter" style="margin-top:11px"><i style="width:${pctW}%;background:${R.c}"></i></div>
+      <div class="mini-lbl"><span>Últimos 7 días: ${w}</span><span>límite ${j.weekRisk}</span></div>
+    </div>`;
+}
+function syncFood(){
+  const l = dayLog(cur), hf = S.habits.find(h=>h.type==="food");
+  if(hf) l.values[hf.id] = l.food.groups.length;
+  save();
+}
+
+/* ============================================================
+   ALERTA DE PANTALLAS
+   ============================================================ */
+function screensTick(){
+  const c = S.settings.screens;
+  if(!c.on) return;
+  const t = todayKey();
+  if(c.lastFired === t) return;
+  const n = nowMin(), at = hm(c.at);
+  if(n < at || n > at + 120) return;            // se avisa dentro de las 2 h siguientes
+  c.lastFired = t; save();
+  const title = "🌙 Hora de dejar las pantallas";
+  const body  = `Son las ${c.at}. Baja el ritmo y prepara tu descanso: mañana tu puntuación de sueño lo nota.`;
+  if(notifState()==="granted") showNotif(title, {body, icon:"icons/icon-192.png", tag:"bienestar-pantallas"});
+  else toast(title);
+}
+
+/* ============================================================
+   SINCRONIZACIÓN CON LA NUBE
+   Cada día viaja como una fila propia. Al fusionar gana la
+   versión modificada más tarde, así que usar el celular y el
+   computador el mismo día no pisa nada.
+   ============================================================ */
+let sesionUsuario = null, perfil = null;
+let syncing = false, syncTimer = null, ultimaSync = 0, syncErr = "";
+
+const nubeOn = () => typeof Nube !== "undefined" && Nube.activa();
+
+function syncSoon(){
+  if(!nubeOn() || !sesionUsuario) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(()=>syncNow(false), 3500);
+}
+
+/* Estado local -> formato de la base */
+function aFilas(){
+  const dias = [];
+  for(const f in S.logs){
+    const {mt, ...datos} = S.logs[f];
+    dias.push({fecha:f, datos, mt: mt||0});
+  }
+  return {
+    config: {datos:{habits:S.habits, settings:S.settings, theme:S.theme, v:S.v}, mt: S.metaMt||0},
+    dias
+  };
+}
+
+async function syncNow(manual){
+  if(!nubeOn() || !sesionUsuario || syncing) return;
+  syncing = true;
+  if(manual) toast("Sincronizando…");
+  try{
+    const remoto = await Nube.bajar();
+    let cambio = false;
+    const subirDias = [];
+
+    // --- días: gana el más reciente de cada fecha
+    for(const f in (remoto.dias||{})){
+      const r = remoto.dias[f], l = S.logs[f];
+      if(!l || (r.mt||0) > (l.mt||0)){
+        S.logs[f] = {...r.datos, mt: r.mt}; cambio = true;
+      }
+    }
+    for(const f in S.logs){
+      const l = S.logs[f], r = remoto.dias?.[f];
+      if(!r || (l.mt||0) > (r.mt||0)){
+        const {mt, ...datos} = l;
+        subirDias.push({fecha:f, datos, mt: mt||0});
+      }
+    }
+
+    // --- hábitos y ajustes
+    let subirConfig = null;
+    const rc = remoto.config;
+    /* La cuenta puede tener guardada una lista de hábitos de una versión
+       anterior. La ponemos al día antes de compararla; si la tocamos, la
+       versión corregida es la que manda y se devuelve a la nube. */
+    if(rc && arreglarHabitos(rc.datos?.habits)){ rc.mt = Date.now(); rc.corregida = true; }
+    if(rc && (rc.mt||0) > (S.metaMt||0)){
+      S.habits = rc.datos.habits || S.habits;
+      S.settings = Object.assign({}, S.settings, rc.datos.settings || {});
+      if(rc.datos.theme) S.theme = rc.datos.theme;
+      S.metaMt = rc.mt; cambio = true;
+      if(rc.corregida) subirConfig = aFilas().config;
+    }else if(!rc || (S.metaMt||0) > (rc.mt||0)){
+      subirConfig = aFilas().config;
+    }
+
+    if(subirConfig || subirDias.length) await Nube.subir({config:subirConfig, dias:subirDias});
+
+    if(cambio){
+      localStorage.setItem(KEY, JSON.stringify(S));
+      applyTheme(); renderAll();
+      const v = document.querySelector("nav.tabs button.on");
+      if(v && !document.querySelector(".modal.open")) go(v.dataset.v);
+    }
+    ultimaSync = Date.now(); syncErr = "";
+    if(manual) toast(cambio ? "Sincronizado · datos actualizados" : "Todo al día");
+  }catch(e){
+    syncErr = (typeof Nube !== "undefined" ? Nube.traduce(e.message) : e.message) || "Error";
+    if(manual) toast("No se pudo sincronizar: " + syncErr);
+  }finally{
+    syncing = false;
+    renderSyncPanel();
+  }
+}
+
+function hace(ms){
+  if(!ms) return "nunca";
+  const m = Math.floor((Date.now()-ms)/60000);
+  if(m < 1) return "recién";
+  if(m < 60) return `hace ${m} min`;
+  const h = Math.floor(m/60);
+  if(h < 24) return `hace ${h} h`;
+  return `hace ${Math.floor(h/24)} días`;
+}
+
+/* ---------------- acceso ---------------- */
+function mostrarLogin(ver){
+  const vEl = document.getElementById("lgVer");
+  if(vEl) vEl.textContent = "versión " + APP_VERSION;
+  document.getElementById("login").classList.toggle("hidden", !ver);
+  document.body.style.overflow = ver ? "hidden" : "";
+}
+
+async function initSesion(){
+  if(!nubeOn()){ mostrarLogin(false); return; }     // sin configurar: modo solo local
+  try{
+    sesionUsuario = await Nube.sesion();
+    Nube.alCambiarSesion(async (s)=>{
+      const antes = !!sesionUsuario;
+      sesionUsuario = s;
+      if(s && !antes){ mostrarLogin(false); await trasEntrar(); }
+      if(!s) mostrarLogin(true);
+    });
+    if(!sesionUsuario){ mostrarLogin(true); return; }
+    mostrarLogin(false);
+    await trasEntrar();
+  }catch(e){ console.warn(e); mostrarLogin(true); }
+}
+
+async function trasEntrar(){
+  try{
+    perfil = await Nube.miPerfil();
+    // primera vez en la nube: subimos lo que ya había en este dispositivo
+    const remoto = await Nube.bajar();
+    const vacio = !remoto.config && !Object.keys(remoto.dias||{}).length;
+    const hayLocal = Object.keys(S.logs||{}).length > 0;
+    if(vacio && hayLocal){
+      S.metaMt = S.metaMt || Date.now();
+      const now = Date.now();
+      for(const f in S.logs) if(!S.logs[f].mt) S.logs[f].mt = now;
+      localStorage.setItem(KEY, JSON.stringify(S));
+      await Nube.subir(aFilas());
+      toast("Tu historial se guardó en tu cuenta");
+    }
+    await syncNow(false);
+    renderSettings();
+  }catch(e){
+    syncErr = Nube.traduce(e.message); renderSyncPanel();
+  }
+}
+
+const $$ = id => document.getElementById(id);
+function verModo(crear){
+  $$("lgEntrar").classList.toggle("hidden", crear);
+  $$("lgCrear").classList.toggle("hidden", !crear);
+}
+$$("lgIrCrear").onclick = ()=>verModo(true);
+$$("crVolver").onclick  = ()=>verModo(false);
+
+const correoOk = c => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c);
+
+$$("lgGo").onclick = async ()=>{
+  const c = $$("lgMail").value.trim(), p = $$("lgPass").value;
+  if(!correoOk(c)){ toast("Escribe un correo válido"); return; }
+  if(!p){ toast("Escribe tu contraseña"); return; }
+  $$("lgGo").disabled = true; $$("lgGo").textContent = "Entrando…";
+  try{ await Nube.entrar(c, p); }
+  catch(e){ toast(e.message); }
+  finally{ $$("lgGo").disabled = false; $$("lgGo").textContent = "Entrar"; }
+};
+
+$$("crGo").onclick = async ()=>{
+  const n = $$("crName").value.trim(), c = $$("crMail").value.trim();
+  const p = $$("crPass").value, p2 = $$("crPass2").value;
+  if(!correoOk(c)){ toast("Escribe un correo válido"); return; }
+  if(p.length < 8){ toast("La contraseña necesita al menos 8 caracteres"); return; }
+  if(p !== p2){ toast("Las contraseñas no coinciden"); return; }
+  $$("crGo").disabled = true; $$("crGo").textContent = "Creando…";
+  try{ await Nube.registrarse(c, p, n); }
+  catch(e){ toast(e.message); }
+  finally{ $$("crGo").disabled = false; $$("crGo").textContent = "Crear cuenta y entrar"; }
+};
+
+$$("lgOlvide").onclick = async ()=>{
+  const c = $$("lgMail").value.trim();
+  if(!correoOk(c)){ toast("Escribe primero tu correo arriba"); return; }
+  if(!confirm(`Te enviaremos un correo a ${c} para restablecer la contraseña. ¿Continuar?`)) return;
+  try{ await Nube.recuperar(c); toast("Te mandamos un correo para restablecerla"); }
+  catch(e){ toast(e.message); }
+};
+
+[["lgMail","lgGo"],["lgPass","lgGo"],["crPass2","crGo"]].forEach(([campo,boton])=>{
+  $$(campo).addEventListener("keydown", e=>{ if(e.key === "Enter") $$(boton).click(); });
+});
+
+/* ============================================================
+   NAVEGACIÓN Y EVENTOS
+   ============================================================ */
+function go(v){
+  ["hoy","hist","stats","set"].forEach(x=>
+    document.getElementById("view-"+x).classList.toggle("hidden", x!==v));
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  document.getElementById("datebar").classList.toggle("hidden", v!=="hoy");
+  if(v==="hist") renderHist();
+  if(v==="stats") renderStats();
+  if(v==="set") renderSettings();
+}
+function renderAll(){ renderToday(); renderMeals(); renderMood(); renderBanner(); }
+
+function renderBanner(){
+  const show = notifSupported() && Notification.permission==="default"
+            && !S.settings.rem.on && !sessionStorage.getItem("bannerOff");
+  document.getElementById("permBanner").classList.toggle("hidden", !show);
+  document.getElementById("bellBtn").innerHTML = S.settings.rem.on
+    ? '🔔<span class="pip"></span>' : '🔕';
+}
+document.getElementById("permYes").onclick = async ()=>{
+  const ok = await askNotifPermission();
+  S.settings.rem.on = true; S.settings.rem.lastAt = Date.now(); save();
+  sessionStorage.setItem("bannerOff","1"); renderBanner();
+  if(ok) fireReminder(true);
+};
+document.getElementById("permNo").onclick = ()=>{ sessionStorage.setItem("bannerOff","1"); renderBanner(); };
+document.getElementById("bellBtn").onclick = ()=>{ go("set"); document.getElementById("remPanel").scrollIntoView({behavior:"smooth",block:"center"}); };
+
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+document.getElementById("prevD").onclick=()=>{ cur=shift(cur,-1); renderAll(); };
+document.getElementById("nextD").onclick=()=>{ if(cur<todayKey()){ cur=shift(cur,1); renderAll(); } };
+document.getElementById("todayBtn").onclick=()=>{ cur=todayKey(); renderAll(); };
+document.getElementById("addHabit").onclick=()=>openModal(null);
+document.getElementById("fCancel").onclick=closeModal;
+document.getElementById("modal").onclick=e=>{ if(e.target.id==="modal") closeModal(); };
+document.getElementById("sleepModal").onclick=e=>{ if(e.target.id==="sleepModal"){
+  S.settings.wake.lastAsked=todayKey(); save(); e.currentTarget.classList.remove("open"); } };
+fType.onchange = typeUI;
+
+function cerrarActividad(){
+  syncActividad();
+  document.getElementById("acModal").classList.remove("open");
+  renderToday();
+}
+document.getElementById("acSave").onclick  = ()=>{ cerrarActividad(); toast("🏃 Actividad guardada"); };
+document.getElementById("acClose").onclick = cerrarActividad;
+document.getElementById("acModal").onclick = e=>{ if(e.target.id==="acModal") cerrarActividad(); };
+
+document.getElementById("wkAdd").onclick   = ()=>addExercise(false);
+document.getElementById("wkSave").onclick  = saveWorkout;
+document.getElementById("wkClose").onclick = saveWorkout;
+document.getElementById("wkModal").onclick = e=>{ if(e.target.id==="wkModal") saveWorkout(); };
+document.getElementById("wkNote").oninput  = e=>{ dayLog(cur).workout.note = e.target.value; save(); };
+
+function closeFood(){
+  dayLog(cur).food.note = document.getElementById("fdNote").value;
+  syncFood();
+  document.getElementById("fdModal").classList.remove("open");
+  renderToday();
+}
+document.getElementById("fdSave").onclick  = ()=>{ closeFood(); toast("🥗 Alimentación guardada"); };
+document.getElementById("fdClose").onclick = closeFood;
+document.getElementById("fdModal").onclick = e=>{ if(e.target.id==="fdModal") closeFood(); };
+
+document.getElementById("fSave").onclick=()=>{
+  const name = fName.value.trim();
+  if(!name){ toast("Ponle un nombre"); fName.focus(); return; }
+  const type = fType.value;
+  const data = {
+    name,
+    emoji: document.querySelector("[data-e].on")?.dataset.e || "🎯",
+    color: document.querySelector("[data-c].on")?.dataset.c || COLORS[0],
+    type,
+    goal: (type==="check"||type==="workout") ? 1 : Math.max(0.1, Number(fGoal.value)||1),
+    unit: type==="check" ? "" : (type==="workout" ? "" : (type==="food" ? "grupos" : (type==="activity" ? "min" : fUnit.value.trim()))),
+    step: (type==="check"||type==="workout"||type==="food") ? 1 : Math.max(0.1, Number(fStep.value)||1)
+  };
+  if(editing) Object.assign(editing, data);
+  else{
+    let id = slug(name), n=2;
+    while(S.habits.some(h=>h.id===id)) id = slug(name)+"-"+(n++);
+    S.habits.push({id, ...data});
+  }
+  save(); closeModal(); renderSettings(); renderToday(); toast("Guardado");
+};
+document.getElementById("fDel").onclick=()=>{
+  if(!editing) return;
+  if(!confirm(`¿Eliminar "${editing.name}"? Se borrará también su historial.`)) return;
+  const id = editing.id;
+  S.habits = S.habits.filter(h=>h.id!==id);
+  Object.values(S.logs).forEach(l=>{ if(l.values) delete l.values[id]; });
+  save(); closeModal(); renderSettings(); renderToday(); toast("Hábito eliminado");
+};
+
+document.getElementById("expBtn").onclick=()=>{
+  const blob = new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `mi-app-${todayKey()}.json`;
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+};
+document.getElementById("impBtn").onclick=()=>document.getElementById("impFile").click();
+document.getElementById("impFile").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!d.habits||!d.logs) throw new Error("formato");
+      if(!confirm("Esto reemplazará tus datos actuales. ¿Continuar?")) return;
+      localStorage.setItem(KEY, JSON.stringify(d));
+      S = load(); applyTheme(); renderAll(); renderSettings(); toast("Datos importados");
+    }catch(err){ alert("Archivo no válido."); }
+  };
+  r.readAsText(f); e.target.value="";
+};
+document.getElementById("wipeBtn").onclick=()=>{
+  if(!confirm("Se borrarán TODOS tus registros. ¿Seguro?")) return;
+  if(!confirm("Esta acción no se puede deshacer. ¿Confirmas?")) return;
+  localStorage.removeItem(KEY); S=load(); cur=todayKey(); applyTheme(); renderAll(); renderSettings(); toast("Datos borrados");
+};
+
+function applyTheme(){
+  document.documentElement.dataset.theme = S.theme;
+  document.getElementById("themeBtn").textContent = S.theme==="dark" ? "☀️":"🌙";
+  document.querySelector('meta[name=theme-color]').content = S.theme==="dark" ? "#000000":"#f5f6f8";
+}
+document.getElementById("themeBtn").onclick=()=>{ S.theme = S.theme==="dark"?"light":"dark"; save(); applyTheme(); };
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    closeModal();
+    document.getElementById("sleepModal").classList.remove("open");
+    if(document.getElementById("wkModal").classList.contains("open")) saveWorkout();
+    if(document.getElementById("fdModal").classList.contains("open")) closeFood();
+    if(document.getElementById("acModal").classList.contains("open")) cerrarActividad();
+  }
+  if(e.target.matches("input,textarea,select")) return;
+  if(e.key==="ArrowLeft"){ cur=shift(cur,-1); renderAll(); }
+  if(e.key==="ArrowRight" && cur<todayKey()){ cur=shift(cur,1); renderAll(); }
+});
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState !== "visible"){
+    clearTimeout(syncTimer);          // al salir de la app, subimos ya lo que quedaba pendiente
+    syncNow(false);
+    return;
+  }
+  maybeAskSleep(); remTick(); screensTick(); syncNow(false);
+});
+addEventListener("pagehide", ()=>{ clearTimeout(syncTimer); syncNow(false); });
+
+/* ============================================================
+   INIT
+   ============================================================ */
+applyTheme();
+renderAll();
+go("hoy");
+initSW();
+mirrorState();
+/* Si acabamos de recargar por una versión nueva, se lo decimos:
+   una pantalla que se recarga sola sin explicación asusta. */
+try{
+  if(sessionStorage.getItem("recienActualizada")){
+    sessionStorage.removeItem("recienActualizada");
+    setTimeout(()=>toast("✨ App actualizada a la última versión"), 900);
+  }
+}catch(e){}
+touch();                       // firma inicial: evita marcar cambios falsos
+initSesion();
+setInterval(()=>syncNow(false), 300000);
+maybeAskSleep();
+remTick();
+screensTick();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "app-push",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Envía las alertas de Fractale al celular mediante Web Push",
+  "scripts": {
+    "keys": "node generate-keys.js",
+    "send": "node send.js",
+    "test": "node send.js --force habits"
+  },
+  "dependencies": { "web-push": "^3.6.7" }
+}

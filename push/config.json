@@ -1,0 +1,18 @@
+{
+  "timezone": "America/Santiago",
+  "contacto": "mailto:alejandro.macayab@gmail.com",
+  "habitos": {
+    "activo": true,
+    "desde": "08:00",
+    "hasta": "22:00",
+    "cadaMinutos": 120
+  },
+  "pantallas": {
+    "activo": true,
+    "hora": "21:00"
+  },
+  "sueno": {
+    "activo": true,
+    "hora": "08:00"
+  }
+}
