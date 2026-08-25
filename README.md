@@ -47,11 +47,13 @@ pone `TU-DIRECCION-AQUI`.
    (crea la tabla de documentos y el almacén privado de archivos)
 6. Para la bandeja de mensajes, ejecuta `base-de-datos/chat.sql`
 7. Para el checklist de objetivos, ejecuta `base-de-datos/objetivos.sql`
-8. **Authentication → Sign In / Providers**: Email activado, **Confirm email
+8. Para que el médico y el nutricionista entren al panel, ejecuta
+   `base-de-datos/equipo.sql`
+9. **Authentication → Sign In / Providers**: Email activado, **Confirm email
    desactivado**, contraseña mínima 8
-9. **Authentication → URL Configuration**: pon tu dirección como *Site URL* y
+10. **Authentication → URL Configuration**: pon tu dirección como *Site URL* y
    añádela a *Redirect URLs* terminada en `/**`
-10. **Project Settings → API**: copia *Project URL* y la clave *anon/publishable*
+11. **Project Settings → API**: copia *Project URL* y la clave *anon/publishable*
    a `config.js`
 
 **La primera cuenta que se registre queda como entrenador.** Regístrate tú primero.
