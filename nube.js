@@ -114,6 +114,182 @@ async function subir({config, dias}){
   }
 }
 
+/* ---------------- documentos médicos y nutricionales ----------------
+   El archivo va a Storage, en una carpeta con el id de su dueño. La ficha
+   (título, tipo, fecha) va a la tabla `documentos`. Para abrirlo se pide un
+   enlace firmado que caduca: nunca hay una URL pública. */
+const BUCKET = "documentos";
+
+async function docs(uid){
+  if(!sb) return [];
+  const id = uid || (await usuario())?.id;
+  if(!id) return [];
+  const {data, error} = await sb.from("documentos").select("*")
+    .eq("user_id", id).order("fecha", {ascending:false});
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
+}
+
+async function subirDoc(archivo, {titulo, tipo, fecha, notas}){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  const u = await usuario(); if(!u) throw new Error("Sin sesión");
+  const ext  = (archivo.name.split(".").pop() || "pdf").toLowerCase();
+  const ruta = `${u.id}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+
+  const sub = await sb.storage.from(BUCKET).upload(ruta, archivo, {
+    contentType: archivo.type || "application/pdf", upsert:false
+  });
+  if(sub.error) throw new Error(traduce(sub.error.message));
+
+  const {data, error} = await sb.from("documentos").insert({
+    user_id:u.id, tipo: tipo||"medico", titulo, ruta,
+    tam: archivo.size, fecha: fecha || new Date().toISOString().slice(0,10),
+    notas: notas || null
+  }).select().single();
+  /* Si la ficha no se pudo guardar, el archivo quedaría huérfano en Storage. */
+  if(error){
+    await sb.storage.from(BUCKET).remove([ruta]).catch(()=>{});
+    throw new Error(traduce(error.message));
+  }
+  return data;
+}
+
+/* Enlace temporal para abrir o descargar el archivo. */
+async function urlDoc(ruta, segundos = 300){
+  if(!sb) return null;
+  const {data, error} = await sb.storage.from(BUCKET).createSignedUrl(ruta, segundos);
+  if(error) throw new Error(traduce(error.message));
+  return data.signedUrl;
+}
+
+async function borrarDoc(doc){
+  if(!sb) return;
+  const {error} = await sb.from("documentos").delete().eq("id", doc.id);
+  if(error) throw new Error(traduce(error.message));
+  await sb.storage.from(BUCKET).remove([doc.ruta]).catch(()=>{});
+}
+
+/* ---------------- objetivos ----------------
+   El equipo asigna, el deportista marca. Editar el objetivo solo puede quien
+   lo escribió; marcarlo, solo el deportista. */
+async function objetivos(atletaId, incluirArchivados){
+  if(!sb) return [];
+  const id = atletaId || (await usuario())?.id;
+  if(!id) return [];
+  let q = sb.from("objetivos").select("*").eq("atleta_id", id).order("creado", {ascending:false});
+  if(!incluirArchivados) q = q.eq("archivado", false);
+  const {data, error} = await q;
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
+}
+
+/* Los cumplimientos desde una fecha: con el mes en curso basta para calcular
+   tanto el avance semanal como el mensual. */
+async function hechos(atletaId, desde){
+  if(!sb) return [];
+  const id = atletaId || (await usuario())?.id;
+  if(!id) return [];
+  let q = sb.from("objetivo_hechos").select("*").eq("atleta_id", id).order("fecha", {ascending:false});
+  if(desde) q = q.gte("fecha", desde);
+  const {data, error} = await q;
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
+}
+
+async function guardarObjetivo(obj){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  const u = await usuario(); if(!u) throw new Error("Sin sesión");
+  if(obj.id){
+    const {id, ...campos} = obj;
+    const {data, error} = await sb.from("objetivos").update(campos).eq("id", id).select().single();
+    if(error) throw new Error(traduce(error.message));
+    return data;
+  }
+  const {data, error} = await sb.from("objetivos")
+    .insert({...obj, autor_id:u.id, atleta_id: obj.atleta_id || u.id}).select().single();
+  if(error) throw new Error(traduce(error.message));
+  return data;
+}
+
+async function borrarObjetivo(id){
+  if(!sb) return;
+  const {error} = await sb.from("objetivos").delete().eq("id", id);
+  if(error) throw new Error(traduce(error.message));
+}
+
+async function marcarObjetivo(objetivoId, fecha, nota){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  const u = await usuario(); if(!u) throw new Error("Sin sesión");
+  const {data, error} = await sb.from("objetivo_hechos").insert({
+    objetivo_id: objetivoId, atleta_id: u.id,
+    fecha: fecha || new Date().toISOString().slice(0,10), nota: nota || null
+  }).select().single();
+  if(error) throw new Error(traduce(error.message));
+  return data;
+}
+
+async function desmarcarObjetivo(hechoId){
+  if(!sb) return;
+  const {error} = await sb.from("objetivo_hechos").delete().eq("id", hechoId);
+  if(error) throw new Error(traduce(error.message));
+}
+
+/* ---------------- mensajes ----------------
+   Una conversación por deportista: `atleta_id` la identifica, tanto si escribe
+   él como si escribe su entrenador. */
+async function mensajes(atletaId, desde){
+  if(!sb) return [];
+  let q = sb.from("mensajes").select("*").eq("atleta_id", atletaId).order("creado", {ascending:true});
+  if(desde) q = q.gt("creado", desde);
+  const {data, error} = await q;
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
+}
+
+async function enviar(atletaId, texto){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  const u = await usuario(); if(!u) throw new Error("Sin sesión");
+  const t = String(texto||"").trim();
+  if(!t) return null;
+  const {data, error} = await sb.from("mensajes")
+    .insert({atleta_id:atletaId, autor_id:u.id, texto:t}).select().single();
+  if(error) throw new Error(traduce(error.message));
+  return data;
+}
+
+async function borrarMensaje(id){
+  if(!sb) return;
+  const {error} = await sb.from("mensajes").delete().eq("id", id);
+  if(error) throw new Error(traduce(error.message));
+}
+
+/* Cuántos mensajes del otro llegaron después de la última vez que miraste. */
+async function sinLeer(atletaId){
+  if(!sb) return 0;
+  const {data, error} = await sb.rpc("sin_leer", {conv: atletaId});
+  if(error) return 0;
+  return Number(data) || 0;
+}
+
+async function marcarLeido(atletaId){
+  if(!sb) return;
+  const u = await usuario(); if(!u) return;
+  await sb.from("lecturas").upsert({
+    atleta_id: atletaId, user_id: u.id, leido_hasta: new Date().toISOString()
+  });
+}
+
+/* Avisa cuando entra un mensaje nuevo en esa conversación. */
+function escucharChat(atletaId, alLlegar){
+  if(!sb) return null;
+  const canal = sb.channel("chat-" + atletaId)
+    .on("postgres_changes",
+        {event:"INSERT", schema:"public", table:"mensajes", filter:`atleta_id=eq.${atletaId}`},
+        p => alLlegar && alLlegar(p.new))
+    .subscribe();
+  return canal;
+}
+
 /* ---------------- entrenador ---------------- */
 async function misAtletas(){
   if(!sb) return [];
@@ -177,6 +353,20 @@ function traduce(m){
                                                    + "Espera un rato o configura un servicio de correo propio.";
   if(/rate limit|too many/i.test(s))          return "Demasiados intentos seguidos. Espera un rato.";
   if(/invalid.*email|email.*invalid/i.test(s))return "Ese correo no parece válido.";
+  if(/Bucket not found/i.test(s))             return "Falta crear el almacén de documentos. "
+                                                   + "Ejecuta base-de-datos/salud.sql en Supabase.";
+  if(/relation .*objetivo.* does not exist|objetivos.*not exist/i.test(s))
+                                              return "Falta el checklist de objetivos. "
+                                                   + "Ejecuta base-de-datos/objetivos.sql en Supabase.";
+  if(/relation .*mensajes.* does not exist|Could not find the function public.sin_leer/i.test(s))
+                                              return "Falta la bandeja de mensajes. "
+                                                   + "Ejecuta base-de-datos/chat.sql en Supabase.";
+  if(/relation .*documentos.* does not exist|documentos.*not exist/i.test(s))
+                                              return "Falta la tabla de documentos. "
+                                                   + "Ejecuta base-de-datos/salud.sql en Supabase.";
+  if(/exceeded the maximum allowed size|Payload too large/i.test(s))
+                                              return "El archivo pesa más de 15 MB.";
+  if(/mime type.*not supported|invalid_mime/i.test(s)) return "Solo se aceptan PDF e imágenes.";
   if(/row-level security|permission denied/i.test(s)) return "No tienes permiso para ver eso.";
   if(/Failed to fetch|NetworkError/i.test(s)) return "Sin conexión a internet.";
   if(/signup.*disabled/i.test(s))             return "El registro está cerrado. Pide una invitación.";
@@ -187,6 +377,9 @@ global.Nube = {
   activa, cliente:()=>sb, sesion, usuario, salir, alCambiarSesion,
   entrar, registrarse, recuperar, cambiarClave,
   miPerfil, ponerNombre, bajar, subir,
+  docs, subirDoc, urlDoc, borrarDoc,
+  mensajes, enviar, borrarMensaje, sinLeer, marcarLeido, escucharChat,
+  objetivos, hechos, guardarObjetivo, borrarObjetivo, marcarObjetivo, desmarcarObjetivo,
   misAtletas, diasDe, configDe, invitaciones, invitar, quitarInvitacion,
   escuchar, dejarDeEscuchar, traduce
 };

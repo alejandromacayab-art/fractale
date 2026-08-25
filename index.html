@@ -24,6 +24,7 @@
         <span class="wm"><b>Fractale</b></span>
       </div>
       <div class="spacer"></div>
+      <button class="iconbtn" id="chatBtn" title="Mensajes">💬</button>
       <button class="iconbtn" id="bellBtn" title="Recordatorios">🔔</button>
       <button class="iconbtn" id="themeBtn" title="Tema">☀️</button>
     </div>
@@ -47,6 +48,8 @@
       <button class="x" id="permNo">✕</button>
     </div>
 
+    <div id="compStrip"></div>
+
     <div class="hero">
       <div class="ring">
         <svg width="92" height="92">
@@ -67,19 +70,16 @@
       </div>
     </div>
 
+    <div id="objStrip"></div>
+
+    <section>
+      <div class="stitle">Registro del día</div>
+      <div class="grid" id="registro"></div>
+    </section>
+
     <section>
       <div class="stitle">😴 Al despertar</div>
       <div class="sleepcard" id="sleepCard"></div>
-    </section>
-
-    <section>
-      <div class="stitle">Hábitos del día</div>
-      <div class="grid" id="cards"></div>
-    </section>
-
-    <section>
-      <div class="stitle">🍽️ Comidas</div>
-      <div class="panel" id="meals"></div>
     </section>
 
     <section>
@@ -92,6 +92,72 @@
         </div>
       </div>
     </section>
+  </div>
+
+  <!-- ================= PLAN ================= -->
+  <div id="view-plan" class="hidden">
+    <section>
+      <div class="stitle">🎯 Próxima competencia</div>
+      <div id="planProxima"></div>
+    </section>
+    <section>
+      <div class="stitle">📅 Calendario de competencias</div>
+      <div class="panel" id="planLista"></div>
+      <button class="btn" style="margin-top:12px" id="addComp">+ Añadir competencia</button>
+    </section>
+    <section>
+      <div class="stitle">✅ Objetivos Fractale</div>
+      <div class="panel" id="objLista"></div>
+      <button class="btn ghost hidden" style="margin-top:12px" id="addObj">+ Nuevo objetivo</button>
+    </section>
+    <section>
+      <div class="stitle">⚖️ Carga de entrenamiento</div>
+      <div class="panel" id="planCarga"></div>
+    </section>
+    <section>
+      <div class="stitle">🏋️ Tonelaje semanal · 12 semanas</div>
+      <div class="panel" id="planTonelaje"></div>
+    </section>
+  </div>
+
+  <!-- ================= SALUD ================= -->
+  <div id="view-salud" class="hidden">
+    <div id="saludFlags"></div>
+    <section>
+      <div class="stitle">⚖️ Composición corporal</div>
+      <div id="cuerpoResumen"></div>
+      <button class="btn" style="margin-top:12px" id="addMedida">+ Registrar medición</button>
+    </section>
+    <section>
+      <div class="stitle">📉 Peso · últimas mediciones</div>
+      <div class="panel" id="cuerpoGrafico"></div>
+    </section>
+    <section>
+      <div class="stitle">🩺 Ficha médica</div>
+      <div class="panel" id="fichaMedica"></div>
+    </section>
+    <section>
+      <div class="stitle">🥗 Ficha nutricional</div>
+      <div class="panel" id="fichaNutri"></div>
+    </section>
+    <section>
+      <div class="stitle">📎 Documentos del equipo</div>
+      <div class="panel" id="docsPanel"></div>
+      <button class="btn" style="margin-top:12px" id="addDoc">+ Subir documento</button>
+      <input type="file" id="docFile" accept="application/pdf,image/png,image/jpeg,image/webp" class="hidden">
+    </section>
+  </div>
+
+  <!-- ================= MENSAJES ================= -->
+  <div id="view-chat" class="hidden">
+    <button class="volver" id="chatVolver">‹ Volver</button>
+    <div class="chatwrap">
+      <div class="chatlog" id="chatLog"></div>
+      <div class="chatbar" id="chatBar">
+        <textarea id="chatTexto" rows="1" placeholder="Escríbele a tu entrenador…"></textarea>
+        <button id="chatSend" title="Enviar">➤</button>
+      </div>
+    </div>
   </div>
 
   <!-- ================= HISTORIAL ================= -->
@@ -117,7 +183,7 @@
       <div class="panel" id="foodBox"></div>
     </section>
     <section>
-      <div class="stitle">Cumplimiento · últimos 14 días</div>
+      <div class="stitle">🏃 Actividad física · últimos 14 días</div>
       <div class="panel"><div class="chart" id="chart14"></div></div>
     </section>
     <section>
@@ -126,19 +192,15 @@
         <div class="hlbl" id="sleepAvg"></div></div>
     </section>
     <section>
-      <div class="stitle">Mapa de constancia · 12 semanas</div>
+      <div class="stitle">Mapa de registro · 12 semanas</div>
       <div class="panel">
         <div class="heat" id="heat"></div>
-        <div class="hlbl"><span>Cada columna = 1 semana</span><span style="flex:1"></span><span>menos</span>
+        <div class="hlbl"><span>Cada columna = 1 semana · 4 = día completo</span><span style="flex:1"></span><span>menos</span>
           <b style="background:var(--line)"></b>
           <b style="background:color-mix(in srgb,var(--accent) 30%,var(--line))"></b>
           <b style="background:color-mix(in srgb,var(--accent) 60%,var(--line))"></b>
           <b style="background:var(--accent)"></b><span>más</span></div>
       </div>
-    </section>
-    <section>
-      <div class="stitle">Por hábito · últimos 30 días</div>
-      <div class="panel" id="perHabit"></div>
     </section>
   </div>
 
@@ -165,9 +227,8 @@
       <div class="panel" id="junkPanel"></div>
     </section>
     <section>
-      <div class="stitle">Mis hábitos</div>
-      <div class="panel" id="habitList"></div>
-      <button class="btn" style="margin-top:12px" id="addHabit">+ Nuevo hábito</button>
+      <div class="stitle">🎯 Metas del día</div>
+      <div class="panel" id="metasPanel"></div>
     </section>
     <section>
       <div class="stitle">Datos</div>
@@ -187,39 +248,12 @@
 
 <nav class="tabs">
   <button data-v="hoy" class="on"><i>◎</i>Hoy</button>
+  <button data-v="plan"><i>◈</i>Plan</button>
+  <button data-v="salud"><i>✚</i>Salud</button>
   <button data-v="hist"><i>▤</i>Historial</button>
   <button data-v="stats"><i>◑</i>Progreso</button>
   <button data-v="set"><i>⚙</i>Ajustes</button>
 </nav>
-
-<!-- ===== Modal hábito ===== -->
-<div class="modal" id="modal">
-  <div class="sheet">
-    <h3 id="mTitle">Nuevo hábito</h3>
-    <p class="sub">Define qué quieres registrar y su meta diaria.</p>
-    <label class="f"><span>Nombre</span><input class="inp" id="fName" placeholder="Ej: Tomar agua"></label>
-    <label class="f"><span>Icono</span><div class="epick" id="fEmoji"></div></label>
-    <label class="f"><span>Color</span><div class="cpick" id="fColor"></div></label>
-    <label class="f"><span>Tipo de registro</span>
-      <select class="inp" id="fType">
-        <option value="check">Sí / No — lo hice o no</option>
-        <option value="count">Cantidad — sumar de a poco (vasos, series…)</option>
-        <option value="amount">Medida — número libre (km, min, kg…)</option>
-        <option value="workout">Entrenamiento — ejercicios, series y kg</option>
-        <option value="food">Alimentación — grupos priorizados y chatarra</option>
-        <option value="activity">Actividad física — deportes y minutos</option>
-      </select>
-    </label>
-    <div class="two" id="goalWrap">
-      <label class="f"><span>Meta diaria</span><input class="inp" id="fGoal" type="number" step="0.1" min="0" value="1"></label>
-      <label class="f"><span>Unidad</span><input class="inp" id="fUnit" placeholder="vasos, km, min"></label>
-    </div>
-    <label class="f" id="stepWrap"><span>Cada toque suma</span><input class="inp" id="fStep" type="number" step="0.1" min="0.1" value="1"></label>
-    <button class="btn" id="fSave">Guardar</button>
-    <button class="btn ghost" style="margin-top:8px" id="fCancel">Cancelar</button>
-    <button class="btn danger hidden" style="margin-top:8px" id="fDel">Eliminar hábito</button>
-  </div>
-</div>
 
 <!-- ===== Modal check-in de sueño ===== -->
 <div class="modal" id="sleepModal">
@@ -319,6 +353,157 @@
   </div>
 </div>
 
+<!-- ===== Modal competencia ===== -->
+<div class="modal" id="compModal">
+  <div class="sheet">
+    <h3 id="cpTitle">Nueva competencia</h3>
+    <p class="sub">La fecha manda: todo lo demás se planifica hacia ella.</p>
+
+    <label class="f"><span>Nombre</span>
+      <input class="inp" id="cpName" placeholder="Ej: Campeonato nacional"></label>
+
+    <div class="two">
+      <label class="f"><span>Fecha</span><input class="inp" id="cpDate" type="date"></label>
+      <label class="f"><span>Deporte o prueba</span>
+        <input class="inp" id="cpSport" placeholder="Ej: 10 km"></label>
+    </div>
+
+    <label class="f"><span>Lugar</span>
+      <input class="inp" id="cpPlace" placeholder="Ciudad o recinto"></label>
+
+    <label class="f"><span>Prioridad</span>
+      <div class="tags" id="cpPrio">
+        <button class="tag" data-pr="A">🔴 A · objetivo principal</button>
+        <button class="tag" data-pr="B">🟡 B · preparatoria</button>
+        <button class="tag" data-pr="C">🔵 C · test</button>
+      </div></label>
+
+    <label class="f"><span>Objetivo</span>
+      <input class="inp" id="cpGoal" placeholder="Ej: bajar de 40 min"></label>
+
+    <label class="f"><span>Notas</span>
+      <textarea class="inp" id="cpNote" rows="2" placeholder="Logística, rivales, estrategia…" style="resize:vertical"></textarea></label>
+
+    <div id="cpResWrap" class="hidden">
+      <label class="f"><span>Resultado</span>
+        <input class="inp" id="cpRes" placeholder="Qué tal salió"></label>
+    </div>
+
+    <button class="btn" id="cpSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="cpCancel">Cancelar</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="cpDel">Eliminar competencia</button>
+  </div>
+</div>
+
+<!-- ===== Modal objetivo ===== -->
+<div class="modal" id="objModal">
+  <div class="sheet">
+    <h3 id="obTitle">Nuevo objetivo</h3>
+    <p class="sub">Algo concreto y contable. «Subir 3 historias por semana» sirve; «tener más presencia» no.</p>
+
+    <label class="f"><span>Objetivo</span>
+      <input class="inp" id="obTitulo" placeholder="Ej: Subir historias entrenando"></label>
+
+    <label class="f"><span>Categoría</span>
+      <div class="tags" id="obCat">
+        <button class="tag" data-cat="redes">📱 Redes</button>
+        <button class="tag" data-cat="rendimiento">🏋️ Rendimiento</button>
+        <button class="tag" data-cat="equipo">🤝 Equipo</button>
+        <button class="tag" data-cat="otro">⭐️ Otro</button>
+      </div></label>
+
+    <label class="f"><span>Cada cuánto</span>
+      <div class="tags" id="obCad">
+        <button class="tag" data-cad="semanal">Por semana</button>
+        <button class="tag" data-cad="mensual">Por mes</button>
+        <button class="tag" data-cad="unica">Una sola vez</button>
+      </div></label>
+
+    <label class="f" id="obMetaWrap"><span>¿Cuántas veces?</span>
+      <input class="inp" id="obMeta" type="number" min="1" max="99" step="1" value="3"></label>
+
+    <label class="f"><span>Fecha límite <span style="font-weight:400;color:var(--tx3)">· opcional</span></span>
+      <input class="inp" id="obVence" type="date"></label>
+
+    <label class="f"><span>Detalle</span>
+      <textarea class="inp" id="obDetalle" rows="2" placeholder="Qué se espera exactamente: etiquetas, formato, plazo…" style="resize:vertical"></textarea></label>
+
+    <button class="btn" id="obSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="obCancel">Cancelar</button>
+    <button class="btn ghost hidden" style="margin-top:8px" id="obArch">Archivar objetivo</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="obDel">Eliminar objetivo</button>
+  </div>
+</div>
+
+<!-- ===== Modal medición corporal ===== -->
+<div class="modal" id="medModal">
+  <div class="sheet">
+    <h3>Medición corporal</h3>
+    <p class="sub">Deja en blanco lo que no midieron. El peso solo ya sirve.</p>
+
+    <label class="f"><span>Fecha</span><input class="inp" id="mdDate" type="date"></label>
+
+    <label class="f"><span>Peso (kg)</span>
+      <input class="inp" id="mdPeso" type="number" step="0.1" min="0" inputmode="decimal" placeholder="Ej: 74.5"></label>
+
+    <div class="two">
+      <label class="f"><span>% de grasa</span>
+        <input class="inp" id="mdGrasa" type="number" step="0.1" min="0" max="70" inputmode="decimal" placeholder="Ej: 14.2"></label>
+      <label class="f"><span>% de músculo</span>
+        <input class="inp" id="mdMusculo" type="number" step="0.1" min="0" max="80" inputmode="decimal" placeholder="Ej: 42.0"></label>
+    </div>
+
+    <div id="mdCalc" class="panel" style="padding:12px;margin-bottom:14px"></div>
+
+    <label class="f"><span>Notas</span>
+      <input class="inp" id="mdNota" placeholder="Quién midió, con qué báscula…"></label>
+
+    <button class="btn" id="mdSave">Guardar medición</button>
+    <button class="btn ghost" style="margin-top:8px" id="mdCancel">Cancelar</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="mdDel">Borrar esta medición</button>
+  </div>
+</div>
+
+<!-- ===== Modal ficha de salud ===== -->
+<div class="modal" id="fichaModal">
+  <div class="sheet">
+    <h3 id="fcTitle">Ficha médica</h3>
+    <p class="sub" id="fcSub">Lo que el equipo necesita saber antes de ponerte a entrenar.</p>
+    <div id="fcCampos"></div>
+    <button class="btn" id="fcSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="fcCancel">Cancelar</button>
+  </div>
+</div>
+
+<!-- ===== Modal documento ===== -->
+<div class="modal" id="docModal">
+  <div class="sheet">
+    <h3>Subir documento</h3>
+    <p class="sub">PDF o imagen, hasta 15 MB. Lo verá tu equipo de trabajo.</p>
+
+    <div class="panel" id="dcArchivo" style="padding:13px;margin-bottom:14px"></div>
+
+    <label class="f"><span>Título</span>
+      <input class="inp" id="dcTitulo" placeholder="Ej: Perfil bioquímico agosto"></label>
+
+    <label class="f"><span>Tipo</span>
+      <div class="tags" id="dcTipo">
+        <button class="tag" data-tp="medico">🩺 Médico</button>
+        <button class="tag" data-tp="nutricional">🥗 Nutricional</button>
+        <button class="tag" data-tp="otro">📄 Otro</button>
+      </div></label>
+
+    <label class="f"><span>Fecha del documento</span>
+      <input class="inp" id="dcFecha" type="date"></label>
+
+    <label class="f"><span>Notas</span>
+      <textarea class="inp" id="dcNotas" rows="2" placeholder="Qué contiene, quién lo emitió…" style="resize:vertical"></textarea></label>
+
+    <button class="btn" id="dcSave">Subir</button>
+    <button class="btn ghost" style="margin-top:8px" id="dcCancel">Cancelar</button>
+  </div>
+</div>
+
 <!-- ===== Pantalla de acceso ===== -->
 <div id="login" class="hidden" style="position:fixed;inset:0;z-index:300;background:var(--bg);
      display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto">
@@ -380,26 +565,36 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.08.24-16";
+const APP_VERSION = "2026.08.25-1";
 const PUSH_PUBLIC_KEY = "";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
-const DEF_HABITS = [
-  {id:"agua",   name:"Tomar agua",  emoji:"💧", type:"count",  goal:8,   unit:"vasos", step:1,    color:"#38bdf8"},
-  {id:"entren", name:"Entrenar",    emoji:"🏋️", type:"workout",goal:1,   unit:"",      step:1,    color:"#22e07a"},
-  {id:"activi", name:"Actividad física", emoji:"🏃", type:"activity", goal:60, unit:"min", step:5, color:"#f97316"},
-  {id:"caminar",name:"Caminar",     emoji:"🚶", type:"amount", goal:8000,unit:"pasos", step:1000, color:"#fbbf24"},
-  {id:"comida", name:"Comer sano",  emoji:"🥗", type:"food",   goal:3,   unit:"grupos",step:1,    color:"#2dd4bf"},
-  {id:"leer",   name:"Leer",        emoji:"📖", type:"amount", goal:10,  unit:"páginas",step:2,   color:"#a78bfa"},
-  {id:"personal",name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#fb7185"},
-  {id:"pantall",name:"Sin pantallas de noche", emoji:"📵", type:"check", goal:1, unit:"", step:1, color:"#e879f9"}
-];
-const MEALS = ["Desayuno","Almuerzo","Cena","Snacks"];
-const EMOJIS = ["💧","🏋️","🏃","🚶","🥗","😴","🧘","🤸","🚴","🏊","📖","☀️","💊","🧴","🚭","🍎","☕️","🥦","⚖️","🧠","📵","✍️","🎯","❤️"];
 const DEF_SETTINGS = {
   rem:{on:false, from:"08:00", to:"22:00", every:120, lastAt:0},
   wake:{on:true, goalHours:8, lastAsked:""},
   screens:{on:true, at:"21:00", lastFired:""},
-  junk:{dayWarn:2, dayRisk:3, weekWarn:3, weekRisk:5}
+  junk:{dayWarn:2, dayRisk:3, weekWarn:3, weekRisk:5},
+  carga:{metaSemanal:0},                   // 0 = sin meta fija, se compara contra tu propia media
+  metas:{actividadMin:60, gruposComida:3}  // antes vivían dentro de un hábito
+};
+/* Ficha de salud. Las claves viejas se mantienen tal cual para no romper
+   las fichas ya escritas: lo nuevo se suma, no reemplaza. */
+const DEF_SALUD = {
+  /* identificación y contacto */
+  nacimiento:"", grupo:"", estatura:"", prevision:"", contacto:"", contacto2:"", tratante:"",
+  /* alergias */
+  alergiaMed:"", alergiaAlim:"", alergias:"",
+  /* antecedentes */
+  condiciones:"", cirugias:"", conmociones:"", respiratorio:"",
+  /* tamizaje cardiovascular */
+  cvDolor:"", cvDesmayo:"", cvAhogo:"", cvSoplo:"", cvFamiliar:"",
+  /* medicación */
+  medicacion:"", medicacionOcas:"", tue:"", habitos:"",
+  /* lesiones */
+  lesiones:"", lesionActual:"", limitaciones:"",
+  /* controles */
+  ultimoControl:"", ecg:"", sangre:"", certificaVence:"", vacunas:"",
+  /* nutricional */
+  restricciones:"", suplementos:"", objetivoNutri:"", notasNutri:""
 };
 
 /* Grupos de alimentos que se pueden priorizar en el día */
@@ -447,7 +642,6 @@ const EX_PRESETS = ["Sentadilla","Press banca","Peso muerto","Dominadas","Remo c
 
 let S = load();
 let cur = todayKey();
-let editing = null;
 let sk = {h:7.5, q:0, f:0};
 
 function load(){
@@ -478,12 +672,28 @@ function load(){
                       type:"activity", goal:60, unit:"min", step:5, color:"#f97316"});
         d.v = 4;
       }
+      if(d.v < 5){ d.comps ||= []; d.v = 5; }          // calendario de competencias y carga
+      if(d.v < 6){ d.salud ||= {}; d.v = 6; }          // ficha médica y nutricional
+      if(d.v < 7){                                     // los hábitos dejan de mandar: metas propias
+        const ha = (d.habits||[]).find(h=>h.type==="activity");
+        const hf = (d.habits||[]).find(h=>h.type==="food");
+        d.settings = d.settings || {};
+        d.settings.metas = {
+          actividadMin: Number(ha?.goal) || 60,
+          gruposComida: Number(hf?.goal) || 3
+        };
+        d.v = 7;
+      }
+      d.comps ||= [];
+      d.salud = Object.assign({}, DEF_SALUD, d.salud||{});
       d.theme ||= "dark";
       d.settings = Object.assign({}, DEF_SETTINGS, d.settings||{});
       d.settings.rem  = Object.assign({}, DEF_SETTINGS.rem,  d.settings.rem||{});
       d.settings.wake = Object.assign({}, DEF_SETTINGS.wake, d.settings.wake||{});
       d.settings.screens = Object.assign({}, DEF_SETTINGS.screens, d.settings.screens||{});
       d.settings.junk = Object.assign({}, DEF_SETTINGS.junk, d.settings.junk||{});
+      d.settings.carga = Object.assign({}, DEF_SETTINGS.carga, d.settings.carga||{});
+      d.settings.metas = Object.assign({}, DEF_SETTINGS.metas, d.settings.metas||{});
       d.habits.forEach((h,i)=> h.color ||= COLORS[i % COLORS.length]);
       /* Si acabamos de migrar, la lista nueva tiene que ganarle a la que está en
          la nube. Sin esto, al sincronizar volvían los hábitos viejos. */
@@ -502,12 +712,17 @@ function load(){
         crudo.settings.wake = Object.assign({}, DEF_SETTINGS.wake, crudo.settings.wake||{});
         crudo.settings.screens = Object.assign({}, DEF_SETTINGS.screens, crudo.settings.screens||{});
         crudo.settings.junk = Object.assign({}, DEF_SETTINGS.junk, crudo.settings.junk||{});
+        crudo.settings.carga = Object.assign({}, DEF_SETTINGS.carga, crudo.settings.carga||{});
+        crudo.settings.metas = Object.assign({}, DEF_SETTINGS.metas, crudo.settings.metas||{});
+        crudo.comps ||= [];
+        crudo.salud = Object.assign({}, DEF_SALUD, crudo.salud||{});
         crudo.theme ||= "dark";
         return crudo;
       }
     }catch(e2){}
   }
-  return {v:4, habits: DEF_HABITS.map(h=>({...h})), logs:{}, theme:"dark",
+  return {v:7, habits: [], logs:{}, comps:[],
+          salud: {...DEF_SALUD}, theme:"dark",
           settings: JSON.parse(JSON.stringify(DEF_SETTINGS))};
 }
 /* Firmas para detectar qué cambió de verdad: solo entonces movemos la marca de
@@ -516,7 +731,7 @@ const _sig = {};
 const sigOf = o => { const {mt, ...r} = o||{}; return JSON.stringify(r); };
 function touch(){
   const now = Date.now();
-  const meta = JSON.stringify({h:S.habits, s:S.settings, t:S.theme});
+  const meta = JSON.stringify({h:S.habits, s:S.settings, t:S.theme, c:S.comps, sa:S.salud});
   if(_sig.meta !== undefined && _sig.meta !== meta) S.metaMt = now;
   _sig.meta = meta;
   const l = S.logs[cur];
@@ -549,20 +764,6 @@ function dayLog(k){
 
 const fmt = n => Number.isInteger(n) ? String(n) : String(Math.round(n*10)/10);
 const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
-function progress(h,v){ const g=Number(h.goal)||1; return clamp((Number(v)||0)/g,0,1); }
-function isDone(h,v){ return progress(h,v) >= 1; }
-
-function dayPct(k){
-  const l = S.logs[k]; if(!l || !S.habits.length) return 0;
-  let s=0; S.habits.forEach(h=> s += progress(h, l.values?.[h.id]||0));
-  return s / S.habits.length;
-}
-function streak(h){
-  let n=0, k=todayKey();
-  if(!isDone(h, S.logs[k]?.values?.[h.id]||0)) k = shift(k,-1);
-  while(isDone(h, S.logs[k]?.values?.[h.id]||0)){ n++; k = shift(k,-1); }
-  return n;
-}
 function toast(msg){
   const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800);
@@ -573,26 +774,6 @@ function esc(s){ return String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&
 function slug(s){
   return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"")
           .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "h";
-}
-
-/* Pone al día una lista de hábitos venga de donde venga: del dispositivo
-   o de la nube. Devuelve true si tuvo que cambiar algo. */
-const CAMBIOS_HABITOS = [
-  ["entren",  {type:"workout", goal:1, unit:""}],
-  ["comida",  {type:"food", goal:3, unit:"grupos", step:1}],
-  ["medit",   {id:"leer", name:"Leer", emoji:"📖", type:"amount", goal:10, unit:"páginas", step:2, color:"#a78bfa"}],
-  ["estirar", {id:"personal", name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#fb7185"}],
-  ["correr",  {id:"activi", name:"Actividad física", emoji:"🏃", type:"activity", goal:60, unit:"min", step:5, color:"#f97316"}]
-];
-function arreglarHabitos(lista){
-  if(!Array.isArray(lista)) return false;
-  let cambio = false;
-  CAMBIOS_HABITOS.forEach(([id, patch])=>{
-    const h = lista.find(x=>x && x.id === id);
-    if(!h) return;
-    if(Object.entries(patch).some(([k,v])=> h[k] !== v)){ Object.assign(h, patch); cambio = true; }
-  });
-  return cambio;
 }
 
 /* ============================================================
@@ -670,13 +851,12 @@ async function mirrorState(){
   try{
     const t = todayKey(), l = dayLog(t);
     const p = pendingSummary();
-    const hp = S.habits.find(h=>h.id==="pantall" || /pantalla/i.test(h.name));
     const data = {
       date: t,
-      pct: Math.round(dayPct(t)*100),
+      pct: Math.round(registroDe(t)/4*100),
       pending: p ? p.n : 0,
       detail: p ? p.detalle : "",
-      screensDone: hp ? isDone(hp, l.values[hp.id]||0) : false
+      screensDone: true          // el hábito de pantallas ya no existe
     };
     const db = await idb();
     db.transaction("kv","readwrite").objectStore("kv").put(data, "today");
@@ -732,27 +912,30 @@ function inWindow(){
   return a<=b ? (n>=a && n<=b) : (n>=a || n<=b);   // soporta ventanas que cruzan medianoche
 }
 
+/* Lo que falta hoy: primero el registro del día, después los objetivos de la
+   semana. Devuelve null cuando no queda nada que recordar. */
 function pendingSummary(){
-  const l = dayLog(todayKey());
-  const pend = S.habits.filter(h=>!isDone(h, l.values[h.id]||0));
-  if(!pend.length) return null;
-  const pct = Math.round(dayPct(todayKey())*100);
-  const top = pend
-    .map(h=>({h, falta: Math.max(0,(Number(h.goal)||1)-(Number(l.values[h.id])||0))}))
-    .sort((a,b)=> progress(b.h, l.values[b.h.id]||0) - progress(a.h, l.values[a.h.id]||0));
-  const first = top[0];
-  const detalle = first.h.type==="check"
-    ? `${first.h.emoji} ${first.h.name}`
-    : `${first.h.emoji} te faltan ${fmt(first.falta)} ${first.h.unit||""}`.trim();
-  return {pct, n:pend.length, detalle, pend};
+  const t = todayKey(), l = dayLog(t);
+  const falta = [];
+  if(!l.sleep) falta.push("😴 el check-in de sueño");
+  if(wkVolume(l.workout) === 0 && acTotal(l) === 0) falta.push("🏋️ el entrenamiento o la actividad");
+  if(!(l.food?.groups||[]).length) falta.push("🥗 la alimentación");
+  const objsFalta = objPendientes();
+  objsFalta.slice(0,2).forEach(o=>{
+    const a = avance(o);
+    falta.push(`✅ ${o.titulo} (${a.n}/${a.meta})`);
+  });
+  if(!falta.length) return null;
+  const n = registroDe(t);
+  return {pct: Math.round(n/4*100), n: falta.length, detalle: falta[0], pend: falta};
 }
 
 function fireReminder(manual){
   const p = pendingSummary();
   if(!p && !manual){ return false; }
-  const title = p ? `Vas ${p.pct}% del día 🏋️` : "¡Día completo! 🎉";
-  const body  = p ? `${p.detalle}. Te quedan ${p.n} hábito${p.n>1?"s":""} por cerrar.`
-                  : "Completaste todos tus círculos de hoy.";
+  const title = p ? `Te falta registrar el día 🏋️` : "¡Día completo! 🎉";
+  const body  = p ? `${p.detalle}${p.n > 1 ? ` y ${p.n-1} cosa${p.n>2?"s":""} más` : ""}.`
+                  : "Registraste todo lo de hoy.";
   if(notifState()==="granted"){
     showNotif(title, {body, icon:"icons/icon-192.png", badge:"icons/icon-192.png", tag:"bienestar-dia", renotify:true});
   }else{
@@ -794,22 +977,40 @@ function renderDate(){
   document.getElementById("todayBtn").style.visibility = cur===t ? "hidden":"visible";
 }
 
+/* El anillo sigue a los objetivos de la semana: es lo que ahora se marca desde
+   el inicio. Cuenta el avance parcial, no solo los cumplidos, para que sumar
+   una historia de tres se note. */
 function renderHero(){
   const l = dayLog(cur);
-  const done = S.habits.filter(h=>isDone(h,l.values[h.id]||0)).length;
-  const pct = Math.round(dayPct(cur)*100);
   const C = 2*Math.PI*38;
-  document.getElementById("ringFg").style.strokeDashoffset = C*(1-pct/100);
-  document.getElementById("ringVal").textContent = pct+"%";
-  const msg = pct===0?"Empecemos el día":pct<40?"Buen arranque":pct<75?"Vas muy bien":pct<100?"Casi lo logras":"¡Día completo! 🎉";
-  document.getElementById("heroTitle").textContent = msg;
-  document.getElementById("heroSub").textContent = `${done} de ${S.habits.length} hábitos completados`;
+  const hay = objs.length > 0;
+  const cumplidos = objs.filter(o => avance(o).listo).length;
+  const pct = hay
+    ? Math.round(objs.reduce((a,o)=> a + avance(o).pct, 0) / objs.length * 100)
+    : 0;
+
+  document.getElementById("ringFg").style.strokeDashoffset = C*(1 - pct/100);
+  document.getElementById("ringVal").textContent = hay ? pct+"%" : "–";
+
+  document.getElementById("heroTitle").textContent = !hay
+    ? "Sin objetivos aún"
+    : pct===0 ? "Empecemos la semana"
+    : pct<40  ? "Buen arranque"
+    : pct<75  ? "Vas muy bien"
+    : pct<100 ? "Casi lo logras"
+    : "¡Semana completa! 🎉";
+
+  document.getElementById("heroSub").textContent = hay
+    ? `${cumplidos} de ${objs.length} objetivos cumplidos esta semana`
+    : chatListo() ? "Tu equipo todavía no te asigna objetivos"
+                  : "Entra con tu cuenta para ver tus objetivos";
 
   const chips = [];
   if(l.sleep) chips.push(`<span class="chip sleep">😴 Sueño ${l.sleep.score}</span>`);
-  S.habits.map(h=>({h,n:streak(h)})).filter(x=>x.n>1).sort((a,b)=>b.n-a.n).slice(0,2)
-    .forEach(x=>chips.push(`<span class="chip hot">${x.h.emoji} ${x.n} días 🔥</span>`));
-  if(!chips.length) chips.push(`<span class="chip">Completa un hábito 2 días seguidos para iniciar una racha</span>`);
+  const kgSem = tonelajeSemana(lunesDe(todayKey())).kg;
+  if(kgSem) chips.push(`<span class="chip">🏋️ ${kg(kgSem)} kg esta semana</span>`);
+  const c = proximaComp();
+  if(c) chips.push(`<span class="chip hot">🎯 ${diasHasta(c.fecha)} días para ${esc(c.nombre)}</span>`);
   document.getElementById("heroChips").innerHTML = chips.join("");
 }
 
@@ -840,114 +1041,76 @@ function renderSleepCard(){
   document.getElementById("openSleep").onclick = ()=>openSleep(false);
 }
 
-function renderCards(){
-  const l = dayLog(cur), box = document.getElementById("cards");
-  if(!S.habits.length){ box.innerHTML = `<div class="empty">No tienes hábitos todavía.<br>Créalos en <b>Ajustes</b>.</div>`; return; }
-  box.innerHTML = S.habits.map(h=>{
-    const v = l.values[h.id]||0, p = progress(h,v), done = p>=1, st = streak(h);
-    let body;
-    if(h.type==="activity"){ body = actividadCardBody(h,l); }
-    else if(h.type==="workout"){ body = workoutCardBody(h,l); }
-    else if(h.type==="food"){ body = foodCardBody(h,l); }
-    else if(h.type==="check"){
-      body = `<div class="row"><div class="hval">${done?"Hecho":"Pendiente"}</div>
-        <button class="toggle ${done?'on':''}" data-t="${h.id}">${done?"✓":"○"}</button></div>`;
-    }else{
-      const dots = h.type==="count" && h.goal<=12
-        ? `<div class="dots">${Array.from({length:Math.round(h.goal)},(_,i)=>
-            `<div class="dot ${v>=i+1?'f':(v>i?'p':'')}"></div>`).join("")}</div>` : "";
-      body = `<div class="row">
-          <div class="hval">${fmt(v)}<small>/ ${fmt(h.goal)} ${esc(h.unit||"")}</small></div>
-          <div class="stepper">
-            <button class="sbtn" data-m="${h.id}">−</button>
-            <button class="sbtn plus" data-p="${h.id}">+</button>
-          </div>
-        </div>${dots}`;
-    }
-    return `<div class="hcard ${done?'done':''}" data-card="${h.id}" style="--a:${h.color||'#22e07a'}">
-      <div class="hh">
-        <div class="emoji">${h.emoji}</div>
-        <div style="min-width:0"><div class="hname">${esc(h.name)}</div>
-             <div class="hgoal">${h.type==="check"?"Meta: hacerlo":h.type==="workout"?"Sesión de fuerza":"Meta: "+fmt(h.goal)+" "+esc(h.unit||"")}</div></div>
-        <div class="streak ${st>1?'on':''}">${st>1?"🔥 "+st:""}</div>
-      </div>
-      ${body}
-      <div class="bar" style="width:${p*100}%"></div>
-    </div>`;
-  }).join("");
+const metaAct  = () => Number(S.settings.metas?.actividadMin) || 60;
+const metaFood = () => Number(S.settings.metas?.gruposComida) || 3;
 
-  box.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>bump(b.dataset.p,+1));
-  box.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>bump(b.dataset.m,-1));
-  box.querySelectorAll("[data-ac]").forEach(b=>b.onclick=()=>openActividad());
-  box.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>openWorkout());
-  box.querySelectorAll("[data-fd]").forEach(b=>b.onclick=()=>openFood());
-  box.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
-    const lg=dayLog(cur), h=S.habits.find(x=>x.id===b.dataset.t);
-    const was = !!lg.values[h.id];
-    lg.values[h.id] = was?0:1; save();
-    refrescarTarjeta(h.id);
-    if(!was) celebrate(h);
-  });
-}
-
-function bump(id,dir){
-  const h = S.habits.find(x=>x.id===id); if(!h) return;
-  const l = dayLog(cur), step = Number(h.step)||1;
-  let v = (Number(l.values[id])||0) + dir*step;
-  v = Math.max(0, Math.round(v*100)/100);
-  const was = isDone(h, l.values[id]||0);
-  l.values[id] = v; save();
-  refrescarTarjeta(id);                       // solo esta tarjeta, sin rehacer la lista
-  if(!was && isDone(h,v)) celebrate(h);
-}
-
-/* Actualiza una tarjeta en su sitio. Redibujar la lista entera movía los
-   botones bajo el dedo y hacía que un toque cayera en el hábito de al lado. */
-function refrescarTarjeta(id){
-  const h = S.habits.find(x=>x.id===id); if(!h) return;
-  const card = document.querySelector(`[data-card="${id}"]`); if(!card) return;
-  const l = dayLog(cur), v = l.values[id]||0, p = progress(h,v), done = p>=1;
-
-  card.classList.toggle("done", done);
-  const bar = card.querySelector(".bar"); if(bar) bar.style.width = (p*100)+"%";
-
-  const val = card.querySelector(".hval");
-  if(h.type === "check"){
-    if(val) val.textContent = done ? "Hecho" : "Pendiente";
-    const t = card.querySelector(".toggle");
-    if(t){ t.classList.toggle("on", done); t.textContent = done ? "✓" : "○"; }
-  }else if(h.type !== "workout" && h.type !== "food"){
-    if(val) val.innerHTML = `${fmt(v)}<small>/ ${fmt(h.goal)} ${esc(h.unit||"")}</small>`;
-    card.querySelectorAll(".dot").forEach((d,i)=>{
-      d.className = "dot" + (v >= i+1 ? " f" : (v > i ? " p" : ""));
-    });
-  }
-  const st = streak(h), sEl = card.querySelector(".streak");
-  if(sEl){ sEl.className = "streak" + (st>1 ? " on" : ""); sEl.textContent = st>1 ? "🔥 "+st : ""; }
-  renderHero();
-}
-function celebrate(h){
-  toast(`${h.emoji} ${h.name} · meta cumplida`);
-  if(dayPct(cur)>=0.999 && cur===todayKey()){
-    setTimeout(()=>{
-      toast("🎉 ¡Cerraste todos los círculos de hoy!");
-      if(notifState()==="granted" && S.settings.rem.on)
-        showNotif("¡Día completo! 🎉", {body:"Cerraste todos tus círculos de hoy.", icon:"icons/icon-192.png", tag:"bienestar-dia"});
-    }, 1900);
-  }
-}
-
-function renderMeals(){
+/* Las tres cosas que Fractale registra a diario. Antes eran "hábitos" con una
+   tarjeta genérica; ahora cada una es lo que es, con su propia meta. */
+function renderRegistro(){
   const l = dayLog(cur);
-  document.getElementById("meals").innerHTML = MEALS.map(m=>
-    `<div class="meal"><div class="mtag">${m}</div>
-      <textarea data-meal="${m}" placeholder="¿Qué comiste?">${esc(l.meals[m]||"")}</textarea></div>`).join("");
-  document.querySelectorAll("[data-meal]").forEach(t=>{
-    autosize(t);
-    t.oninput = ()=>{ autosize(t); dayLog(cur).meals[t.dataset.meal]=t.value; save(); };
-  });
+  document.getElementById("registro").innerHTML =
+    tarjetaEntreno(l) + tarjetaActividad(l) + tarjetaComida(l);
+
+  document.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>openWorkout());
+  document.querySelectorAll("[data-ac]").forEach(b=>b.onclick=()=>openActividad());
+  document.querySelectorAll("[data-fd]").forEach(b=>b.onclick=()=>openFood());
 }
-function autosize(t){ t.style.height="auto"; t.style.height=Math.max(38,t.scrollHeight)+"px"; }
+
+function marco(color, emoji, nombre, sub, cuerpo, pct){
+  return `<div class="hcard ${pct>=1?"done":""}" style="--a:${color}">
+    <div class="hh">
+      <div class="emoji">${emoji}</div>
+      <div style="min-width:0"><div class="hname">${nombre}</div>
+        <div class="hgoal">${sub}</div></div>
+    </div>
+    ${cuerpo}
+    <div class="bar" style="width:${clamp(pct,0,1)*100}%"></div>
+  </div>`;
+}
+
+function tarjetaEntreno(l){
+  const v = wkVolume(l.workout);
+  const cuerpo = `<div class="row">
+      <div class="hval">${v?kg(v):"0"}<small>kg de volumen</small></div>
+      <button class="toggle ${v>0?"on":""}" data-wk="1">${v>0?"✓":"+"}</button>
+    </div>
+    <div class="hgoal" style="margin-top:8px">${v>0
+      ? `${wkExN(l.workout)} ejercicio${wkExN(l.workout)===1?"":"s"} · ${wkSets(l.workout)} serie${wkSets(l.workout)===1?"":"s"}`
+      : "Sin entrenamiento registrado"}</div>
+    <button class="cardbtn" data-wk="1">${v>0?"Editar sesión":"Registrar entrenamiento"}</button>`;
+  return marco("#22e07a", "🏋️", "Entrenamiento", "Sesión de fuerza", cuerpo, v>0 ? 1 : 0);
+}
+
+function tarjetaActividad(l){
+  const t = acTotal(l), meta = metaAct();
+  const ks = Object.keys(l.actividad.items||{}).filter(k=>actMin(l.actividad.items[k])>0 || actKm(l.actividad.items[k])>0);
+  const cuerpo = `<div class="row">
+      <div class="hval">${t}<small>/ ${fmt(meta)} min</small></div>
+      <button class="toggle ${t>=meta?"on":""}" data-ac="1">${t>=meta?"✓":"+"}</button>
+    </div>
+    <div class="hgoal" style="margin-top:8px">${ks.length
+      ? ks.map(k=>{ const v = l.actividad.items[k];
+          return `${actNombre(k).e} ${actNombre(k).l} ${actMin(v)}′${actKm(v)?` · ${fmt(actKm(v))} km`:""}`;
+        }).join(" · ")
+      : "Sin actividad registrada"}</div>
+    <button class="cardbtn" data-ac="1">${t ? "Editar actividad" : "Registrar actividad"}</button>`;
+  return marco("#f97316", "🏃", "Actividad física", `Meta: ${fmt(meta)} min`, cuerpo, t/meta);
+}
+
+function tarjetaComida(l){
+  const g = (l.food.groups||[]).length, meta = metaFood();
+  const d = junkCount(cur), w = junkWeek(cur), R = RISK[riskLevel(d,w)];
+  const cuerpo = `<div class="row">
+      <div class="hval">${g}<small>/ ${meta} grupos</small></div>
+      <span class="badge ${R.bd}" style="margin-left:auto">${R.e} ${d} chatarra hoy</span>
+    </div>
+    <div class="hgoal" style="margin-top:8px">${g
+      ? l.food.groups.map(k=>FOOD_GROUPS.find(f=>f.k===k)?.e||"").join(" ")
+      : "Sin alimentos priorizados"} · ${w} en 7 días</div>
+    <button class="cardbtn" data-fd="1">Registrar alimentación</button>`;
+  return marco("#2dd4bf", "🥗", "Alimentación", `Meta: ${meta} grupos`, cuerpo, g/meta);
+}
+
 
 function renderMood(){
   const l = dayLog(cur), faces=["😞","😕","😐","🙂","😄"], box = document.getElementById("mood");
@@ -972,7 +1135,10 @@ function marcarAnimo(){
   });
 }
 
-function renderToday(){ renderDate(); renderHero(); renderSleepCard(); renderCards(); }
+function renderToday(){
+  renderDate(); renderCompStrip(); renderHero(); renderObjStrip();
+  renderRegistro(); renderSleepCard();
+}
 
 /* ============================================================
    CHECK-IN DE SUEÑO
@@ -1047,8 +1213,6 @@ document.getElementById("skSave").onclick = ()=>{
   if(!sk.q || !sk.f){ toast("Elige calidad y cómo te sientes"); return; }
   const rec = {hours:sk.h, quality:sk.q, feel:sk.f, score:sleepScore({hours:sk.h,quality:sk.q,feel:sk.f}), at:Date.now()};
   dayLog(cur).sleep = rec;
-  const hd = S.habits.find(h=>h.id==="dormir");
-  if(hd) dayLog(cur).values[hd.id] = sk.h;      // sincroniza con el hábito "Dormir" si existe
   S.settings.wake.lastAsked = todayKey();
   save();
   document.getElementById("sleepModal").classList.remove("open");
@@ -1069,21 +1233,1174 @@ function maybeAskSleep(){
 }
 
 /* ============================================================
+   PLAN · COMPETENCIAS Y CARGA
+   ============================================================ */
+const PRIOS = {
+  A:{e:"🔴", l:"Objetivo principal"},
+  B:{e:"🟡", l:"Preparatoria"},
+  C:{e:"🔵", l:"Test"}
+};
+/* Fases hacia la competencia. El corte lo marca cuántos días faltan. */
+const FASES = [
+  {d:57, l:"Base · construir volumen"},
+  {d:29, l:"Construcción · subir intensidad"},
+  {d:8,  l:"Específico · simular la prueba"},
+  {d:1,  l:"Puesta a punto · bajar carga"},
+  {d:0,  l:"Día de competencia"}
+];
+const faseDe = n => (FASES.find(f=>n>=f.d) || FASES[FASES.length-1]).l;
+
+const comps = () => (S.comps ||= []);
+const compsOrden = () => [...comps()].sort((a,b)=> String(a.fecha).localeCompare(String(b.fecha)));
+/* Días naturales entre hoy y una fecha: negativo si ya pasó. */
+function diasHasta(fecha){
+  return Math.round((parseKey(fecha) - parseKey(todayKey())) / 86400000);
+}
+const proximaComp = () => compsOrden().find(c => diasHasta(c.fecha) >= 0) || null;
+const fechaLarga = f => { const d = parseKey(f);
+  return `${cap(DIAS[d.getDay()])} ${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`; };
+
+/* ---------- carga de entrenamiento ----------
+   Tonelaje = kg movidos en la sala de pesas. La razón aguda:crónica compara
+   la semana que llevas contra tu media de las últimas cuatro: es la forma
+   estándar de ver si estás subiendo la carga más rápido de lo que aguantas. */
+const tonelajeDia = k => wkVolume(S.logs[k]?.workout);
+/* Lunes de la semana a la que pertenece una fecha. */
+function lunesDe(k){
+  const d = parseKey(k);
+  return shift(k, -((d.getDay() + 6) % 7));
+}
+function tonelajeSemana(lunes){
+  let kgs = 0, ses = 0;
+  for(let i=0;i<7;i++){
+    const v = tonelajeDia(shift(lunes, i));
+    if(v > 0){ kgs += v; ses++; }
+  }
+  return {lunes, kg:kgs, ses};
+}
+function semanas(n){
+  const out = []; let l = lunesDe(todayKey());
+  for(let i=0;i<n;i++){ out.unshift(tonelajeSemana(l)); l = shift(l, -7); }
+  return out;
+}
+/* Últimos 7 días móviles (no la semana calendario): es lo que mide la carga aguda. */
+function cargaAguda(){
+  let t = 0, k = todayKey();
+  for(let i=0;i<7;i++){ t += tonelajeDia(k); k = shift(k,-1); }
+  return t;
+}
+/* Media semanal de los últimos 28 días. */
+function cargaCronica(){
+  let t = 0, k = todayKey();
+  for(let i=0;i<28;i++){ t += tonelajeDia(k); k = shift(k,-1); }
+  return t / 4;
+}
+const ZONAS = [
+  {max:0.80, c:"#38bdf8", e:"🌤", t:"Carga baja",     s:"Estás entrenando menos que tu media. Bien si vienes de competir o lesionado."},
+  {max:1.30, c:"#22e07a", e:"✅", t:"Zona óptima",    s:"La progresión es sostenible. Aquí es donde se construye forma."},
+  {max:1.50, c:"#fbbf24", e:"⚠️", t:"Carga alta",     s:"Subiste rápido. Vigila el sueño y las molestias esta semana."},
+  {max:99,   c:"#fb7185", e:"🚨", t:"Riesgo de lesión",s:"Salto demasiado brusco. Baja el volumen unos días."}
+];
+const zonaDe = r => ZONAS.find(z => r < z.max) || ZONAS[ZONAS.length-1];
+
+function renderPlan(){
+  renderCompProxima(); renderCompLista(); renderCarga(); renderTonelaje();
+  renderObjetivos();
+}
+
+/* Tira compacta arriba de Hoy. Solo aparece si hay algo por delante. */
+function renderCompStrip(){
+  const box = document.getElementById("compStrip");
+  const c = proximaComp();
+  if(!c){ box.innerHTML = ""; return; }
+  const n = diasHasta(c.fecha), pr = PRIOS[c.prio] || PRIOS.B;
+  box.innerHTML = `<div class="cdcard ${n===0?"cd-hoy":c.prio==="A"?"cd-a":""}" style="margin-top:14px" id="stripGo">
+    <div class="cd-top">
+      <div class="cd-num"><b>${n===0?"¡Hoy!":n}</b><span>${n===0?"es el día":n===1?"día":"días"}</span></div>
+      <div class="cd-t"><b>${pr.e} ${esc(c.nombre)}</b>
+        <span>${fechaLarga(c.fecha)}${c.lugar?" · "+esc(c.lugar):""}</span>
+        <span class="cd-fase">${faseDe(n)}</span></div>
+    </div></div>`;
+  document.getElementById("stripGo").onclick = ()=>go("plan");
+}
+
+function renderCompProxima(){
+  const box = document.getElementById("planProxima");
+  const c = proximaComp();
+  if(!c){
+    box.innerHTML = `<div class="panel"><div class="empty">
+      No tienes competencias por delante.<br>Añade una y la app cuenta los días.</div></div>`;
+    return;
+  }
+  const n = diasHasta(c.fecha), pr = PRIOS[c.prio] || PRIOS.B;
+  const sem = Math.floor(n/7), res = n % 7;
+  box.innerHTML = `<div class="cdcard ${n===0?"cd-hoy":c.prio==="A"?"cd-a":""}">
+    <div class="cd-top">
+      <div class="cd-num"><b>${n===0?"¡Hoy!":n}</b><span>${n===0?"es el día":n===1?"día":"días"}</span></div>
+      <div class="cd-t"><b>${esc(c.nombre)}</b>
+        <span>${fechaLarga(c.fecha)}</span>
+        <span>${pr.e} ${pr.l}${c.deporte?" · "+esc(c.deporte):""}${c.lugar?" · "+esc(c.lugar):""}</span>
+        <span class="cd-fase">${faseDe(n)}</span></div>
+    </div>
+    <div class="sl-meta libre">
+      <div><b>${n>=7 ? sem+" sem"+(res?" "+res+" d":"") : n+" d"}</b><span>Tiempo restante</span></div>
+      <div><b>${kg(cargaAguda())}</b><span>Tonelaje 7 días</span></div>
+      <div><b>${c.objetivo ? esc(c.objetivo) : "–"}</b><span>Objetivo</span></div>
+    </div>
+    ${c.notas ? `<p style="margin:13px 0 0;font-size:13px;color:var(--tx2);line-height:1.5">${esc(c.notas)}</p>` : ""}
+  </div>`;
+}
+
+function renderCompLista(){
+  const box = document.getElementById("planLista"), lista = compsOrden();
+  if(!lista.length){
+    box.innerHTML = `<div class="empty">Todavía no hay competencias en el calendario.</div>`;
+    return;
+  }
+  box.innerHTML = lista.map(c=>{
+    const n = diasHasta(c.fecha), d = parseKey(c.fecha), pr = PRIOS[c.prio] || PRIOS.B;
+    const cuando = n > 0 ? `en ${n} d` : n === 0 ? "hoy" : `hace ${-n} d`;
+    return `<button class="crow ${n<0?"pasada":""}" data-comp="${c.id}">
+      <span class="prio pr-${c.prio||"B"}">${c.prio||"B"}</span>
+      <span class="cn"><b>${esc(c.nombre)}</b>
+        <span>${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}${c.lugar?" · "+esc(c.lugar):""}${
+          n<0 && c.resultado ? " · "+esc(c.resultado) : ""}</span></span>
+      <span class="cd">${cuando}</span>
+    </button>`;
+  }).join("");
+  box.querySelectorAll("[data-comp]").forEach(b=>
+    b.onclick = ()=> openComp(comps().find(x=>x.id === b.dataset.comp)));
+}
+
+function renderCarga(){
+  const ag = cargaAguda(), cr = cargaCronica();
+  const r = cr > 0 ? ag/cr : 0;
+  const z = zonaDe(r);
+  const box = document.getElementById("planCarga");
+  if(!cr){
+    box.innerHTML = `<div class="empty">Registra algunos entrenamientos de fuerza
+      y aquí aparece tu carga semanal.</div>`;
+    return;
+  }
+  /* La barra de zonas va de 0 a 2.0; el marcador se posiciona en ese rango. */
+  const pos = clamp(r/2, 0, 1) * 100;
+  const meta = Number(S.settings.carga.metaSemanal) || 0;
+  box.innerHTML = `
+    <div class="gauge">
+      <div class="lv" style="color:${z.c};border-color:${z.c}55;background:${z.c}18">${r.toFixed(2)}</div>
+      <div class="t"><b>${z.e} ${z.t}</b><span>${z.s}</span></div>
+    </div>
+    <div class="zonas"><i style="left:${pos}%"></i></div>
+    <div class="zlbl"><span style="left:40%">0.8</span><span style="left:65%">1.3</span>
+      <span style="left:75%">1.5</span><span style="left:100%">2.0</span></div>
+    <div class="sl-meta libre" style="margin-top:14px">
+      <div><b>${kg(ag)}</b><span>Aguda · 7 días</span></div>
+      <div><b>${kg(cr)}</b><span>Crónica · media 4 sem</span></div>
+      <div><b>${kg(ag-cr)}</b><span>Diferencia</span></div>
+    </div>
+    <div class="metafila">
+      <span>Meta de tonelaje semanal</span>
+      <input id="metaKg" type="number" min="0" step="500" value="${meta}" placeholder="0">
+    </div>
+    <p style="font-size:11.5px;color:var(--tx3);margin:9px 0 0;line-height:1.5">
+      Déjala en 0 y la app te compara contra tu propia media en vez de contra un número fijo.</p>`;
+
+  document.getElementById("metaKg").onchange = e=>{
+    S.settings.carga.metaSemanal = Math.max(0, Number(e.target.value) || 0);
+    save(); renderTonelaje();
+    toast(S.settings.carga.metaSemanal ? "Meta semanal guardada" : "Meta semanal quitada");
+  };
+}
+
+function renderTonelaje(){
+  const ss = semanas(12), box = document.getElementById("planTonelaje");
+  const conKg = ss.filter(w=>w.kg>0);
+  if(!conKg.length){
+    box.innerHTML = `<div class="empty">Sin entrenamientos de fuerza en las últimas 12 semanas.</div>`;
+    return;
+  }
+  const meta = Number(S.settings.carga.metaSemanal) || 0;
+  const tope = Math.max(...ss.map(w=>w.kg), meta) || 1;
+  const media = Math.round(conKg.reduce((a,w)=>a+w.kg,0) / conKg.length);
+  const actual = ss[ss.length-1];
+
+  box.innerHTML = `
+    <div class="wbars">${ss.map((w,i)=>{
+      const d = parseKey(w.lunes), ult = i === ss.length-1;
+      const cls = ult ? "actual" : (meta && w.kg > meta*1.2 ? "sobre" : "");
+      return `<div class="wb ${cls}" title="${kg(w.kg)} kg · ${w.ses} sesiones">
+        <i style="height:${Math.max(3, w.kg/tope*100)}%"></i>
+        <span>${d.getDate()}/${d.getMonth()+1}</span></div>`;
+    }).join("")}</div>
+    <div class="sl-meta libre" style="margin-top:14px">
+      <div><b>${kg(actual.kg)}</b><span>Semana en curso</span></div>
+      <div><b>${kg(media)}</b><span>Media 12 sem</span></div>
+      <div><b>${actual.ses}</b><span>Sesiones</span></div>
+    </div>
+    ${meta ? `<div class="meter"><i style="width:${clamp(actual.kg/meta,0,1)*100}%;background:${
+        actual.kg>=meta ? "var(--accent)" : "#38bdf8"}"></i></div>
+      <div class="mini-lbl"><span>${kg(actual.kg)} kg</span><span>Meta: ${kg(meta)} kg</span></div>` : ""}`;
+}
+
+/* ---------- modal de competencia ---------- */
+let editandoComp = null;
+
+function openComp(c){
+  shutModals();
+  editandoComp = c || null;
+  const hoy = todayKey();
+  document.getElementById("cpTitle").textContent = c ? "Editar competencia" : "Nueva competencia";
+  document.getElementById("cpName").value  = c?.nombre || "";
+  document.getElementById("cpDate").value  = c?.fecha || hoy;
+  document.getElementById("cpSport").value = c?.deporte || "";
+  document.getElementById("cpPlace").value = c?.lugar || "";
+  document.getElementById("cpGoal").value  = c?.objetivo || "";
+  document.getElementById("cpNote").value  = c?.notas || "";
+  document.getElementById("cpRes").value   = c?.resultado || "";
+  const prio = c?.prio || "A";
+  document.querySelectorAll("#cpPrio [data-pr]").forEach(b=>
+    b.classList.toggle("on", b.dataset.pr === prio));
+  /* El resultado solo tiene sentido cuando la fecha ya pasó. */
+  document.getElementById("cpResWrap").classList.toggle("hidden", !(c && diasHasta(c.fecha) < 0));
+  document.getElementById("cpDel").classList.toggle("hidden", !c);
+  document.getElementById("compModal").classList.add("open");
+}
+
+document.querySelectorAll("#cpPrio [data-pr]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#cpPrio [data-pr]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
+document.getElementById("addComp").onclick   = ()=> openComp(null);
+document.getElementById("cpCancel").onclick  = ()=> document.getElementById("compModal").classList.remove("open");
+document.getElementById("cpSave").onclick = ()=>{
+  const nombre = document.getElementById("cpName").value.trim();
+  const fecha  = document.getElementById("cpDate").value;
+  if(!nombre){ toast("Ponle un nombre a la competencia"); return; }
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(fecha)){ toast("Elige una fecha válida"); return; }
+  const datos = {
+    nombre, fecha,
+    deporte:   document.getElementById("cpSport").value.trim(),
+    lugar:     document.getElementById("cpPlace").value.trim(),
+    prio:      document.querySelector("#cpPrio [data-pr].on")?.dataset.pr || "A",
+    objetivo:  document.getElementById("cpGoal").value.trim(),
+    notas:     document.getElementById("cpNote").value.trim(),
+    resultado: document.getElementById("cpRes").value.trim()
+  };
+  if(editandoComp) Object.assign(editandoComp, datos);
+  else comps().push({id: "c"+Date.now().toString(36), ...datos});
+  save();
+  document.getElementById("compModal").classList.remove("open");
+  renderPlan(); renderCompStrip();
+  toast(editandoComp ? "Competencia actualizada" : "Competencia añadida");
+};
+document.getElementById("cpDel").onclick = ()=>{
+  if(!editandoComp) return;
+  if(!confirm(`¿Eliminar "${editandoComp.nombre}" del calendario?`)) return;
+  S.comps = comps().filter(x => x.id !== editandoComp.id);
+  save();
+  document.getElementById("compModal").classList.remove("open");
+  renderPlan(); renderCompStrip();
+  toast("Competencia eliminada");
+};
+
+/* ============================================================
+   OBJETIVOS
+   El equipo asigna, tú marcas. Viven en la nube porque el sentido
+   es que alguien más los ponga y los vea.
+   ============================================================ */
+const CAT_OBJ = {
+  redes:       {e:"📱", l:"Redes",       c:"#e879f9"},
+  rendimiento: {e:"🏋️", l:"Rendimiento", c:"#22e07a"},
+  equipo:      {e:"🤝", l:"Equipo",      c:"#38bdf8"},
+  otro:        {e:"⭐️", l:"Otro",        c:"#fbbf24"}
+};
+const CADENCIAS = {semanal:"por semana", mensual:"por mes", unica:"una vez"};
+
+let objs = [], objHechos = [], objEditando = null;
+
+/* Lunes de esta semana y día 1 de este mes: los dos periodos que cuentan. */
+const inicioSemana = () => lunesDe(todayKey());
+function inicioMes(){
+  const d = parseKey(todayKey());
+  return todayKey(new Date(d.getFullYear(), d.getMonth(), 1));
+}
+
+/* Cumplimientos de un objetivo dentro del periodo que le toca. */
+function hechosDe(o){
+  const desde = o.cadencia === "semanal" ? inicioSemana()
+              : o.cadencia === "mensual" ? inicioMes() : null;
+  return objHechos.filter(h => h.objetivo_id === o.id && (!desde || h.fecha >= desde));
+}
+function avance(o){
+  const n = hechosDe(o).length, meta = o.cadencia === "unica" ? 1 : Math.max(1, o.meta||1);
+  return {n, meta, pct: clamp(n/meta, 0, 1), listo: n >= meta};
+}
+/* Lo que queda por hacer en el periodo en curso. */
+const objPendientes = () => objs.filter(o => !avance(o).listo);
+
+function periodoTxt(o){
+  if(o.cadencia === "unica") return o.vence ? "para el " + fechaLarga(o.vence) : "sin plazo";
+  return `${o.meta} ${CADENCIAS[o.cadencia]}`;
+}
+
+async function cargarObjetivos(){
+  if(!chatListo()) return false;
+  /* Desde el primero del mes: alcanza para el conteo semanal y el mensual. */
+  const [os, hs] = await Promise.all([Nube.objetivos(), Nube.hechos(null, inicioMes())]);
+  objs = os; objHechos = hs;
+  return true;
+}
+
+/* Baja los datos y pinta. Al marcar algo no hace falta volver aquí: para eso
+   está `pintaObjetivos`, que repinta con lo que ya tenemos en memoria. */
+async function renderObjetivos(){
+  const box = document.getElementById("objLista"), btn = document.getElementById("addObj");
+  if(!chatListo()){
+    btn.classList.add("hidden");
+    box.innerHTML = `<div class="empty">Los objetivos los pone tu equipo y los ves en tu cuenta.<br>
+      Entra con tu correo para verlos.</div>`;
+    return;
+  }
+  btn.classList.remove("hidden");
+  try{
+    await cargarObjetivos();
+  }catch(e){
+    btn.classList.add("hidden");
+    box.innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    return;
+  }
+  pintaObjetivos();
+}
+
+function pintaObjetivos(){
+  pintaListaObjetivos();
+  renderObjStrip();
+}
+
+function pintaListaObjetivos(){
+  const box = document.getElementById("objLista");
+  if(!box) return;
+  if(!objs.length){
+    box.innerHTML = `<div class="empty">Sin objetivos todavía.<br>
+      Tu equipo puede asignártelos, o puedes ponerte los tuyos.</div>`;
+    return;
+  }
+  box.innerHTML = objs.map(o=>{
+    const a = avance(o), cat = CAT_OBJ[o.categoria] || CAT_OBJ.otro;
+    const mio = o.autor_id === miId();
+    const vencido = o.vence && diasHasta(o.vence) < 0 && !a.listo;
+    return `<div class="objrow ${a.listo ? "listo" : ""}" style="--a:${cat.c}">
+      <button class="objtick ${a.listo ? "on" : ""}" data-tick="${o.id}"
+        title="${a.listo ? "Quitar la última marca" : "Marcar como hecho"}">${a.listo ? "✓" : "＋"}</button>
+      <div class="objtx">
+        <b>${esc(o.titulo)}</b>
+        <span>${cat.e} ${cat.l} · ${periodoTxt(o)}${
+          vencido ? ` · <em style="color:#fb7185;font-style:normal;font-weight:800">vencido</em>` : ""}${
+          mio ? "" : " · lo puso tu equipo"}</span>
+        ${o.detalle ? `<span class="det">${esc(o.detalle)}</span>` : ""}
+        ${o.cadencia === "unica" ? "" : `<div class="objdots">${
+          Array.from({length: Math.min(a.meta, 12)}, (_,i)=>
+            `<i class="${i < a.n ? "f" : ""}"></i>`).join("")}</div>`}
+      </div>
+      <div class="objn">${a.n}/${a.meta}</div>
+      ${mio ? `<button class="objedit" data-obj="${o.id}" title="Editar">✎</button>` : ""}
+    </div>`;
+  }).join("");
+
+  box.querySelectorAll("[data-tick]").forEach(b=> b.onclick = ()=> alternarObjetivo(b.dataset.tick));
+  box.querySelectorAll("[data-obj]").forEach(b=>
+    b.onclick = ()=> openObjetivo(objs.find(o => o.id === b.dataset.obj)));
+}
+
+
+
+/* Marcar suma una vez más; si ya está cumplido, quita la última marca. */
+async function alternarObjetivo(id){
+  const o = objs.find(x => x.id === id); if(!o) return;
+  const a = avance(o);
+  try{
+    if(a.listo){
+      const ultimos = hechosDe(o).sort((x,y)=> String(y.creado).localeCompare(String(x.creado)));
+      if(!ultimos.length) return;
+      await Nube.desmarcarObjetivo(ultimos[0].id);
+      objHechos = objHechos.filter(h => h.id !== ultimos[0].id);
+    }else{
+      const h = await Nube.marcarObjetivo(o.id);
+      objHechos.push(h);
+      const n = avance(o);
+      toast(n.listo ? `✅ ${o.titulo} · cumplido` : `${o.titulo} · ${n.n} de ${n.meta}`);
+    }
+  }catch(e){ toast(Nube.traduce(e.message)); return; }
+  pintaObjetivos();
+}
+
+/* Tira compacta en Hoy: solo lo que falta, para que sirva de recordatorio. */
+function renderObjStrip(){
+  const box = document.getElementById("objStrip");
+  if(!box) return;
+  /* Sin cuenta la lista está vacía de todas formas: no hace falta preguntar. */
+  const faltan = objPendientes();
+  if(!faltan.length){ box.innerHTML = ""; return; }
+  box.innerHTML = `<section style="margin:14px 0 0">
+    <div class="stitle">✅ Objetivos pendientes</div>
+    <div class="panel" style="padding:6px 16px">${faltan.slice(0,4).map(o=>{
+      const a = avance(o), cat = CAT_OBJ[o.categoria] || CAT_OBJ.otro;
+      return `<div class="objrow" style="--a:${cat.c}">
+        <button class="objtick" data-stick="${o.id}">＋</button>
+        <div class="objtx"><b>${esc(o.titulo)}</b>
+          <span>${cat.e} ${cat.l} · ${periodoTxt(o)}</span></div>
+        <div class="objn">${a.n}/${a.meta}</div>
+      </div>`;
+    }).join("")}${faltan.length > 4
+      ? `<div class="objmas" id="objMas">y ${faltan.length-4} más · ver todos</div>` : ""}</div>
+  </section>`;
+  box.querySelectorAll("[data-stick]").forEach(b=> b.onclick = ()=> alternarObjetivo(b.dataset.stick));
+  const mas = document.getElementById("objMas");
+  if(mas) mas.onclick = ()=> go("plan");
+}
+
+/* ---------- modal ---------- */
+function openObjetivo(o){
+  shutModals();
+  objEditando = o || null;
+  document.getElementById("obTitle").textContent = o ? "Editar objetivo" : "Nuevo objetivo";
+  document.getElementById("obTitulo").value  = o?.titulo || "";
+  document.getElementById("obDetalle").value = o?.detalle || "";
+  document.getElementById("obVence").value   = o?.vence || "";
+  document.getElementById("obMeta").value    = o?.meta || 3;
+  const cat = o?.categoria || "redes", cad = o?.cadencia || "semanal";
+  document.querySelectorAll("#obCat [data-cat]").forEach(b=> b.classList.toggle("on", b.dataset.cat === cat));
+  document.querySelectorAll("#obCad [data-cad]").forEach(b=> b.classList.toggle("on", b.dataset.cad === cad));
+  ajustaMeta();
+  document.getElementById("obDel").classList.toggle("hidden", !o);
+  document.getElementById("obArch").classList.toggle("hidden", !o);
+  document.getElementById("objModal").classList.add("open");
+}
+/* «Una sola vez» no lleva número de veces. */
+function ajustaMeta(){
+  const cad = document.querySelector("#obCad [data-cad].on")?.dataset.cad || "semanal";
+  document.getElementById("obMetaWrap").classList.toggle("hidden", cad === "unica");
+}
+document.querySelectorAll("#obCat [data-cat]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#obCat [data-cat]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
+document.querySelectorAll("#obCad [data-cad]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#obCad [data-cad]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); ajustaMeta();
+});
+document.getElementById("addObj").onclick   = ()=> openObjetivo(null);
+document.getElementById("obCancel").onclick = ()=> document.getElementById("objModal").classList.remove("open");
+
+document.getElementById("obSave").onclick = async ()=>{
+  const titulo = document.getElementById("obTitulo").value.trim();
+  if(!titulo){ toast("Escribe el objetivo"); return; }
+  const cad = document.querySelector("#obCad [data-cad].on")?.dataset.cad || "semanal";
+  const meta = cad === "unica" ? 1 : clamp(Math.round(Number(document.getElementById("obMeta").value) || 1), 1, 99);
+  const btn = document.getElementById("obSave");
+  btn.disabled = true; btn.textContent = "Guardando…";
+  try{
+    await Nube.guardarObjetivo({
+      ...(objEditando ? {id: objEditando.id} : {}),
+      titulo, meta, cadencia: cad,
+      categoria: document.querySelector("#obCat [data-cat].on")?.dataset.cat || "otro",
+      detalle: document.getElementById("obDetalle").value.trim() || null,
+      vence:   document.getElementById("obVence").value || null
+    });
+    document.getElementById("objModal").classList.remove("open");
+    toast(objEditando ? "Objetivo actualizado" : "Objetivo añadido");
+    await renderObjetivos(); renderObjStrip();
+  }catch(e){ toast(Nube.traduce(e.message)); }
+  finally{ btn.disabled = false; btn.textContent = "Guardar"; }
+};
+document.getElementById("obArch").onclick = async ()=>{
+  if(!objEditando) return;
+  try{
+    await Nube.guardarObjetivo({id: objEditando.id, archivado: true});
+    document.getElementById("objModal").classList.remove("open");
+    toast("Objetivo archivado");
+    await renderObjetivos(); renderObjStrip();
+  }catch(e){ toast(Nube.traduce(e.message)); }
+};
+document.getElementById("obDel").onclick = async ()=>{
+  if(!objEditando) return;
+  if(!confirm(`¿Eliminar "${objEditando.titulo}"? Se borra también su historial de cumplimiento.`)) return;
+  try{
+    await Nube.borrarObjetivo(objEditando.id);
+    document.getElementById("objModal").classList.remove("open");
+    toast("Objetivo eliminado");
+    await renderObjetivos(); renderObjStrip();
+  }catch(e){ toast(Nube.traduce(e.message)); }
+};
+
+/* ============================================================
+   SALUD · COMPOSICIÓN CORPORAL, FICHA Y DOCUMENTOS
+   ============================================================ */
+/* `num` ya existe más abajo: acepta coma decimal, que es como se escribe aquí. */
+const un1 = n => Math.round(n*10)/10;
+
+/* Una medición vive dentro del día, como el sueño: así viaja sola a la nube. */
+function medicion(k){ return S.logs[k]?.cuerpo || null; }
+/* Todas las mediciones, de la más nueva a la más vieja. */
+function mediciones(){
+  return Object.keys(S.logs)
+    .filter(k => S.logs[k]?.cuerpo && num(S.logs[k].cuerpo.peso))
+    .sort((a,b)=> b.localeCompare(a))
+    .map(k => ({fecha:k, ...S.logs[k].cuerpo}));
+}
+const ultimaMedicion = () => mediciones()[0] || null;
+/* La medición más cercana a n días atrás, para comparar contra ella. */
+function medicionHace(n){
+  const limite = shift(todayKey(), -n);
+  return mediciones().find(m => m.fecha <= limite) || null;
+}
+/* Kg de grasa y de músculo a partir de los porcentajes. */
+function desglose(m){
+  const p = num(m?.peso);
+  if(!p) return null;
+  const g = num(m.grasa), mu = num(m.musculo);
+  return {
+    peso: p,
+    grasaKg:  g  ? un1(p*g/100)  : 0,
+    musculoKg:mu ? un1(p*mu/100) : 0,
+    magraKg:  g  ? un1(p*(100-g)/100) : 0
+  };
+}
+const flecha = d => d > 0 ? "▲" : d < 0 ? "▼" : "•";
+/* En peso no hay dirección "buena" universal, así que el color es neutro;
+   en grasa bajar es mejor y en músculo subir. */
+function delta(actual, antes, mejorSube){
+  if(!antes || !num(antes)) return {txt:"—", c:"var(--tx3)"};
+  const d = un1(actual - antes);
+  if(d === 0) return {txt:"sin cambio", c:"var(--tx3)"};
+  const bueno = mejorSube === null ? null : (mejorSube ? d > 0 : d < 0);
+  return {
+    txt: `${flecha(d)} ${fmt(Math.abs(d))}`,
+    c: bueno === null ? "var(--tx2)" : bueno ? "#22e07a" : "#fb7185"
+  };
+}
+
+function renderSalud(){
+  renderCuerpo(); renderCuerpoGrafico(); renderFichas(); renderDocs();
+}
+
+function renderCuerpo(){
+  const box = document.getElementById("cuerpoResumen");
+  const m = ultimaMedicion();
+  if(!m){
+    box.innerHTML = `<div class="panel"><div class="empty">
+      Sin mediciones todavía.<br>Registra tu peso y la app arma el seguimiento.</div></div>`;
+    return;
+  }
+  const d = desglose(m), antes = medicionHace(30);
+  const dPeso = delta(m.peso, antes?.peso, null);
+  const dGra  = delta(num(m.grasa), antes && num(antes.grasa), false);
+  const dMus  = delta(num(m.musculo), antes && num(antes.musculo), true);
+  const dias  = -diasHasta(m.fecha);
+
+  box.innerHTML = `<div class="panel">
+    <div class="sl-top">
+      <div class="sl-score" style="color:#2dd4bf;border-color:#2dd4bf55;background:#2dd4bf18;font-size:26px">⚖️</div>
+      <div class="sl-t"><b>${fmt(m.peso)} kg</b>
+        <span>Medido ${dias === 0 ? "hoy" : dias === 1 ? "ayer" : `hace ${dias} días`}${
+          dias > 30 ? " · conviene actualizar" : ""}</span></div>
+    </div>
+    <div class="sl-meta libre">
+      <div><b style="color:${dPeso.c}">${dPeso.txt}</b><span>Peso vs 30 d</span></div>
+      ${num(m.grasa) ? `<div><b>${fmt(m.grasa)}%</b><span>Grasa · ${d.grasaKg} kg</span></div>` : ""}
+      ${num(m.musculo) ? `<div><b>${fmt(m.musculo)}%</b><span>Músculo · ${d.musculoKg} kg</span></div>` : ""}
+    </div>
+    ${num(m.grasa) || num(m.musculo) ? `<div class="sl-meta libre" style="margin-top:6px">
+      ${num(m.grasa) ? `<div><b style="color:${dGra.c}">${dGra.txt}</b><span>Grasa vs 30 d</span></div>` : ""}
+      ${num(m.musculo) ? `<div><b style="color:${dMus.c}">${dMus.txt}</b><span>Músculo vs 30 d</span></div>` : ""}
+      ${num(m.grasa) ? `<div><b>${d.magraKg} kg</b><span>Masa magra</span></div>` : ""}
+    </div>` : ""}
+    ${m.nota ? `<p style="margin:13px 0 0;font-size:12.5px;color:var(--tx3)">${esc(m.nota)}</p>` : ""}
+    <button class="cardbtn" id="editMed">Editar esta medición</button>
+  </div>`;
+  document.getElementById("editMed").onclick = ()=> openMedida(m.fecha);
+}
+
+function renderCuerpoGrafico(){
+  const box = document.getElementById("cuerpoGrafico");
+  const ms = mediciones().slice(0, 14).reverse();
+  if(ms.length < 2){
+    box.innerHTML = `<div class="empty">Con dos mediciones o más aparece la curva.</div>`;
+    return;
+  }
+  const pesos = ms.map(m=>m.peso);
+  const min = Math.min(...pesos), max = Math.max(...pesos);
+  const rango = (max - min) || 1;
+  /* Escala relativa: con variaciones de 1 kg una barra completa no dice nada,
+     así que el suelo del gráfico es el peso mínimo menos un margen. */
+  const suelo = min - rango*0.35;
+  box.innerHTML = `
+    <div class="wbars">${ms.map(m=>{
+      const d = parseKey(m.fecha), alt = (m.peso - suelo) / (max - suelo) * 100;
+      return `<div class="wb peso" title="${m.fecha} · ${fmt(m.peso)} kg">
+        <i style="height:${clamp(alt, 6, 100)}%"></i>
+        <span>${d.getDate()}/${d.getMonth()+1}</span></div>`;
+    }).join("")}</div>
+    <div class="sl-meta libre" style="margin-top:14px">
+      <div><b>${fmt(un1(pesos[pesos.length-1] - pesos[0]))} kg</b><span>Cambio total</span></div>
+      <div><b>${fmt(min)} – ${fmt(max)}</b><span>Rango (kg)</span></div>
+      <div><b>${ms.length}</b><span>Mediciones</span></div>
+    </div>`;
+}
+
+/* ---------- fichas médica y nutricional ----------
+   La médica sigue el orden de una anamnesis deportiva: quién eres y a quién
+   llamar, qué te puede matar rápido (alergias y corazón), qué arrastras, qué
+   tomas y qué te duele hoy. */
+const GRUPOS_SANGRE = ["O+","O−","A+","A−","B+","B−","AB+","AB−","No lo sé"];
+
+const FICHA_MED = [
+  {g:"Identificación y contacto", c:[
+    {k:"nacimiento", l:"Fecha de nacimiento", t:"date"},
+    {k:"grupo",      l:"Grupo sanguíneo", t:"sel", o:GRUPOS_SANGRE},
+    {k:"estatura",   l:"Estatura (cm)", t:"num", ph:"Ej: 178"},
+    {k:"prevision",  l:"Previsión o seguro", ph:"Isapre, Fonasa, seguro deportivo"},
+    {k:"contacto",   l:"Contacto de emergencia", ph:"Nombre, parentesco y teléfono"},
+    {k:"contacto2",  l:"Segundo contacto", ph:"Por si el primero no responde"},
+    {k:"tratante",   l:"Médico o kinesiólogo tratante", ph:"Nombre y teléfono"}
+  ]},
+  {g:"Alergias", n:"Escribe también qué reacción produce: no es lo mismo un sarpullido que un shock.", c:[
+    {k:"alergiaMed",  l:"A medicamentos", ph:"Cuál y qué reacción produce", area:true, alerta:true},
+    {k:"alergiaAlim", l:"Alimentarias", ph:"Cuál y qué reacción produce", area:true, alerta:true},
+    {k:"alergias",    l:"Otras alergias", ph:"Polen, picaduras, látex…", area:true}
+  ]},
+  {g:"Antecedentes médicos", c:[
+    {k:"condiciones",  l:"Condiciones diagnosticadas", ph:"Asma, diabetes, hipertensión, tiroides, epilepsia…", area:true},
+    {k:"cirugias",     l:"Cirugías y hospitalizaciones", ph:"Qué, cuándo y cómo quedó", area:true},
+    {k:"conmociones",  l:"Golpes en la cabeza o conmociones", ph:"Cuántas, cuándo y si quedaron secuelas", area:true},
+    {k:"respiratorio", l:"Problemas respiratorios con el ejercicio", ph:"Broncoespasmo, asma inducida por esfuerzo…", area:true}
+  ]},
+  {g:"Tamizaje cardiovascular",
+   n:"Las preguntas del examen previo a la competencia. Un «sí» no te impide entrenar: significa que hay que verlo con un médico antes de exigirte a fondo.", c:[
+    {k:"cvDolor",    l:"¿Dolor u opresión en el pecho al esforzarte?", t:"sn"},
+    {k:"cvDesmayo",  l:"¿Desmayos o mareos durante o después del ejercicio?", t:"sn"},
+    {k:"cvAhogo",    l:"¿Te falta el aire o te cansas antes que tus pares?", t:"sn"},
+    {k:"cvSoplo",    l:"¿Te han detectado un soplo o la presión alta?", t:"sn"},
+    {k:"cvFamiliar", l:"¿Alguien de tu familia murió de forma súbita antes de los 50?", t:"sn"}
+  ]},
+  {g:"Medicación y sustancias", c:[
+    {k:"medicacion",     l:"Medicación habitual", ph:"Qué, dosis y horario", area:true},
+    {k:"medicacionOcas", l:"Medicación ocasional", ph:"Analgésicos, antiinflamatorios…", area:true},
+    {k:"tue",            l:"Autorización de uso terapéutico (TUE)", ph:"Sustancia, número y vigencia"},
+    {k:"habitos",        l:"Tabaco y alcohol", ph:"Frecuencia, si corresponde"}
+  ]},
+  {g:"Lesiones", c:[
+    {k:"lesiones",     l:"Lesiones previas", ph:"Qué, cuándo, tratamiento y si hubo alta", area:true},
+    {k:"lesionActual", l:"Molestia o lesión activa", ph:"Qué te duele hoy y desde cuándo", area:true, alerta:true},
+    {k:"limitaciones", l:"Movimientos o cargas a evitar", ph:"Lo que el entrenador no debe programar", area:true}
+  ]},
+  {g:"Controles y certificados", c:[
+    {k:"ultimoControl",  l:"Último control médico deportivo", t:"date"},
+    {k:"ecg",            l:"Electrocardiograma", ph:"Fecha y resultado"},
+    {k:"sangre",         l:"Último examen de sangre", ph:"Fecha y hallazgos"},
+    {k:"certificaVence", l:"Vence el certificado de aptitud", t:"date"},
+    {k:"vacunas",        l:"Vacunas relevantes", ph:"Tétanos, hepatitis…"}
+  ]}
+];
+const FICHA_NUT = [
+  {g:"Alimentación", c:[
+    {k:"restricciones", l:"Restricciones e intolerancias", ph:"Celiaquía, lactosa, vegetariano…", area:true, alerta:true},
+    {k:"suplementos",   l:"Suplementos", ph:"Cuáles, dosis y horario", area:true},
+    {k:"objetivoNutri", l:"Objetivo nutricional", ph:"Ej: bajar 3 kg antes de octubre"},
+    {k:"notasNutri",    l:"Indicaciones del nutricionista", ph:"Pauta, horarios, hidratación", area:true}
+  ]}
+];
+/* Lista plana, para contar y buscar sin recorrer los grupos cada vez. */
+const planos = secs => secs.flatMap(s => s.c);
+const campoDe = k => planos(FICHA_MED).concat(planos(FICHA_NUT)).find(c => c.k === k);
+
+const SN = {si:"Sí", no:"No", nose:"No lo sé"};
+/* Años cumplidos: restar fechas no basta, hay que ver si ya pasó el cumpleaños. */
+function edad(fecha){
+  const n = parseKey(fecha), h = parseKey(todayKey());
+  let a = h.getFullYear() - n.getFullYear();
+  const m = h.getMonth() - n.getMonth();
+  if(m < 0 || (m === 0 && h.getDate() < n.getDate())) a--;
+  return a;
+}
+const lleno = v => String(v ?? "").trim() !== "";
+/* Cómo se lee un valor guardado, según su tipo. */
+function valorFicha(c){
+  const v = S.salud?.[c.k];
+  if(!lleno(v)) return "";
+  if(c.t === "sn")   return SN[v] || v;
+  if(c.t === "date"){
+    const d = parseKey(v), corta = `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
+    return c.k === "nacimiento" ? `${corta} · ${edad(v)} años` : corta;
+  }
+  if(c.t === "num")  return v + " cm";
+  return v;
+}
+
+/* Lo que el equipo tiene que ver antes que nada. */
+function banderas(){
+  const f = S.salud || {}, out = [];
+  planos(FICHA_MED).filter(c => c.t === "sn" && f[c.k] === "si")
+    .forEach(c => out.push({t:"alta", txt: c.l.replace(/^¿|\?$/g, "")}));
+  if(lleno(f.alergiaMed))   out.push({t:"alta",  txt:"Alergia a medicamentos: " + f.alergiaMed});
+  if(lleno(f.alergiaAlim))  out.push({t:"media", txt:"Alergia alimentaria: " + f.alergiaAlim});
+  if(lleno(f.lesionActual)) out.push({t:"media", txt:"Lesión activa: " + f.lesionActual});
+  if(lleno(f.limitaciones)) out.push({t:"media", txt:"Evitar: " + f.limitaciones});
+  if(lleno(f.certificaVence)){
+    const n = diasHasta(f.certificaVence);
+    if(n < 0)       out.push({t:"alta",  txt:`Certificado de aptitud vencido hace ${-n} días`});
+    else if(n <= 30) out.push({t:"media", txt:`El certificado de aptitud vence en ${n} días`});
+  }
+  return out;
+}
+
+function pintaFicha(id, secs, vacio){
+  const box = document.getElementById(id);
+  const total = planos(secs).length;
+  const puestos = planos(secs).filter(c => lleno(S.salud?.[c.k])).length;
+
+  const cuerpo = secs.map(sec=>{
+    const llenos = sec.c.filter(c => lleno(S.salud?.[c.k]));
+    if(!llenos.length) return "";
+    return `<div class="fcgrupo">${sec.g}</div>` + llenos.map(c=>{
+      const v = valorFicha(c);
+      const rojo = c.t === "sn" ? S.salud[c.k] === "si" : c.alerta;
+      return `<div class="fcrow"><span>${c.l}</span>
+        <b${rojo ? ' style="color:#fb7185"' : ""}>${esc(v)}</b></div>`;
+    }).join("");
+  }).join("");
+
+  box.innerHTML = (puestos
+    ? cuerpo + `<div class="fcprog">
+        <div class="meter"><i style="width:${Math.round(puestos/total*100)}%;background:var(--accent)"></i></div>
+        <div class="mini-lbl"><span>${puestos} de ${total} campos</span>
+          <span>${Math.round(puestos/total*100)}% completa</span></div></div>`
+    : `<div class="empty">${vacio}</div>`)
+    + `<button class="cardbtn" data-ficha="${id}">${puestos ? "Editar ficha" : "Completar ficha"}</button>`;
+  box.querySelector("[data-ficha]").onclick = ()=> openFicha(id);
+}
+
+/* Banda de avisos: lo que hay que saber sin leer la ficha entera. */
+function renderBanderas(){
+  const box = document.getElementById("saludFlags"), bs = banderas();
+  if(!bs.length){ box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="flags">
+    ${bs.map(b=>`<div class="flag ${b.t}"><span>${b.t === "alta" ? "🚨" : "⚠️"}</span>${esc(b.txt)}</div>`).join("")}
+  </div>`;
+}
+
+function renderFichas(){
+  renderBanderas();
+  pintaFicha("fichaMedica", FICHA_MED,
+    "Sin datos médicos todavía. Esto es lo que tu equipo necesita saber antes de exigirte, y a quién llamar si algo pasa.");
+  pintaFicha("fichaNutri", FICHA_NUT,
+    "Sin datos nutricionales todavía.");
+}
+
+let fichaAbierta = null;
+
+function campoHTML(c){
+  const v = S.salud?.[c.k] ?? "";
+  if(c.t === "sn") return `<label class="f"><span>${c.l}</span>
+    <select class="inp" data-fc="${c.k}">
+      <option value=""${v===""?" selected":""}>Sin responder</option>
+      <option value="no"${v==="no"?" selected":""}>No</option>
+      <option value="si"${v==="si"?" selected":""}>Sí</option>
+      <option value="nose"${v==="nose"?" selected":""}>No lo sé</option>
+    </select></label>`;
+  if(c.t === "sel") return `<label class="f"><span>${c.l}</span>
+    <select class="inp" data-fc="${c.k}">
+      <option value="">Sin indicar</option>
+      ${c.o.map(o=>`<option${v===o?" selected":""}>${o}</option>`).join("")}
+    </select></label>`;
+  if(c.t === "date") return `<label class="f"><span>${c.l}</span>
+    <input class="inp" type="date" data-fc="${c.k}" value="${esc(v)}"></label>`;
+  if(c.t === "num") return `<label class="f"><span>${c.l}</span>
+    <input class="inp" type="number" inputmode="decimal" step="0.1" min="0" data-fc="${c.k}"
+      placeholder="${c.ph||""}" value="${esc(v)}"></label>`;
+  if(c.area) return `<label class="f"><span>${c.l}</span>
+    <textarea class="inp" data-fc="${c.k}" rows="2" placeholder="${c.ph||""}" style="resize:vertical">${esc(v)}</textarea></label>`;
+  return `<label class="f"><span>${c.l}</span>
+    <input class="inp" data-fc="${c.k}" placeholder="${c.ph||""}" value="${esc(v)}"></label>`;
+}
+
+function openFicha(id){
+  shutModals();
+  fichaAbierta = id;
+  const med = id === "fichaMedica";
+  const secs = med ? FICHA_MED : FICHA_NUT;
+  document.getElementById("fcTitle").textContent = med ? "Ficha médica" : "Ficha nutricional";
+  document.getElementById("fcSub").textContent = med
+    ? "Rellena lo que sepas y deja el resto en blanco. Se puede completar de a poco."
+    : "Lo que condiciona tu alimentación día a día.";
+  document.getElementById("fcCampos").innerHTML = secs.map(sec=>
+    `<div class="fcgrupo" style="margin-top:18px">${sec.g}</div>
+     ${sec.n ? `<p class="fcnota">${sec.n}</p>` : ""}
+     ${sec.c.map(campoHTML).join("")}`).join("")
+    + (med ? `<p class="fcnota" style="margin-top:6px">Esta ficha organiza información, no
+        la evalúa: no reemplaza un examen médico ni una autorización deportiva.</p>` : "");
+  document.getElementById("fichaModal").classList.add("open");
+}
+document.getElementById("fcCancel").onclick = ()=>
+  document.getElementById("fichaModal").classList.remove("open");
+document.getElementById("fcSave").onclick = ()=>{
+  document.querySelectorAll("#fcCampos [data-fc]").forEach(el=>{
+    S.salud[el.dataset.fc] = el.value.trim();
+  });
+  save();
+  document.getElementById("fichaModal").classList.remove("open");
+  renderFichas();
+  toast("Ficha guardada");
+};
+
+/* ---------- modal de medición ---------- */
+let medEditando = null;
+
+function calcMed(){
+  const p = num(document.getElementById("mdPeso").value);
+  const g = num(document.getElementById("mdGrasa").value);
+  const m = num(document.getElementById("mdMusculo").value);
+  const box = document.getElementById("mdCalc");
+  if(!p){ box.innerHTML = `<div style="font-size:12.5px;color:var(--tx3)">Escribe el peso para ver el desglose.</div>`; return; }
+  const d = desglose({peso:p, grasa:g, musculo:m});
+  box.innerHTML = `<div class="sl-meta libre" style="margin-top:0">
+    <div><b>${fmt(d.peso)} kg</b><span>Peso</span></div>
+    ${g ? `<div><b>${d.grasaKg} kg</b><span>Grasa</span></div>
+           <div><b>${d.magraKg} kg</b><span>Masa magra</span></div>` : ""}
+    ${m ? `<div><b>${d.musculoKg} kg</b><span>Músculo</span></div>` : ""}
+  </div>${g && m && g + m > 100
+    ? `<div style="font-size:12px;color:#fb7185;font-weight:700;margin-top:9px">
+        Grasa y músculo suman más de 100 %. Revisa los números.</div>` : ""}`;
+}
+
+function openMedida(fecha){
+  shutModals();
+  medEditando = fecha || null;
+  const m = fecha ? medicion(fecha) : null;
+  document.getElementById("mdDate").value    = fecha || todayKey();
+  document.getElementById("mdPeso").value    = m?.peso ?? "";
+  document.getElementById("mdGrasa").value   = m?.grasa ?? "";
+  document.getElementById("mdMusculo").value = m?.musculo ?? "";
+  document.getElementById("mdNota").value    = m?.nota ?? "";
+  document.getElementById("mdDel").classList.toggle("hidden", !m);
+  calcMed();
+  document.getElementById("medModal").classList.add("open");
+}
+["mdPeso","mdGrasa","mdMusculo"].forEach(id=>
+  document.getElementById(id).oninput = calcMed);
+document.getElementById("addMedida").onclick = ()=> openMedida(null);
+document.getElementById("mdCancel").onclick  = ()=>
+  document.getElementById("medModal").classList.remove("open");
+document.getElementById("mdSave").onclick = ()=>{
+  const fecha = document.getElementById("mdDate").value;
+  const peso  = num(document.getElementById("mdPeso").value);
+  const grasa = num(document.getElementById("mdGrasa").value);
+  const musc  = num(document.getElementById("mdMusculo").value);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(fecha)){ toast("Elige una fecha válida"); return; }
+  if(!peso){ toast("El peso es obligatorio"); return; }
+  if(grasa && musc && grasa + musc > 100){ toast("Grasa y músculo suman más de 100 %"); return; }
+  /* Guardar en un día distinto al que estás viendo exige mover `cur`, o la
+     marca de tiempo se le pondría al día equivocado y no subiría. */
+  const antes = cur;
+  cur = fecha;
+  dayLog(fecha).cuerpo = {peso, grasa, musculo:musc, at:Date.now(),
+                          nota: document.getElementById("mdNota").value.trim()};
+  save();
+  cur = antes;
+  document.getElementById("medModal").classList.remove("open");
+  renderSalud();
+  toast(`⚖️ ${fmt(peso)} kg registrados`);
+};
+document.getElementById("mdDel").onclick = ()=>{
+  if(!medEditando) return;
+  if(!confirm("¿Borrar la medición de ese día?")) return;
+  const antes = cur;
+  cur = medEditando;
+  if(S.logs[medEditando]) delete S.logs[medEditando].cuerpo;
+  save();
+  cur = antes;
+  document.getElementById("medModal").classList.remove("open");
+  renderSalud();
+  toast("Medición borrada");
+};
+
+/* ---------- documentos ----------
+   Los archivos viven en la nube, no en el dispositivo: sin cuenta no hay
+   dónde guardarlos ni con quién compartirlos. */
+const TIPOS_DOC = {medico:{e:"🩺", l:"Médico"}, nutricional:{e:"🥗", l:"Nutricional"}, otro:{e:"📄", l:"Otro"}};
+let docsCache = [], docArchivo = null;
+
+const pesoArchivo = b => b >= 1048576 ? (b/1048576).toFixed(1)+" MB" : Math.max(1, Math.round(b/1024))+" KB";
+
+async function renderDocs(){
+  const box = document.getElementById("docsPanel");
+  const btn = document.getElementById("addDoc");
+  if(!nubeOn() || !sesionUsuario){
+    btn.classList.add("hidden");
+    box.innerHTML = `<div class="empty">Los documentos se guardan en tu cuenta
+      para que tu equipo pueda verlos.<br>Entra con tu correo para usarlos.</div>`;
+    return;
+  }
+  btn.classList.remove("hidden");
+  box.innerHTML = `<div class="empty">Cargando documentos…</div>`;
+  try{
+    docsCache = await Nube.docs();
+  }catch(e){
+    box.innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    return;
+  }
+  if(!docsCache.length){
+    box.innerHTML = `<div class="empty">Sin documentos todavía.<br>
+      Sube exámenes, informes o pautas en PDF.</div>`;
+    return;
+  }
+  box.innerHTML = docsCache.map(d=>{
+    const t = TIPOS_DOC[d.tipo] || TIPOS_DOC.otro, f = parseKey(d.fecha);
+    return `<div class="hrow">
+      <div class="m">${t.e}</div>
+      <div class="t"><b>${esc(d.titulo)}</b>
+        <span>${t.l} · ${f.getDate()} ${MESES[f.getMonth()]} ${f.getFullYear()}${
+          d.tam ? " · "+pesoArchivo(d.tam) : ""}</span></div>
+      <button class="mini" data-abrir="${d.id}">Abrir</button>
+      <button class="mini" data-borrar="${d.id}" style="color:#fb7185">✕</button>
+    </div>${d.notas ? `<p style="font-size:12px;color:var(--tx3);margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
+  }).join("");
+
+  box.querySelectorAll("[data-abrir]").forEach(b=> b.onclick = async ()=>{
+    const d = docsCache.find(x=>x.id === b.dataset.abrir);
+    b.disabled = true; b.textContent = "…";
+    try{ window.open(await Nube.urlDoc(d.ruta), "_blank", "noopener"); }
+    catch(e){ toast(Nube.traduce(e.message)); }
+    finally{ b.disabled = false; b.textContent = "Abrir"; }
+  });
+  box.querySelectorAll("[data-borrar]").forEach(b=> b.onclick = async ()=>{
+    const d = docsCache.find(x=>x.id === b.dataset.borrar);
+    if(!confirm(`¿Eliminar "${d.titulo}"? Tu equipo dejará de verlo.`)) return;
+    try{ await Nube.borrarDoc(d); toast("Documento eliminado"); renderDocs(); }
+    catch(e){ toast(Nube.traduce(e.message)); }
+  });
+}
+
+document.getElementById("addDoc").onclick = ()=> document.getElementById("docFile").click();
+document.getElementById("docFile").onchange = e=>{
+  const f = e.target.files?.[0];
+  e.target.value = "";
+  if(!f) return;
+  if(f.size > 15*1024*1024){ toast("El archivo pesa más de 15 MB"); return; }
+  docArchivo = f;
+  shutModals();
+  document.getElementById("dcArchivo").innerHTML =
+    `<div style="display:flex;align-items:center;gap:10px">
+       <div style="font-size:22px">${f.type.includes("pdf") ? "📄" : "🖼"}</div>
+       <div style="min-width:0"><b style="display:block;font-size:13.5px;word-break:break-all">${esc(f.name)}</b>
+         <span style="font-size:12px;color:var(--tx3)">${pesoArchivo(f.size)}</span></div>
+     </div>`;
+  /* Un título por defecto sacado del nombre del archivo: casi siempre sirve. */
+  document.getElementById("dcTitulo").value = f.name.replace(/\.[^.]+$/, "").slice(0, 80);
+  document.getElementById("dcFecha").value  = todayKey();
+  document.getElementById("dcNotas").value  = "";
+  document.querySelectorAll("#dcTipo [data-tp]").forEach(b=>
+    b.classList.toggle("on", b.dataset.tp === "medico"));
+  document.getElementById("docModal").classList.add("open");
+};
+document.querySelectorAll("#dcTipo [data-tp]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#dcTipo [data-tp]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
+document.getElementById("dcCancel").onclick = ()=>{
+  docArchivo = null;
+  document.getElementById("docModal").classList.remove("open");
+};
+document.getElementById("dcSave").onclick = async ()=>{
+  const titulo = document.getElementById("dcTitulo").value.trim();
+  if(!docArchivo){ toast("Elige un archivo"); return; }
+  if(!titulo){ toast("Ponle un título al documento"); return; }
+  const btn = document.getElementById("dcSave");
+  btn.disabled = true; btn.textContent = "Subiendo…";
+  try{
+    await Nube.subirDoc(docArchivo, {
+      titulo,
+      tipo:  document.querySelector("#dcTipo [data-tp].on")?.dataset.tp || "otro",
+      fecha: document.getElementById("dcFecha").value || todayKey(),
+      notas: document.getElementById("dcNotas").value.trim()
+    });
+    docArchivo = null;
+    document.getElementById("docModal").classList.remove("open");
+    toast("Documento subido");
+    renderDocs();
+  }catch(e){
+    toast(Nube.traduce(e.message));
+  }finally{
+    btn.disabled = false; btn.textContent = "Subir";
+  }
+};
+
+/* ============================================================
+   MENSAJES
+   Una sola conversación: tú y tu entrenador. Los mensajes viven en la
+   nube, así que sin cuenta no hay bandeja.
+   ============================================================ */
+let chatMsgs = [], chatCanal = null, chatPintado = "";
+
+const chatListo = () => nubeOn() && !!sesionUsuario;
+const miId = () => sesionUsuario?.user?.id || null;
+
+function horaCorta(iso){
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+function diaDe(iso){ return todayKey(new Date(iso)); }
+function separadorDia(k){
+  const t = todayKey();
+  if(k === t) return "Hoy";
+  if(k === shift(t,-1)) return "Ayer";
+  const d = parseKey(k);
+  return `${cap(DIAS[d.getDay()])} ${d.getDate()} ${MESES[d.getMonth()]}`;
+}
+
+function pintaChat(){
+  const log = document.getElementById("chatLog");
+  if(!chatMsgs.length){
+    log.innerHTML = `<div class="empty">Todavía no hay mensajes.<br>
+      Escribe lo que necesites: dudas, molestias, cómo te sentiste.</div>`;
+    return;
+  }
+  let ultimoDia = "";
+  log.innerHTML = chatMsgs.map(m=>{
+    const dia = diaDe(m.creado);
+    const sep = dia !== ultimoDia ? `<div class="chatdia">${separadorDia(dia)}</div>` : "";
+    ultimoDia = dia;
+    const mio = m.autor_id === miId();
+    return `${sep}<div class="burb ${mio ? "mia" : ""}" data-msg="${m.id}">
+      <div class="tx">${esc(m.texto)}</div>
+      <div class="hr">${horaCorta(m.creado)}</div></div>`;
+  }).join("");
+  /* Ir al final: en un chat lo último es lo que importa. */
+  log.scrollTop = log.scrollHeight;
+
+  log.querySelectorAll(".burb.mia").forEach(b=> b.oncontextmenu = async e=>{
+    e.preventDefault();
+    if(!confirm("¿Borrar este mensaje?")) return;
+    try{
+      await Nube.borrarMensaje(b.dataset.msg);
+      chatMsgs = chatMsgs.filter(m => m.id !== b.dataset.msg);
+      pintaChat();
+    }catch(err){ toast(Nube.traduce(err.message)); }
+  });
+}
+
+async function abrirChat(){
+  const log = document.getElementById("chatLog");
+  document.getElementById("chatBar").classList.toggle("hidden", !chatListo());
+  if(!chatListo()){
+    log.innerHTML = `<div class="empty">La bandeja vive en tu cuenta, para que tu
+      entrenador pueda responderte.<br>Entra con tu correo para usarla.</div>`;
+    return;
+  }
+  if(chatPintado !== miId()){ log.innerHTML = `<div class="empty">Cargando mensajes…</div>`; }
+  try{
+    chatMsgs = await Nube.mensajes(miId());
+    chatPintado = miId();
+    pintaChat();
+    await Nube.marcarLeido(miId());
+    pintarPipChat(0);
+  }catch(e){
+    log.innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    return;
+  }
+  escucharChatVivo();
+}
+
+/* Un solo canal abierto, aunque entres y salgas de la vista. */
+function escucharChatVivo(){
+  if(chatCanal || !chatListo()) return;
+  chatCanal = Nube.escucharChat(miId(), m=>{
+    if(chatMsgs.some(x => x.id === m.id)) return;   // el mío ya está puesto
+    chatMsgs.push(m);
+    const enChat = !document.getElementById("view-chat").classList.contains("hidden");
+    if(enChat){
+      pintaChat();
+      if(m.autor_id !== miId()) Nube.marcarLeido(miId());
+    }else if(m.autor_id !== miId()){
+      pintarPipChat(1);
+      toast("💬 Mensaje nuevo de tu entrenador");
+    }
+  });
+}
+
+function pintarPipChat(n){
+  const b = document.getElementById("chatBtn");
+  if(!b) return;
+  b.innerHTML = n > 0 ? '💬<span class="pip"></span>' : "💬";
+}
+
+async function revisarChat(){
+  if(!chatListo()) return;
+  try{ pintarPipChat(await Nube.sinLeer(miId())); }catch(e){}
+  escucharChatVivo();
+}
+
+async function enviarChat(){
+  const ta = document.getElementById("chatTexto");
+  const t = ta.value.trim();
+  if(!t) return;
+  const btn = document.getElementById("chatSend");
+  btn.disabled = true;
+  try{
+    const m = await Nube.enviar(miId(), t);
+    if(m){ chatMsgs.push(m); pintaChat(); }
+    ta.value = ""; ta.style.height = "auto";
+  }catch(e){
+    toast(Nube.traduce(e.message));
+  }finally{
+    btn.disabled = false; ta.focus();
+  }
+}
+
+document.getElementById("chatBtn").onclick    = ()=> go("chat");
+document.getElementById("chatVolver").onclick = ()=> go("hoy");
+document.getElementById("chatSend").onclick   = enviarChat;
+document.getElementById("chatTexto").oninput  = e=>{
+  e.target.style.height = "auto";
+  e.target.style.height = Math.min(120, Math.max(40, e.target.scrollHeight)) + "px";
+};
+/* Enter envía; Shift+Enter hace salto de línea. En el móvil el teclado manda
+   su propio salto y no dispara esto. */
+document.getElementById("chatTexto").onkeydown = e=>{
+  if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); enviarChat(); }
+};
+
+/* ============================================================
    HISTORIAL
    ============================================================ */
+/* Cuánto quedó registrado de un día: sueño, entrenamiento o actividad,
+   alimentación y cómo te sentiste. Cuatro cosas, no un porcentaje de hábitos. */
+function registroDe(k){
+  const l = S.logs[k];
+  if(!l) return 0;
+  let n = 0;
+  if(l.sleep) n++;
+  if(wkVolume(l.workout) > 0 || acTotal(l) > 0) n++;
+  if((l.food?.groups||[]).length || (l.food?.junk||[]).length) n++;
+  if(l.mood || String(l.note||"").trim()) n++;
+  return n;
+}
+
 function renderHist(){
   const rows=[]; let k=todayKey();
   for(let i=0;i<30;i++){ rows.push(k); k=shift(k,-1); }
   document.getElementById("histList").innerHTML = rows.map(d=>{
-    const p = Math.round(dayPct(d)*100), dt = parseKey(d), l = S.logs[d];
+    const n = registroDe(d), p = n/4*100, dt = parseKey(d), l = S.logs[d];
     const mood = l?.mood ? " "+["","😞","😕","😐","🙂","😄"][l.mood] : "";
     const slp  = l?.sleep ? ` <span style="color:#a5b4fc;font-weight:700">😴${l.sleep.score}</span>` : "";
     const vol  = wkVolume(l?.workout);
     const trn  = vol ? ` <span style="color:#4ade80;font-weight:700">🏋️${kg(vol)}</span>` : "";
     const jk   = junkCount(d) ? ` <span style="color:#fb7185;font-weight:700">🍔${junkCount(d)}</span>` : "";
+    const act  = acTotal(l||{actividad:{items:{}}});
+    const ac   = act ? ` <span style="color:#fb923c;font-weight:700">🏃${act}′</span>` : "";
     return `<div class="hist" data-go="${d}">
-      <div class="hd">${cap(DIAS[dt.getDay()].slice(0,3))} ${dt.getDate()} ${MESES[dt.getMonth()]}${mood}${slp}${trn}${jk}</div>
-      <div class="hp"><i style="width:${p}%"></i></div><div class="hn">${p}%</div></div>`;
+      <div class="hd">${cap(DIAS[dt.getDay()].slice(0,3))} ${dt.getDate()} ${MESES[dt.getMonth()]}${mood}${slp}${trn}${ac}${jk}</div>
+      <div class="hp"><i style="width:${p}%"></i></div><div class="hn">${n}/4</div></div>`;
   }).join("");
   document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>{
     cur = el.dataset.go; go("hoy"); renderAll(); window.scrollTo({top:0,behavior:"smooth"});
@@ -1096,24 +2413,32 @@ function renderHist(){
 function renderStats(){
   const days=[]; let k=todayKey();
   for(let i=0;i<30;i++){ days.push(k); k=shift(k,-1); }
-  const avg30 = Math.round(days.reduce((s,d)=>s+dayPct(d),0)/30*100);
-  const perfect = days.filter(d=>dayPct(d)>=0.999).length;
+  const registrados = days.filter(d=>registroDe(d) > 0).length;
+  const completos = days.filter(d=>registroDe(d) === 4).length;
   const sleeps = days.map(d=>S.logs[d]?.sleep).filter(Boolean);
   const avgSleep = sleeps.length ? Math.round(sleeps.reduce((a,s)=>a+s.score,0)/sleeps.length) : 0;
   const avgHrs = sleeps.length ? Math.round(sleeps.reduce((a,s)=>a+s.hours,0)/sleeps.length*10)/10 : 0;
   const totKg = days.reduce((a,d)=>a+wkVolume(S.logs[d]?.workout), 0);
   const jw = junkWeek(todayKey());
+  const agCarga = cargaAguda(), crCarga = cargaCronica();
+  const rCarga = crCarga > 0 ? agCarga/crCarga : 0, zCarga = zonaDe(rCarga);
+  const actTot = days.reduce((a,d)=>a+acTotal(S.logs[d]||{actividad:{items:{}}}), 0);
+  const m = ultimaMedicion(), mAntes = medicionHace(30);
+  const dPeso = m ? delta(m.peso, mAntes?.peso, null) : null;
   let gstreak=0, kk=todayKey();
-  if(dayPct(kk)===0) kk=shift(kk,-1);
-  while(dayPct(kk)>0){ gstreak++; kk=shift(kk,-1); }
+  if(registroDe(kk)===0) kk=shift(kk,-1);
+  while(registroDe(kk)>0){ gstreak++; kk=shift(kk,-1); }
 
   document.getElementById("statBoxes").innerHTML = `
-    <div class="stat"><b>${avg30}%</b><span>Promedio 30 días</span></div>
+    <div class="stat"><b>${registrados}/30</b><span>Días con registro</span></div>
     <div class="stat"><b>${gstreak}</b><span>Días seguidos activo</span></div>
-    <div class="stat"><b>${perfect}</b><span>Días perfectos</span></div>
+    <div class="stat"><b>${completos}</b><span>Registros completos</span></div>
     <div class="stat"><b style="color:#a5b4fc">${avgSleep||"–"}</b><span>Sueño promedio</span></div>
     <div class="stat"><b>${kg(totKg)}</b><span>Kg movidos · 30 días</span></div>
-    <div class="stat"><b style="color:${RISK[riskLevel(junkCount(todayKey()), jw)].c}">${jw}</b><span>Chatarra · 7 días</span></div>`;
+    <div class="stat"><b style="color:#fb923c">${actTot}</b><span>Min de actividad · 30 d</span></div>
+    <div class="stat"><b style="color:${RISK[riskLevel(junkCount(todayKey()), jw)].c}">${jw}</b><span>Chatarra · 7 días</span></div>
+    <div class="stat"><b style="color:${zCarga.c}">${crCarga ? rCarga.toFixed(2) : "–"}</b><span>Carga aguda:crónica</span></div>
+    ${m ? `<div class="stat"><b style="color:#2dd4bf">${fmt(m.peso)}</b><span>Peso (kg) · ${dPeso.txt}</span></div>` : ""}`;
 
   const sesiones = days.filter(d=>wkVolume(S.logs[d]?.workout)>0);
   const mejor = sesiones.length ? Math.max(...sesiones.map(d=>wkVolume(S.logs[d].workout))) : 0;
@@ -1149,10 +2474,12 @@ function renderStats(){
     ${rank.length?`<div style="font-size:12px;color:var(--tx3);margin-top:10px">Lo que más repites: ${rank.map(([k,v])=>`${k} ×${v}`).join(" · ")}</div>`:""}`;
 
   const last14 = days.slice(0,14).reverse();
-  document.getElementById("chart14").innerHTML = last14.map(d=>{
-    const p = dayPct(d), dt = parseKey(d);
-    return `<div class="cb" title="${d} · ${Math.round(p*100)}%">
-      <div class="cbar ${p===0?'empty':''}" style="height:${Math.max(3,p*100)}%"></div>
+  const mins = last14.map(d=>acTotal(S.logs[d]||{actividad:{items:{}}}));
+  const topMin = Math.max(metaAct(), ...mins) || 1;
+  document.getElementById("chart14").innerHTML = last14.map((d,i)=>{
+    const v = mins[i], dt = parseKey(d);
+    return `<div class="cb" title="${d} · ${v} min">
+      <div class="cbar ${v===0?'empty':''}" style="height:${Math.max(3, v/topMin*100)}%"></div>
       <div class="cbl">${dt.getDate()}</div></div>`;
   }).join("");
 
@@ -1171,23 +2498,12 @@ function renderStats(){
   const start=new Date(end); start.setDate(end.getDate()-off-7*11);
   for(let i=0;i<84;i++){
     const d=new Date(start); d.setDate(start.getDate()+i);
-    const key=todayKey(d), p=dayPct(key);
-    const lvl = d>end ? "" : p===0?0 : p<.35?1 : p<.7?2 : p<.999?3 : 4;
-    cells.push(`<div class="hcell" data-l="${lvl}" title="${key} · ${Math.round(p*100)}%" style="${d>end?'opacity:.2':''}"></div>`);
+    const key=todayKey(d), n=registroDe(key);
+    const lvl = d>end ? "" : n;
+    cells.push(`<div class="hcell" data-l="${lvl}" title="${key} · ${n} de 4 registrados" style="${d>end?'opacity:.2':''}"></div>`);
   }
   document.getElementById("heat").innerHTML = cells.join("");
 
-  document.getElementById("perHabit").innerHTML = S.habits.length ? S.habits.map(h=>{
-    const s = days.reduce((a,d)=>a+progress(h,S.logs[d]?.values?.[h.id]||0),0);
-    const pct = Math.round(s/30*100);
-    const tot = days.reduce((a,d)=>a+(Number(S.logs[d]?.values?.[h.id])||0),0);
-    return `<div class="hist" style="cursor:default">
-        <div class="hd">${h.emoji} ${esc(h.name)}</div>
-        <div class="hp"><i style="width:${Math.min(100,pct)}%;background:${h.color}"></i></div>
-        <div class="hn">${pct}%</div></div>
-      <div style="font-size:11.5px;color:var(--tx3);margin:-6px 0 8px 0">
-        Total: ${fmt(Math.round(tot*10)/10)} ${esc(h.unit||(h.type==="check"?"días":""))} · racha 🔥 ${streak(h)}</div>`;
-  }).join("") : `<div class="empty">Sin hábitos.</div>`;
 }
 
 /* ============================================================
@@ -1264,21 +2580,7 @@ function renderWake(){
   document.getElementById("wakeNow").onclick = ()=>{ cur=todayKey(); renderAll(); openSleep(false); };
 }
 
-function renderHabits(){
-  const box = document.getElementById("habitList");
-  box.innerHTML = S.habits.length ? S.habits.map((h,i)=>`
-    <div class="hrow">
-      <div class="m" style="border-color:${h.color}55;background:${h.color}18">${h.emoji}</div>
-      <div class="t"><b>${esc(h.name)}</b>
-        <span>${h.type==="check"?"Sí / No":h.type==="workout"?"Entrenamiento con series y kg":"Meta "+fmt(h.goal)+" "+esc(h.unit||"")}</span></div>
-      <button class="mini" data-up="${i}" ${i===0?"disabled style=opacity:.3":""}>↑</button>
-      <button class="mini" data-ed="${h.id}">Editar</button>
-    </div>`).join("") : `<div class="empty">Aún no hay hábitos.</div>`;
-  box.querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>openModal(b.dataset.ed));
-  box.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>{
-    const i=+b.dataset.up; [S.habits[i-1],S.habits[i]]=[S.habits[i],S.habits[i-1]]; save(); renderHabits();
-  });
-}
+/* Las metas que antes venían dentro de un hábito y ahora son de la app. */
 function renderJunk(){
   const j = S.settings.junk;
   document.getElementById("junkPanel").innerHTML = `
@@ -1462,42 +2764,33 @@ function renderSyncPanel(){
     mostrarLogin(true);
   };
 }
-function renderSettings(){ renderSyncPanel(); renderInstall(); renderRem(); renderWake(); renderJunk(); renderHabits(); }
+function renderMetas(){
+  const m = S.settings.metas;
+  document.getElementById("metasPanel").innerHTML = `
+    <div class="sw"><div class="t"><b>🏃 Actividad física</b>
+      <span>Minutos al día que cuentan como meta</span></div>
+      <input class="inp" id="metaActIn" type="number" min="5" max="600" step="5"
+        value="${Number(m.actividadMin)||60}" style="width:96px;text-align:right"></div>
+    <div class="sw"><div class="t"><b>🥗 Alimentación</b>
+      <span>Grupos priorizados al día</span></div>
+      <input class="inp" id="metaFoodIn" type="number" min="1" max="8" step="1"
+        value="${Number(m.gruposComida)||3}" style="width:96px;text-align:right"></div>`;
+
+  document.getElementById("metaActIn").onchange = e=>{
+    m.actividadMin = clamp(Math.round(Number(e.target.value)||60), 5, 600);
+    save(); renderMetas(); renderToday(); toast("Meta de actividad guardada");
+  };
+  document.getElementById("metaFoodIn").onchange = e=>{
+    m.gruposComida = clamp(Math.round(Number(e.target.value)||3), 1, 8);
+    save(); renderMetas(); renderToday(); toast("Meta de alimentación guardada");
+  };
+}
+
+function renderSettings(){ renderSyncPanel(); renderInstall(); renderRem(); renderWake(); renderJunk(); renderMetas(); }
 
 /* ============================================================
    MODAL HÁBITO
    ============================================================ */
-function openModal(id){
-  shutModals();
-  editing = id ? S.habits.find(h=>h.id===id) : null;
-  const h = editing || {name:"",emoji:"🎯",type:"check",goal:1,unit:"",step:1,color:COLORS[S.habits.length%COLORS.length]};
-  document.getElementById("mTitle").textContent = editing? "Editar hábito":"Nuevo hábito";
-  fName.value=h.name; fType.value=h.type; fGoal.value=h.goal; fUnit.value=h.unit||""; fStep.value=h.step||1;
-  document.getElementById("fEmoji").innerHTML = EMOJIS.map(e=>
-    `<button data-e="${e}" class="${e===h.emoji?'on':''}">${e}</button>`).join("");
-  document.getElementById("fColor").innerHTML = COLORS.map(c=>
-    `<button data-c="${c}" class="${c===h.color?'on':''}" style="background:${c}"></button>`).join("");
-  document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{
-    document.querySelectorAll("[data-e]").forEach(x=>x.classList.remove("on")); b.classList.add("on"); });
-  document.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
-    document.querySelectorAll("[data-c]").forEach(x=>x.classList.remove("on")); b.classList.add("on"); });
-  document.getElementById("fDel").classList.toggle("hidden", !editing);
-  typeUI();
-  document.getElementById("modal").classList.add("open");
-}
-function typeUI(){
-  const t = fType.value;
-  if(t==="workout"||t==="food"||t==="activity"){
-    document.getElementById("stepWrap").classList.add("hidden");
-    document.getElementById("goalWrap").classList.toggle("hidden", t==="workout");
-    if(t==="activity") document.getElementById("goalWrap").classList.remove("hidden");
-    return;
-  }
-  document.getElementById("stepWrap").classList.toggle("hidden", t==="check");
-  document.getElementById("goalWrap").classList.toggle("hidden", t==="check");
-}
-function closeModal(){ document.getElementById("modal").classList.remove("open"); }
-
 /* ============================================================
    ENTRENAMIENTO
    ============================================================ */
@@ -1507,18 +2800,6 @@ const wkVolume = w => (w?.ex||[]).reduce((a,e)=> a + exVolume(e), 0);
 const wkSets   = w => (w?.ex||[]).reduce((a,e)=> a + (e.sets||[]).filter(s=>num(s.w)&&num(s.r)).length, 0);
 const wkExN    = w => (w?.ex||[]).filter(e=>exVolume(e)>0).length;
 const kg = n => Math.round(n).toLocaleString("es-CL");
-
-function workoutCardBody(h,l){
-  const w = l.workout, v = wkVolume(w);
-  return `<div class="row">
-      <div class="hval">${v?kg(v):"0"}<small>kg de volumen</small></div>
-      <button class="toggle ${v>0?'on':''}" data-wk="1">${v>0?"✓":"+"}</button>
-    </div>
-    <div class="hgoal" style="margin-top:8px">${v>0
-      ? `${wkExN(w)} ejercicio${wkExN(w)===1?"":"s"} · ${wkSets(w)} serie${wkSets(w)===1?"":"s"}`
-      : "Sin entrenamiento registrado"}</div>
-    <button class="cardbtn" data-wk="1">${v>0?"Editar sesión":"Registrar entrenamiento"}</button>`;
-}
 
 function openWorkout(){
   shutModals();
@@ -1599,8 +2880,6 @@ function saveWorkout(){
   w.note = document.getElementById("wkNote").value;
   w.ex = w.ex.filter(e => e.name.trim() || exVolume(e)>0);
   w.volume = wkVolume(w);
-  const hw = S.habits.find(h=>h.type==="workout");
-  if(hw) l.values[hw.id] = w.volume>0 ? 1 : 0;
   save();
   document.getElementById("wkModal").classList.remove("open");
   renderToday();
@@ -1613,24 +2892,9 @@ function saveWorkout(){
 const acTotal   = l => Object.values(l?.actividad?.items || {}).reduce((a,v)=>a+actMin(v), 0);
 const acTotalKm = l => Object.values(l?.actividad?.items || {}).reduce((a,v)=>a+actKm(v), 0);
 
-function actividadCardBody(h,l){
-  const t = acTotal(l), ks = Object.keys(l.actividad.items||{}).filter(k=>actMin(l.actividad.items[k])>0 || actKm(l.actividad.items[k])>0);
-  return `<div class="row">
-      <div class="hval">${t}<small>/ ${fmt(h.goal)} min</small></div>
-      <button class="toggle ${t>=h.goal?'on':''}" data-ac="1">${t>=h.goal?"✓":"+"}</button>
-    </div>
-    <div class="hgoal" style="margin-top:8px">${ks.length
-      ? ks.map(k=>{ const v = l.actividad.items[k];
-          return `${actNombre(k).e} ${actNombre(k).l} ${actMin(v)}′${actKm(v)?` · ${fmt(actKm(v))} km`:""}`;
-        }).join(" · ")
-      : "Sin actividad registrada"}</div>
-    <button class="cardbtn" data-ac="1">${t ? "Editar actividad" : "Registrar actividad"}</button>`;
-}
-
 function openActividad(){
   shutModals();
-  const h = S.habits.find(x=>x.type==="activity");
-  document.getElementById("acSide").textContent = `Meta: ${fmt(h?.goal||60)} min`;
+  document.getElementById("acSide").textContent = `Meta: ${fmt(metaAct())} min`;
   const box = document.getElementById("acPick");
   if(!box.children.length){
     box.innerHTML = ACTIVIDADES.map(a=>`<button class="tag" data-a="${a.k}">${a.e} ${a.l}</button>`).join("");
@@ -1699,13 +2963,10 @@ function ajustaMin(k, d){
 function totalActividad(){
   const l = dayLog(cur), km = acTotalKm(l);
   document.getElementById("acTotal").textContent = acTotal(l) + " min";
-  const h = S.habits.find(x=>x.type==="activity");
   document.getElementById("acSide").innerHTML =
-    `Meta: ${fmt(h?.goal||60)} min` + (km ? `<br>${fmt(Math.round(km*10)/10)} km recorridos` : "");
+    `Meta: ${fmt(metaAct())} min` + (km ? `<br>${fmt(Math.round(km*10)/10)} km recorridos` : "");
 }
 function syncActividad(){
-  const l = dayLog(cur), h = S.habits.find(x=>x.type==="activity");
-  if(h) l.values[h.id] = acTotal(l);
   totalActividad();
   save();
 }
@@ -1730,17 +2991,6 @@ const RISK = [
   {cls:"rk-warn", bd:"bd-warn", e:"⚠️", t:"Precaución",  c:"#fbbf24"},
   {cls:"rk-bad",  bd:"bd-bad",  e:"🚨", t:"Zona de riesgo", c:"#fb7185"}
 ];
-
-function foodCardBody(h,l){
-  const g = (l.food.groups||[]).length;
-  const d = junkCount(cur), w = junkWeek(cur), lv = riskLevel(d,w), R = RISK[lv];
-  return `<div class="row">
-      <div class="hval">${g}<small>/ ${h.goal} grupos</small></div>
-      <span class="badge ${R.bd}" style="margin-left:auto">${R.e} ${d} chatarra hoy</span>
-    </div>
-    <div class="hgoal" style="margin-top:8px">${g? (l.food.groups.map(k=>FOOD_GROUPS.find(f=>f.k===k)?.e||"").join(" ")) : "Sin alimentos priorizados"} · ${w} en 7 días</div>
-    <button class="cardbtn" data-fd="1">Registrar alimentación</button>`;
-}
 
 function openFood(){
   shutModals();
@@ -1819,11 +3069,7 @@ function drawRisk(){
       <div class="mini-lbl"><span>Últimos 7 días: ${w}</span><span>límite ${j.weekRisk}</span></div>
     </div>`;
 }
-function syncFood(){
-  const l = dayLog(cur), hf = S.habits.find(h=>h.type==="food");
-  if(hf) l.values[hf.id] = l.food.groups.length;
-  save();
-}
+function syncFood(){ save(); }
 
 /* ============================================================
    ALERTA DE PANTALLAS
@@ -1867,7 +3113,8 @@ function aFilas(){
     dias.push({fecha:f, datos, mt: mt||0});
   }
   return {
-    config: {datos:{habits:S.habits, settings:S.settings, theme:S.theme, v:S.v}, mt: S.metaMt||0},
+    config: {datos:{habits:S.habits, settings:S.settings, theme:S.theme,
+                    comps:S.comps||[], salud:S.salud||{}, v:S.v}, mt: S.metaMt||0},
     dias
   };
 }
@@ -1899,16 +3146,15 @@ async function syncNow(manual){
     // --- hábitos y ajustes
     let subirConfig = null;
     const rc = remoto.config;
-    /* La cuenta puede tener guardada una lista de hábitos de una versión
-       anterior. La ponemos al día antes de compararla; si la tocamos, la
-       versión corregida es la que manda y se devuelve a la nube. */
-    if(rc && arreglarHabitos(rc.datos?.habits)){ rc.mt = Date.now(); rc.corregida = true; }
     if(rc && (rc.mt||0) > (S.metaMt||0)){
+      /* Los hábitos ya no se usan, pero siguen viajando intactos por si algún
+         día se quieren recuperar. */
       S.habits = rc.datos.habits || S.habits;
       S.settings = Object.assign({}, S.settings, rc.datos.settings || {});
+      if(Array.isArray(rc.datos.comps)) S.comps = rc.datos.comps;
+      if(rc.datos.salud) S.salud = Object.assign({}, DEF_SALUD, rc.datos.salud);
       if(rc.datos.theme) S.theme = rc.datos.theme;
       S.metaMt = rc.mt; cambio = true;
-      if(rc.corregida) subirConfig = aFilas().config;
     }else if(!rc || (S.metaMt||0) > (rc.mt||0)){
       subirConfig = aFilas().config;
     }
@@ -1983,6 +3229,8 @@ async function trasEntrar(){
     }
     await syncNow(false);
     renderSettings();
+    revisarChat();
+    try{ await cargarObjetivos(); renderObjStrip(); }catch(e){}
   }catch(e){
     syncErr = Nube.traduce(e.message); renderSyncPanel();
   }
@@ -2036,15 +3284,19 @@ $$("lgOlvide").onclick = async ()=>{
    NAVEGACIÓN Y EVENTOS
    ============================================================ */
 function go(v){
-  ["hoy","hist","stats","set"].forEach(x=>
+  ["hoy","plan","salud","chat","hist","stats","set"].forEach(x=>
     document.getElementById("view-"+x).classList.toggle("hidden", x!==v));
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
   document.getElementById("datebar").classList.toggle("hidden", v!=="hoy");
+  document.body.classList.toggle("enchat", v==="chat");
+  if(v==="plan") renderPlan();
+  if(v==="salud") renderSalud();
+  if(v==="chat") abrirChat();
   if(v==="hist") renderHist();
   if(v==="stats") renderStats();
   if(v==="set") renderSettings();
 }
-function renderAll(){ renderToday(); renderMeals(); renderMood(); renderBanner(); }
+function renderAll(){ renderToday(); renderMood(); renderBanner(); }
 
 function renderBanner(){
   const show = notifSupported() && Notification.permission==="default"
@@ -2066,12 +3318,8 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>go(b.datas
 document.getElementById("prevD").onclick=()=>{ cur=shift(cur,-1); renderAll(); };
 document.getElementById("nextD").onclick=()=>{ if(cur<todayKey()){ cur=shift(cur,1); renderAll(); } };
 document.getElementById("todayBtn").onclick=()=>{ cur=todayKey(); renderAll(); };
-document.getElementById("addHabit").onclick=()=>openModal(null);
-document.getElementById("fCancel").onclick=closeModal;
-document.getElementById("modal").onclick=e=>{ if(e.target.id==="modal") closeModal(); };
 document.getElementById("sleepModal").onclick=e=>{ if(e.target.id==="sleepModal"){
   S.settings.wake.lastAsked=todayKey(); save(); e.currentTarget.classList.remove("open"); } };
-fType.onchange = typeUI;
 
 function cerrarActividad(){
   syncActividad();
@@ -2097,36 +3345,6 @@ function closeFood(){
 document.getElementById("fdSave").onclick  = ()=>{ closeFood(); toast("🥗 Alimentación guardada"); };
 document.getElementById("fdClose").onclick = closeFood;
 document.getElementById("fdModal").onclick = e=>{ if(e.target.id==="fdModal") closeFood(); };
-
-document.getElementById("fSave").onclick=()=>{
-  const name = fName.value.trim();
-  if(!name){ toast("Ponle un nombre"); fName.focus(); return; }
-  const type = fType.value;
-  const data = {
-    name,
-    emoji: document.querySelector("[data-e].on")?.dataset.e || "🎯",
-    color: document.querySelector("[data-c].on")?.dataset.c || COLORS[0],
-    type,
-    goal: (type==="check"||type==="workout") ? 1 : Math.max(0.1, Number(fGoal.value)||1),
-    unit: type==="check" ? "" : (type==="workout" ? "" : (type==="food" ? "grupos" : (type==="activity" ? "min" : fUnit.value.trim()))),
-    step: (type==="check"||type==="workout"||type==="food") ? 1 : Math.max(0.1, Number(fStep.value)||1)
-  };
-  if(editing) Object.assign(editing, data);
-  else{
-    let id = slug(name), n=2;
-    while(S.habits.some(h=>h.id===id)) id = slug(name)+"-"+(n++);
-    S.habits.push({id, ...data});
-  }
-  save(); closeModal(); renderSettings(); renderToday(); toast("Guardado");
-};
-document.getElementById("fDel").onclick=()=>{
-  if(!editing) return;
-  if(!confirm(`¿Eliminar "${editing.name}"? Se borrará también su historial.`)) return;
-  const id = editing.id;
-  S.habits = S.habits.filter(h=>h.id!==id);
-  Object.values(S.logs).forEach(l=>{ if(l.values) delete l.values[id]; });
-  save(); closeModal(); renderSettings(); renderToday(); toast("Hábito eliminado");
-};
 
 document.getElementById("expBtn").onclick=()=>{
   const blob = new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
@@ -2164,7 +3382,6 @@ document.getElementById("themeBtn").onclick=()=>{ S.theme = S.theme==="dark"?"li
 
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"){
-    closeModal();
     document.getElementById("sleepModal").classList.remove("open");
     if(document.getElementById("wkModal").classList.contains("open")) saveWorkout();
     if(document.getElementById("fdModal").classList.contains("open")) closeFood();

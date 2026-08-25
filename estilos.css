@@ -323,3 +323,150 @@ label.f span{display:block;font-size:12px;font-weight:700;color:var(--tx2);margi
   font-size:16px;font-weight:800;text-align:center;color:var(--tx)}
 .actrow .grupo:focus-within{border-color:#f97316}
 .actrow .u{font-size:11.5px;color:var(--tx3);font-weight:700}
+
+/* ---------- Competencias ---------- */
+.cdcard{background:linear-gradient(140deg,rgba(251,191,36,.14),transparent 58%),var(--card);
+  border:1px solid #4a3c1c;border-radius:var(--r);padding:18px;box-shadow:var(--glow);position:relative;overflow:hidden}
+:root[data-theme="light"] .cdcard{background:var(--card);border-color:#e6d6a8}
+.cdcard.cd-a{background:linear-gradient(140deg,rgba(251,113,133,.15),transparent 58%),var(--card);border-color:#4d2733}
+.cdcard.cd-hoy{background:linear-gradient(140deg,rgba(34,224,122,.18),transparent 58%),var(--card);border-color:#1e5236}
+.cd-top{display:flex;align-items:center;gap:15px}
+.cd-num{width:78px;flex:none;text-align:center}
+.cd-num b{display:block;font-size:34px;font-weight:800;letter-spacing:-.05em;line-height:1}
+.cd-num span{display:block;font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+.cd-t{min-width:0;flex:1}
+.cd-t b{display:block;font-size:16px;letter-spacing:-.02em}
+.cd-t span{display:block;font-size:12.5px;color:var(--tx2);margin-top:2px}
+.cd-fase{display:inline-block;margin-top:9px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;
+  background:var(--card2);border:1px solid var(--line);color:var(--tx2)}
+.prio{font-size:10.5px;font-weight:800;width:20px;height:20px;flex:none;border-radius:6px;display:grid;place-items:center}
+.pr-A{background:#fb71852b;color:#fb7185}
+.pr-B{background:#fbbf242b;color:#fbbf24}
+.pr-C{background:#38bdf82b;color:#38bdf8}
+.crow{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.crow:last-child{border-bottom:none}
+.crow .cn{flex:1;min-width:0}
+.crow .cn b{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.02em}
+.crow .cn span{display:block;font-size:12px;color:var(--tx3)}
+.crow .cd{font-size:12.5px;font-weight:800;white-space:nowrap;color:var(--tx2)}
+.crow.pasada{opacity:.5}
+
+/* ---------- Carga de entrenamiento ---------- */
+.gauge{display:flex;align-items:center;gap:15px}
+.gauge .lv{width:66px;height:66px;border-radius:20px;flex:none;display:grid;place-items:center;
+  font-size:20px;font-weight:800;letter-spacing:-.04em;border:1px solid}
+.gauge .t b{display:block;font-size:15px;letter-spacing:-.02em}
+.gauge .t span{display:block;font-size:12.5px;color:var(--tx2);margin-top:2px}
+/* La barra cubre de 0 a 2.0, así que los cortes 0.8 / 1.3 / 1.5 caen
+   en el 40 %, el 65 % y el 75 %. */
+.zonas{position:relative;height:9px;border-radius:5px;margin-top:16px;
+  background:linear-gradient(90deg,#38bdf8 0%,#38bdf8 40%,#22e07a 40%,#22e07a 65%,#fbbf24 65%,#fbbf24 75%,#fb7185 75%)}
+.zonas i{position:absolute;top:-4px;width:3px;height:17px;border-radius:2px;background:var(--tx);
+  box-shadow:0 0 0 2px var(--card);transform:translateX(-50%);transition:left .3s}
+.zlbl{position:relative;height:14px;margin-top:7px}
+.zlbl span{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--tx3);font-weight:700}
+.wbars{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:8px}
+.wb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%}
+.wb i{width:100%;background:linear-gradient(180deg,#22e07a,#22e07a55);border-radius:6px 6px 3px 3px;min-height:3px;display:block}
+.wb.sobre i{background:linear-gradient(180deg,#fb7185,#fb718555)}
+.wb.actual i{background:linear-gradient(180deg,#38bdf8,#38bdf855)}
+.wb span{font-size:9.5px;color:var(--tx3);white-space:nowrap}
+.metafila{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.metafila span{font-size:12.5px;color:var(--tx2);font-weight:700;flex:1}
+.metafila input{width:110px;padding:9px 11px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card2);outline:none;font-size:14px;text-align:right}
+.metafila input:focus{border-color:var(--accent)}
+
+/* En Plan las etiquetas son más largas que en el check-in de sueño: que
+   respiren en vez de cortarse. */
+.sl-meta.libre div{min-width:96px}
+.sl-meta.libre b{font-size:14px;line-height:1.25}
+.sl-meta.libre span{white-space:normal;line-height:1.3;font-size:9.5px;letter-spacing:.03em}
+
+/* ---------- Salud ---------- */
+.fcrow{padding:11px 0;border-bottom:1px solid var(--line)}
+.fcrow:last-of-type{border-bottom:none}
+.fcrow span{display:block;font-size:11px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--tx3);margin-bottom:3px}
+.fcrow b{display:block;font-size:14px;font-weight:600;line-height:1.45;white-space:pre-wrap}
+.wb.peso i{background:linear-gradient(180deg,#2dd4bf,#2dd4bf55)}
+
+/* Con seis pestañas el espacio es justo: las etiquetas se aprietan un poco
+   en pantallas estrechas antes que cortarse. */
+nav.tabs button{min-width:0;padding-left:2px;padding-right:2px}
+@media(max-width:400px){
+  nav.tabs button{font-size:9.5px;letter-spacing:-.01em}
+  nav.tabs button i{font-size:18px}
+}
+
+/* ---------- Ficha de salud ---------- */
+.fcgrupo{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--accent);margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--line)}
+.fcgrupo:first-child{margin-top:0;padding-top:0;border-top:none}
+.fcnota{font-size:12px;color:var(--tx3);line-height:1.5;margin:0 0 12px}
+.fcprog{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.flags{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.flag{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:600;line-height:1.4;
+  border-radius:13px;padding:11px 13px;border:1px solid}
+.flag span{font-size:15px;line-height:1.2}
+.flag.alta{background:#fb718514;border-color:#fb718555;color:#fda4af}
+.flag.media{background:#fbbf2412;border-color:#fbbf2455;color:#fcd34d}
+.flag.info{background:#38bdf812;border-color:#38bdf855;color:#7dd3fc}
+
+/* ---------- Mensajes ---------- */
+.volver{display:inline-block;font-size:13px;font-weight:700;color:var(--tx2);
+  padding:9px 0;background:none;border:none}
+.chatwrap{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+/* Altura fija: si el log creciera, la página entera scrollearía y el último
+   mensaje quedaría bajo la barra de escritura. Aquí solo scrollea el log. */
+.chatlog{display:flex;flex-direction:column;gap:8px;overflow-y:auto;
+  height:calc(100vh - 252px);height:calc(100dvh - 252px);min-height:240px;
+  padding:4px 2px 8px}
+.chatdia{align-self:center;font-size:10.5px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--tx3);background:var(--card2);border:1px solid var(--line);
+  border-radius:99px;padding:4px 12px;margin:10px 0 4px}
+.burb{max-width:78%;align-self:flex-start;background:var(--card);border:1px solid var(--line);
+  border-radius:16px 16px 16px 5px;padding:10px 13px;box-shadow:var(--glow)}
+.burb.mia{align-self:flex-end;border-radius:16px 16px 5px 16px;
+  background:color-mix(in srgb,var(--accent) 16%,var(--card));border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+.burb .tx{font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.burb .hr{font-size:10px;color:var(--tx3);text-align:right;margin-top:4px;font-weight:700}
+.chatbar{display:flex;align-items:flex-end;gap:9px;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;padding:8px 8px 8px 14px;box-shadow:var(--glow)}
+.chatbar textarea{flex:1;background:none;border:none;outline:none;resize:none;font-size:15px;
+  line-height:1.4;padding:9px 0;max-height:120px;color:var(--tx)}
+.chatbar button{width:42px;height:42px;flex:none;border-radius:14px;background:var(--accent);
+  color:#05070a;font-size:17px;font-weight:800;display:grid;place-items:center}
+.chatbar button:disabled{opacity:.5}
+
+/* Con tres botones en la cabecera el nombre ya no cabe en pantallas
+   estrechas. El logotipo ya dice "Fractale", así que sobra repetirlo. */
+@media(max-width:430px){ .brand .wm{display:none} }
+.sinleer{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;
+  border-radius:99px;background:var(--accent);color:#05070a;font-size:11px;font-weight:800;
+  vertical-align:1px;margin-left:5px}
+
+/* En la vista de mensajes la barra de escritura ya reserva su sitio: el hueco
+   que deja la barra de pestañas sobra y empujaba el último mensaje fuera. */
+body.enchat{padding-bottom:74px;overflow:hidden}
+
+/* ---------- Objetivos ---------- */
+.objrow{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.objrow:last-child{border-bottom:none}
+.objtick{width:34px;height:34px;flex:none;border-radius:11px;border:1px solid var(--line);
+  background:var(--card2);display:grid;place-items:center;font-size:16px;font-weight:800;
+  color:var(--tx3);transition:.15s}
+.objtick.on{background:var(--a);border-color:var(--a);color:#05070a}
+.objtick:active{transform:scale(.9)}
+.objtx{flex:1;min-width:0}
+.objtx b{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.02em;line-height:1.3}
+.objtx span{display:block;font-size:11.5px;color:var(--tx3);margin-top:2px}
+.objtx .det{color:var(--tx2);font-size:12px;margin-top:4px;line-height:1.4}
+.objrow.listo .objtx b{color:var(--tx2)}
+.objdots{display:flex;gap:3px;margin-top:7px}
+.objdots i{width:14px;height:4px;border-radius:3px;background:var(--line);display:block}
+.objdots i.f{background:var(--a)}
+.objn{font-size:12.5px;font-weight:800;color:var(--tx3);white-space:nowrap;padding-top:8px}
+.objrow.listo .objn{color:var(--a)}
+.objedit{width:30px;flex:none;color:var(--tx3);font-size:14px;padding-top:8px}
+.objmas{font-size:12.5px;font-weight:700;color:var(--accent);padding:11px 0 4px;cursor:pointer}

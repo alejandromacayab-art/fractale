@@ -103,6 +103,46 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
   </div>
 </div>
 
+<!-- asignar objetivo -->
+<div class="modal" id="objModal">
+  <div class="sheet">
+    <h3 id="obTitle">Asignar objetivo</h3>
+    <p class="sub">Algo concreto y contable. «Subir 3 historias por semana» sirve; «tener más presencia» no.</p>
+
+    <label class="f"><span>Objetivo</span>
+      <input class="inp" id="obTitulo" placeholder="Ej: Subir historias entrenando"></label>
+
+    <label class="f"><span>Categoría</span>
+      <div class="tags" id="obCat">
+        <button class="tag" data-cat="redes">📱 Redes</button>
+        <button class="tag" data-cat="rendimiento">🏋️ Rendimiento</button>
+        <button class="tag" data-cat="equipo">🤝 Equipo</button>
+        <button class="tag" data-cat="otro">⭐️ Otro</button>
+      </div></label>
+
+    <label class="f"><span>Cada cuánto</span>
+      <div class="tags" id="obCad">
+        <button class="tag" data-cad="semanal">Por semana</button>
+        <button class="tag" data-cad="mensual">Por mes</button>
+        <button class="tag" data-cad="unica">Una sola vez</button>
+      </div></label>
+
+    <label class="f" id="obMetaWrap"><span>¿Cuántas veces?</span>
+      <input class="inp" id="obMeta" type="number" min="1" max="99" step="1" value="3"></label>
+
+    <label class="f"><span>Fecha límite <span style="font-weight:400;color:var(--tx3)">· opcional</span></span>
+      <input class="inp" id="obVence" type="date"></label>
+
+    <label class="f"><span>Detalle</span>
+      <textarea class="inp" id="obDetalle" rows="2" placeholder="Qué se espera exactamente: etiquetas, formato, plazo…" style="resize:vertical"></textarea></label>
+
+    <button class="btn" id="obSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="obCancel">Cancelar</button>
+    <button class="btn ghost hidden" style="margin-top:8px" id="obArch">Archivar objetivo</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="obDel">Eliminar objetivo</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="config.js"></script>

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fractale",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/Users/alejandromacaya/Desktop/FRACTALE/.claude/servidor.js"],
+      "port": 4173
+    }
+  ]
+}

@@ -43,11 +43,15 @@ pone `TU-DIRECCION-AQUI`.
 3. Si quieres registro abierto a cualquiera, ejecuta también
    `base-de-datos/registro-abierto.sql` (si no, hace falta invitación)
 4. Para el panel en vivo, ejecuta el bloque 8 de `esquema.sql`
-5. **Authentication → Sign In / Providers**: Email activado, **Confirm email
+5. Para el apartado médico y nutricional, ejecuta `base-de-datos/salud.sql`
+   (crea la tabla de documentos y el almacén privado de archivos)
+6. Para la bandeja de mensajes, ejecuta `base-de-datos/chat.sql`
+7. Para el checklist de objetivos, ejecuta `base-de-datos/objetivos.sql`
+8. **Authentication → Sign In / Providers**: Email activado, **Confirm email
    desactivado**, contraseña mínima 8
-6. **Authentication → URL Configuration**: pon tu dirección como *Site URL* y
+9. **Authentication → URL Configuration**: pon tu dirección como *Site URL* y
    añádela a *Redirect URLs* terminada en `/**`
-7. **Project Settings → API**: copia *Project URL* y la clave *anon/publishable*
+10. **Project Settings → API**: copia *Project URL* y la clave *anon/publishable*
    a `config.js`
 
 **La primera cuenta que se registre queda como entrenador.** Regístrate tú primero.

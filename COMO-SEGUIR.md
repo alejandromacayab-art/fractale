@@ -24,12 +24,33 @@ actualiza sola: no hay que pedirle a nadie que reinstale.
 Al tocar `index.html`, sube `APP_VERSION`; al tocar cualquier archivo cacheado,
 sube también el número de `CACHE` en `sw.js`. Así el service worker se renueva.
 
+## Ver la app sin publicar
+
+```bash
+node .claude/servidor.js
+```
+
+Abre <http://localhost:4173>. Ese servidor sirve un `config.js` vacío, así que
+la app arranca sin cuenta y guarda solo en el navegador: sirve para probar
+cambios de pantalla sin tocar la base de datos ni el `config.js` de verdad.
+
 ## Estado
 
 Funcionando: base de datos con permisos por fila, registro abierto a cualquiera,
-panel en vivo, cuentas con correo y contraseña sin confirmación por correo.
+panel en vivo, cuentas con correo y contraseña sin confirmación por correo,
+calendario de competencias con cuenta regresiva y carga semanal de tonelaje
+(pestaña **Plan**), y apartado de salud con composición corporal, ficha médica
+y nutricional y documentos (pestaña **Salud**), registro diario de
+entrenamiento, actividad y alimentación en **Hoy**, y bandeja de mensajes entre cada
+deportista y su entrenador (botón 💬 de la cabecera) y checklist de objetivos
+que el equipo asigna (pestaña **Plan**, con recordatorio en **Hoy**). Todo se
+refleja en la ficha del panel del entrenador.
 
 Pendiente:
+- **Ejecutar en Supabase → SQL Editor**, en cualquier orden:
+  `base-de-datos/salud.sql` (documentos), `base-de-datos/chat.sql` (mensajes) y
+  `base-de-datos/objetivos.sql` (checklist). Sin ellos el resto funciona igual,
+  y tanto la app como el panel avisan con el mensaje exacto de qué falta.
 - Registrar la primera cuenta (queda como entrenador)
 - *Redirect URLs* en Supabase → Authentication → URL Configuration
   (`https://alejandromacayab-art.github.io/fractale/**`). Solo hace falta para
@@ -41,6 +62,23 @@ Pendiente:
 - La clave de `config.js` es **pública por diseño**. Lo que protege los datos son
   los permisos por fila del esquema, no esconderla.
 - La clave `service_role` de Supabase **no debe entrar nunca** en este repositorio.
-- Al cambiar los hábitos por defecto, sube `S.v` y añade el cambio a
-  `CAMBIOS_HABITOS` en `index.html`, o los registros existentes se rompen.
+- Los hábitos genéricos se retiraron. Lo que se registra a diario ahora son
+  tres cosas propias —entrenamiento, actividad física y alimentación— más el
+  check-in de sueño, y sus metas viven en `S.settings.metas`. Los hábitos
+  antiguos siguen guardados en `S.habits` y viajan intactos a la nube, sin que
+  la app los lea: si algún día se quieren recuperar, están.
+- Las competencias viven en `S.comps` y la ficha de salud en `S.salud`; ambas
+  viajan dentro de `config.datos`, igual que los hábitos. Las mediciones de peso
+  van en el día (`logs[fecha].cuerpo`). Nada de eso necesita tabla nueva.
+- Los mensajes son una conversación por deportista: `mensajes.atleta_id` la
+  identifica, escriba quien escriba. Las políticas no permiten `UPDATE`, así que
+  un mensaje enviado no se edita; la marca de lectura vive aparte, en `lecturas`,
+  para que nadie pueda tocar la del otro.
+- En los objetivos manda quien los escribió: `obj_editar` y `obj_borrar` piden
+  `autor_id = auth.uid()`, así que el deportista no puede rebajarse una meta que
+  le puso el equipo. Marcar va en `objetivo_hechos`, una fila por cumplimiento,
+  para que tildar no dé permiso a reescribir la meta.
+- Los documentos sí: tabla `documentos` y bucket privado `documentos`, ambos en
+  `base-de-datos/salud.sql`. El entrenador los lee, no los edita, y cada
+  apertura usa un enlace firmado que caduca a los 5 minutos.
 - La plantilla limpia de la que salió esto está en `/Users/alejandromacaya/plantilla-app`.

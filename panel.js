@@ -38,6 +38,373 @@ function estadoActividad(dias){
   return {t:`hace ${dias} días`, c:"#fb7185"};
 }
 function colorChatarra(n){ return n >= 5 ? "#fb7185" : n >= 3 ? "#fbbf24" : "#22e07a"; }
+
+/* ---------------- salud ---------------- */
+const TIPOS_DOC = {medico:{e:"🩺", l:"Médico"}, nutricional:{e:"🥗", l:"Nutricional"}, otro:{e:"📄", l:"Otro"}};
+/* Los mismos grupos y el mismo orden que la app: entrenador y deportista leen
+   la ficha igual. Si cambia allá, cambia aquí. */
+const FICHA_MED = [
+  {g:"Identificación y contacto", c:[
+    ["nacimiento","Fecha de nacimiento","date"], ["grupo","Grupo sanguíneo"],
+    ["estatura","Estatura","cm"], ["prevision","Previsión o seguro"],
+    ["contacto","Contacto de emergencia"], ["contacto2","Segundo contacto"],
+    ["tratante","Médico o kinesiólogo tratante"]
+  ]},
+  {g:"Alergias", c:[
+    ["alergiaMed","A medicamentos","!"], ["alergiaAlim","Alimentarias","!"], ["alergias","Otras alergias"]
+  ]},
+  {g:"Antecedentes médicos", c:[
+    ["condiciones","Condiciones diagnosticadas"], ["cirugias","Cirugías y hospitalizaciones"],
+    ["conmociones","Golpes en la cabeza o conmociones"], ["respiratorio","Problemas respiratorios con el ejercicio"]
+  ]},
+  {g:"Tamizaje cardiovascular", c:[
+    ["cvDolor","Dolor u opresión en el pecho al esforzarse","sn"],
+    ["cvDesmayo","Desmayos o mareos con el ejercicio","sn"],
+    ["cvAhogo","Falta de aire o fatiga antes que sus pares","sn"],
+    ["cvSoplo","Soplo o presión alta detectados","sn"],
+    ["cvFamiliar","Muerte súbita familiar antes de los 50","sn"]
+  ]},
+  {g:"Medicación y sustancias", c:[
+    ["medicacion","Medicación habitual"], ["medicacionOcas","Medicación ocasional"],
+    ["tue","Autorización de uso terapéutico"], ["habitos","Tabaco y alcohol"]
+  ]},
+  {g:"Lesiones", c:[
+    ["lesiones","Lesiones previas"], ["lesionActual","Molestia o lesión activa","!"],
+    ["limitaciones","Movimientos o cargas a evitar","!"]
+  ]},
+  {g:"Controles y certificados", c:[
+    ["ultimoControl","Último control médico deportivo","date"], ["ecg","Electrocardiograma"],
+    ["sangre","Último examen de sangre"], ["certificaVence","Vence el certificado de aptitud","date"],
+    ["vacunas","Vacunas relevantes"]
+  ]}
+];
+const FICHA_NUT = [
+  {g:"Alimentación", c:[
+    ["restricciones","Restricciones e intolerancias","!"], ["suplementos","Suplementos"],
+    ["objetivoNutri","Objetivo nutricional"], ["notasNutri","Indicaciones del nutricionista"]
+  ]}
+];
+const SN = {si:"Sí", no:"No", nose:"No lo sé"};
+const lleno = v => String(v ?? "").trim() !== "";
+const fechaLargaP = f => {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(f))) return f;
+  const [y,m,d] = f.split("-").map(Number);
+  return `${d} ${MESES[m-1]} ${y}`;
+};
+function edadP(f){
+  const [y,m,d] = f.split("-").map(Number), h = new Date();
+  let a = h.getFullYear() - y, dm = (h.getMonth()+1) - m;
+  if(dm < 0 || (dm === 0 && h.getDate() < d)) a--;
+  return a;
+}
+function valorFichaP(v, tipo, k){
+  if(tipo === "sn")   return SN[v] || v;
+  if(tipo === "date") return k === "nacimiento"
+    ? `${fechaLargaP(v)} · ${edadP(v)} años` : fechaLargaP(v);
+  if(tipo === "cm")   return v + " cm";
+  return v;
+}
+/* Lo que el entrenador tiene que ver sin abrir la ficha. */
+function banderasP(salud){
+  const f = salud || {}, out = [];
+  FICHA_MED.flatMap(s=>s.c).filter(([k,,t]) => t === "sn" && f[k] === "si")
+    .forEach(([,l]) => out.push({t:"alta", txt:l}));
+  if(lleno(f.alergiaMed))   out.push({t:"alta",  txt:"Alergia a medicamentos: " + f.alergiaMed});
+  if(lleno(f.alergiaAlim))  out.push({t:"media", txt:"Alergia alimentaria: " + f.alergiaAlim});
+  if(lleno(f.lesionActual)) out.push({t:"media", txt:"Lesión activa: " + f.lesionActual});
+  if(lleno(f.limitaciones)) out.push({t:"media", txt:"Evitar: " + f.limitaciones});
+  if(lleno(f.contacto))     out.push({t:"info",  txt:"Emergencia: " + f.contacto});
+  if(lleno(f.certificaVence)){
+    const n = faltan(f.certificaVence);
+    if(n < 0)        out.push({t:"alta",  txt:`Certificado de aptitud vencido hace ${-n} días`});
+    else if(n <= 30) out.push({t:"media", txt:`El certificado de aptitud vence en ${n} días`});
+  }
+  return out;
+}
+const un1 = n => Math.round(Number(n)*10)/10;
+const pesoArchivo = b => !b ? "" : b >= 1048576 ? (b/1048576).toFixed(1)+" MB" : Math.max(1, Math.round(b/1024))+" KB";
+/* La medición más reciente y la más cercana a 30 días atrás, para el delta. */
+function medicionesDe(dias){
+  const ms = dias.filter(r=>Number(r.datos?.cuerpo?.peso) > 0)
+                 .map(r=>({fecha:r.fecha, ...r.datos.cuerpo}))
+                 .sort((a,b)=> b.fecha.localeCompare(a.fecha));
+  const limite = hoyKey(new Date(Date.now() - 30*86400000));
+  return {ultima: ms[0] || null, antes: ms.find(m=>m.fecha <= limite) || null, todas: ms};
+}
+function deltaTxt(actual, antes, mejorSube){
+  if(!antes || !Number(antes)) return {t:"—", c:"#6f7887"};
+  const d = un1(actual - antes);
+  if(d === 0) return {t:"sin cambio", c:"#6f7887"};
+  const bueno = mejorSube === null ? null : (mejorSube ? d > 0 : d < 0);
+  return {t:`${d>0?"▲":"▼"} ${Math.abs(d)}`,
+          c: bueno === null ? "#a7b2c2" : bueno ? "#22e07a" : "#fb7185"};
+}
+function fichaHTML(salud, secs){
+  const cuerpo = secs.map(sec=>{
+    const llenos = sec.c.filter(([k]) => lleno(salud?.[k]));
+    if(!llenos.length) return "";
+    return `<div class="fcgrupo">${sec.g}</div>` + llenos.map(([k,l,t])=>{
+      const rojo = t === "sn" ? salud[k] === "si" : t === "!";
+      return `<div class="fcrow"><span>${l}</span>
+        <b${rojo ? ' style="color:#fb7185"' : ""}>${esc(valorFichaP(salud[k], t, k))}</b></div>`;
+    }).join("");
+  }).join("");
+  return cuerpo ? `<div class="panel">${cuerpo}</div>` : "";
+}
+function banderasHTML(salud){
+  const bs = banderasP(salud);
+  if(!bs.length) return "";
+  return `<div class="flags">${bs.map(b=>
+    `<div class="flag ${b.t}"><span>${b.t === "alta" ? "🚨" : b.t === "media" ? "⚠️" : "📞"}</span>${esc(b.txt)}</div>`
+  ).join("")}</div>`;
+}
+
+/* ---------------- objetivos ----------------
+   El entrenador asigna y edita lo que él escribió; marcar es cosa del
+   deportista, así que aquí no hay botón para tildar. */
+const CAT_OBJ = {
+  redes:       {e:"📱", l:"Redes",       c:"#e879f9"},
+  rendimiento: {e:"🏋️", l:"Rendimiento", c:"#22e07a"},
+  equipo:      {e:"🤝", l:"Equipo",      c:"#38bdf8"},
+  otro:        {e:"⭐️", l:"Otro",        c:"#fbbf24"}
+};
+const CADENCIAS = {semanal:"por semana", mensual:"por mes", unica:"una vez"};
+
+function lunesDeP(d = new Date()){
+  const x = new Date(d);
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return hoyKey(x);
+}
+function inicioMesP(){
+  const d = new Date();
+  return hoyKey(new Date(d.getFullYear(), d.getMonth(), 1));
+}
+function avanceP(o, hechos){
+  const desde = o.cadencia === "semanal" ? lunesDeP()
+              : o.cadencia === "mensual" ? inicioMesP() : null;
+  const n = hechos.filter(h => h.objetivo_id === o.id && (!desde || h.fecha >= desde)).length;
+  const meta = o.cadencia === "unica" ? 1 : Math.max(1, o.meta || 1);
+  return {n, meta, listo: n >= meta};
+}
+function objetivosHTML(objs, hechos){
+  if(!objs.length) return `<div class="panel"><div class="empty">
+    Sin objetivos asignados. Ponle el primero.</div></div>`;
+  return `<div class="panel">${objs.map(o=>{
+    const a = avanceP(o, hechos), cat = CAT_OBJ[o.categoria] || CAT_OBJ.otro;
+    const mio = o.autor_id === perfil?.id;
+    const vencido = o.vence && faltan(o.vence) < 0 && !a.listo;
+    const periodo = o.cadencia === "unica"
+      ? (o.vence ? "para el " + fechaLargaP(o.vence) : "sin plazo")
+      : `${o.meta} ${CADENCIAS[o.cadencia]}`;
+    return `<div class="objrow ${a.listo ? "listo" : ""}" style="--a:${cat.c}">
+      <div class="objtick ${a.listo ? "on" : ""}">${a.listo ? "✓" : "·"}</div>
+      <div class="objtx"><b>${esc(o.titulo)}</b>
+        <span>${cat.e} ${cat.l} · ${periodo}${
+          vencido ? ' · <em style="color:#fb7185;font-style:normal;font-weight:800">vencido</em>' : ""}${
+          mio ? "" : " · se lo puso él"}</span>
+        ${o.detalle ? `<span class="det">${esc(o.detalle)}</span>` : ""}
+        ${o.cadencia === "unica" ? "" : `<div class="objdots">${
+          Array.from({length: Math.min(a.meta, 12)}, (_,i)=>
+            `<i class="${i < a.n ? "f" : ""}"></i>`).join("")}</div>`}
+      </div>
+      <div class="objn">${a.n}/${a.meta}</div>
+      ${mio ? `<button class="objedit" data-obj="${o.id}" title="Editar">✎</button>` : ""}
+    </div>`;
+  }).join("")}</div>`;
+}
+
+/* Modal de objetivo. Lo comparte con la app, salvo que aquí siempre se
+   asigna a otra persona. */
+let objEditando = null, objAtleta = null;
+
+function ajustaMeta(){
+  const cad = document.querySelector("#obCad [data-cad].on")?.dataset.cad || "semanal";
+  $("obMetaWrap").classList.toggle("hidden", cad === "unica");
+}
+function openObjetivo(o, atletaId){
+  objEditando = o || null;
+  objAtleta = atletaId;
+  $("obTitle").textContent = o ? "Editar objetivo" : "Asignar objetivo";
+  $("obTitulo").value  = o?.titulo || "";
+  $("obDetalle").value = o?.detalle || "";
+  $("obVence").value   = o?.vence || "";
+  $("obMeta").value    = o?.meta || 3;
+  const cat = o?.categoria || "redes", cad = o?.cadencia || "semanal";
+  document.querySelectorAll("#obCat [data-cat]").forEach(b=> b.classList.toggle("on", b.dataset.cat === cat));
+  document.querySelectorAll("#obCad [data-cad]").forEach(b=> b.classList.toggle("on", b.dataset.cad === cad));
+  ajustaMeta();
+  $("obDel").classList.toggle("hidden", !o);
+  $("obArch").classList.toggle("hidden", !o);
+  $("objModal").classList.add("open");
+}
+document.querySelectorAll("#obCat [data-cat]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#obCat [data-cat]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
+document.querySelectorAll("#obCad [data-cad]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#obCad [data-cad]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); ajustaMeta();
+});
+$("obCancel").onclick = ()=> $("objModal").classList.remove("open");
+
+$("obSave").onclick = async ()=>{
+  const titulo = $("obTitulo").value.trim();
+  if(!titulo){ toast("Escribe el objetivo"); return; }
+  const cad = document.querySelector("#obCad [data-cad].on")?.dataset.cad || "semanal";
+  const meta = cad === "unica" ? 1
+    : Math.max(1, Math.min(99, Math.round(Number($("obMeta").value) || 1)));
+  $("obSave").disabled = true; $("obSave").textContent = "Guardando…";
+  try{
+    await Nube.guardarObjetivo({
+      ...(objEditando ? {id: objEditando.id} : {atleta_id: objAtleta}),
+      titulo, meta, cadencia: cad,
+      categoria: document.querySelector("#obCat [data-cat].on")?.dataset.cat || "otro",
+      detalle: $("obDetalle").value.trim() || null,
+      vence:   $("obVence").value || null
+    });
+    $("objModal").classList.remove("open");
+    toast(objEditando ? "Objetivo actualizado" : "Objetivo asignado");
+    verAtleta(objAtleta);
+  }catch(e){ toast(Nube.traduce(e.message)); }
+  finally{ $("obSave").disabled = false; $("obSave").textContent = "Guardar"; }
+};
+$("obArch").onclick = async ()=>{
+  if(!objEditando) return;
+  try{
+    await Nube.guardarObjetivo({id: objEditando.id, archivado: true});
+    $("objModal").classList.remove("open");
+    toast("Objetivo archivado");
+    verAtleta(objAtleta);
+  }catch(e){ toast(Nube.traduce(e.message)); }
+};
+$("obDel").onclick = async ()=>{
+  if(!objEditando) return;
+  if(!confirm(`¿Eliminar "${objEditando.titulo}"? Se borra también su historial de cumplimiento.`)) return;
+  try{
+    await Nube.borrarObjetivo(objEditando.id);
+    $("objModal").classList.remove("open");
+    toast("Objetivo eliminado");
+    verAtleta(objAtleta);
+  }catch(e){ toast(Nube.traduce(e.message)); }
+};
+
+/* ---------------- mensajes ----------------
+   El entrenador entra en la conversación del deportista, no al revés: la
+   conversación se identifica siempre con el id del atleta. */
+let chatMsgs = [], chatCanal = null, chatConv = null;
+
+function horaCorta(iso){
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+function separadorDiaP(iso){
+  const k = hoyKey(new Date(iso)), hoy = hoyKey();
+  if(k === hoy) return "Hoy";
+  if(k === hoyKey(new Date(Date.now()-86400000))) return "Ayer";
+  return fechaLargaP(k);
+}
+
+function pintaChat(){
+  const log = $("chatLog");
+  if(!log) return;
+  if(!chatMsgs.length){
+    log.innerHTML = `<div class="empty">Sin mensajes todavía. Escríbele tú primero.</div>`;
+    return;
+  }
+  let ultimo = "";
+  log.innerHTML = chatMsgs.map(m=>{
+    const dia = separadorDiaP(m.creado);
+    const sep = dia !== ultimo ? `<div class="chatdia">${dia}</div>` : "";
+    ultimo = dia;
+    /* "Mío" aquí es el entrenador: su burbuja va a la derecha. */
+    const mio = m.autor_id === perfil?.id;
+    return `${sep}<div class="burb ${mio ? "mia" : ""}">
+      <div class="tx">${esc(m.texto)}</div>
+      <div class="hr">${horaCorta(m.creado)}</div></div>`;
+  }).join("");
+  log.scrollTop = log.scrollHeight;
+}
+
+async function montarChat(atletaId){
+  chatConv = atletaId;
+  cerrarChat();
+  try{
+    chatMsgs = await Nube.mensajes(atletaId);
+  }catch(e){
+    $("chatLog").innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    $("chatBar")?.classList.add("hidden");
+    return;
+  }
+  pintaChat();
+  Nube.marcarLeido(atletaId).catch(()=>{});
+
+  chatCanal = Nube.escucharChat(atletaId, m=>{
+    if(chatMsgs.some(x => x.id === m.id)) return;
+    chatMsgs.push(m);
+    pintaChat();
+    if(m.autor_id !== perfil?.id) Nube.marcarLeido(atletaId).catch(()=>{});
+  });
+
+  const enviar = async ()=>{
+    const ta = $("chatTexto"), t = ta.value.trim();
+    if(!t) return;
+    $("chatSend").disabled = true;
+    try{
+      const m = await Nube.enviar(atletaId, t);
+      if(m){ chatMsgs.push(m); pintaChat(); }
+      ta.value = ""; ta.style.height = "auto";
+    }catch(e){ toast(Nube.traduce(e.message)); }
+    finally{ $("chatSend").disabled = false; ta.focus(); }
+  };
+  $("chatSend").onclick = enviar;
+  $("chatTexto").oninput = e=>{
+    e.target.style.height = "auto";
+    e.target.style.height = Math.min(120, Math.max(40, e.target.scrollHeight)) + "px";
+  };
+  $("chatTexto").onkeydown = e=>{
+    if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); enviar(); }
+  };
+}
+
+/* Al salir de la ficha hay que soltar el canal o quedan varios escuchando. */
+function cerrarChat(){
+  if(chatCanal){ Nube.dejarDeEscuchar(chatCanal); chatCanal = null; }
+}
+
+/* ---------------- competencias y carga ----------------
+   Las mismas reglas que usa la app del deportista, para que entrenador y
+   atleta lean exactamente el mismo número. */
+const PRIOS = {A:{e:"🔴", l:"Objetivo principal"}, B:{e:"🟡", l:"Preparatoria"}, C:{e:"🔵", l:"Test"}};
+const FASES = [
+  {d:57, l:"Base"}, {d:29, l:"Construcción"}, {d:8, l:"Específico"},
+  {d:1,  l:"Puesta a punto"}, {d:0, l:"Día de competencia"}
+];
+const faseDe = n => (FASES.find(f=>n>=f.d) || FASES[FASES.length-1]).l;
+const faltan = f => Math.round((new Date(f+"T00:00:00") - new Date(hoyKey()+"T00:00:00")) / 86400000);
+function proximaComp(cfg){
+  const cs = (cfg?.comps || []).filter(c=>c && c.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  return cs.find(c => faltan(c.fecha) >= 0) || null;
+}
+const ZONAS = [
+  {max:0.80, c:"#38bdf8", t:"Carga baja"},
+  {max:1.30, c:"#22e07a", t:"Zona óptima"},
+  {max:1.50, c:"#fbbf24", t:"Carga alta"},
+  {max:99,   c:"#fb7185", t:"Riesgo de lesión"}
+];
+const zonaDe = r => ZONAS.find(z => r < z.max) || ZONAS[ZONAS.length-1];
+/* Aguda = últimos 7 días. Crónica = media semanal de los últimos 28. */
+function razonCarga(dias, vol){
+  const suma = n => {
+    let t = 0;
+    for(let i=0;i<n;i++){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      t += vol(dias.find(x=>x.fecha === hoyKey(d))?.datos);
+    }
+    return t;
+  };
+  const ag = suma(7), cr = suma(28)/4;
+  return {ag, cr, r: cr > 0 ? ag/cr : 0};
+}
 function colorSueno(n){ return !n ? "#6f7887" : n >= 70 ? "#22e07a" : n >= 50 ? "#fbbf24" : "#fb7185"; }
 
 /* ============================================================
@@ -49,6 +416,13 @@ async function verLista(){
   try{
     atletas = await Nube.misAtletas();
   }catch(e){ $("main").innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`; return; }
+
+  /* Mensajes sin leer, uno por deportista. Si la bandeja no está instalada
+     todavía, `sinLeer` devuelve 0 y la lista se ve igual que siempre. */
+  const pendientes = {};
+  await Promise.all(atletas.map(async a=>{
+    try{ pendientes[a.id] = await Nube.sinLeer(a.id); }catch(e){ pendientes[a.id] = 0; }
+  }));
 
   const n = atletas.length;
   const kgTot   = atletas.reduce((a,x)=>a+Number(x.kg_30d||0),0);
@@ -68,6 +442,9 @@ async function verLista(){
         <div class="stat"><b>${ses}</b><span>Sesiones de fuerza</span></div>
         <div class="stat"><b style="color:${colorSueno(sueMed)}">${sueMed||"–"}</b><span>Sueño promedio</span></div>
         <div class="stat"><b style="color:${colorChatarra(chat/Math.max(1,n))}">${chat}</b><span>Chatarra · 7 días</span></div>
+        ${Object.values(pendientes).some(v=>v) ? `<div class="stat">
+          <b style="color:#22e07a">${Object.values(pendientes).reduce((a,b)=>a+b,0)}</b>
+          <span>Mensajes sin leer</span></div>` : ""}
       </div>
     </section>
 
@@ -88,7 +465,8 @@ async function verLista(){
               const d = diasDesde(a.ultimo_registro), act = estadoActividad(d);
               return `<tr data-id="${a.id}">
                 <td><div class="who"><div class="ava">${esc(iniciales(a.nombre))}</div>
-                  <div style="min-width:0"><b>${esc(a.nombre||a.correo)}</b>
+                  <div style="min-width:0"><b>${esc(a.nombre||a.correo)}${
+                    pendientes[a.id] ? ` <span class="sinleer">${pendientes[a.id]}</span>` : ""}</b>
                   <span>${esc(a.correo||"")}</span></div></div></td>
                 <td><span class="num" style="color:${act.c}">${act.t}</span>
                     <div class="sub">${a.dias_con_registro||0} días con registro</div></td>
@@ -117,11 +495,24 @@ async function verAtleta(id){
   const mismaFicha = vista.tipo === "ficha" && vista.id === id;
   vista = {tipo:"ficha", id};
   if(!mismaFicha) $("main").innerHTML = `<div class="empty">Cargando ficha…</div>`;
-  let dias = [];
+  let dias = [], cfg = null;
   try{
     const desde = new Date(); desde.setDate(desde.getDate()-45);
     dias = await Nube.diasDe(id, hoyKey(desde));
   }catch(e){ $("main").innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`; return; }
+  /* El calendario vive en la config, no en los días. Si falla, la ficha
+     igual se muestra: es información añadida, no imprescindible. */
+  try{ cfg = await Nube.configDe(id); }catch(e){ cfg = null; }
+  /* Si `salud.sql` no se ha ejecutado todavía, la tabla no existe y la ficha
+     igual tiene que abrirse: los documentos son un extra. */
+  let documentos = [], docsError = "";
+  try{ documentos = await Nube.docs(id); }
+  catch(e){ docsError = Nube.traduce(e.message); }
+
+  let objs = [], objHechos = [], objError = "";
+  try{
+    [objs, objHechos] = await Promise.all([Nube.objetivos(id), Nube.hechos(id, inicioMesP())]);
+  }catch(e){ objError = Nube.traduce(e.message); }
 
   const vol = d => Number(d?.workout?.volume || 0);
   const mn  = v => (v && typeof v === "object") ? (Number(v.min)||0) : (Number(v)||0);
@@ -136,6 +527,14 @@ async function verAtleta(id){
   const hMed = sue.length ? (sue.reduce((s,x)=>s+x.hours,0)/sue.length).toFixed(1) : 0;
   const chat = dias.reduce((s,r)=>s+junk(r.datos),0);
   const maxVol = Math.max(1, ...dias.map(r=>vol(r.datos)));
+
+  const comp = proximaComp(cfg);
+  const med = medicionesDe(dias);
+  const salud = cfg?.salud || {};
+  const fMed = fichaHTML(salud, FICHA_MED), fNut = fichaHTML(salud, FICHA_NUT);
+  const flags = banderasHTML(salud);
+  const carga = razonCarga(dias, vol);
+  const zc = zonaDe(carga.r);
 
   const ult14 = [];
   for(let i=13;i>=0;i--){
@@ -158,6 +557,83 @@ async function verAtleta(id){
       </div>
     </div>
 
+    ${comp ? `<section>
+      <div class="stitle">Próxima competencia</div>
+      <div class="panel" style="display:flex;align-items:center;gap:15px">
+        <div style="width:70px;flex:none;text-align:center">
+          <b style="display:block;font-size:30px;font-weight:800;letter-spacing:-.05em;line-height:1">${
+            faltan(comp.fecha) === 0 ? "¡Hoy!" : faltan(comp.fecha)}</b>
+          <span style="font-size:10px;color:#6f7887;text-transform:uppercase;letter-spacing:.07em">${
+            faltan(comp.fecha) === 0 ? "es el día" : faltan(comp.fecha) === 1 ? "día" : "días"}</span>
+        </div>
+        <div style="min-width:0">
+          <b style="display:block;font-size:16px">${(PRIOS[comp.prio]||PRIOS.B).e} ${esc(comp.nombre)}</b>
+          <span style="display:block;font-size:12.5px;color:#a7b2c2;margin-top:2px">${
+            fechaCorta(comp.fecha)}${comp.lugar ? " · "+esc(comp.lugar) : ""}${
+            comp.deporte ? " · "+esc(comp.deporte) : ""}</span>
+          <span style="display:block;font-size:12.5px;color:#6f7887;margin-top:4px">${
+            faseDe(faltan(comp.fecha))}${comp.objetivo ? " · objetivo: "+esc(comp.objetivo) : ""}</span>
+        </div>
+      </div>
+    </section>` : ""}
+
+    ${flags}
+
+    <section>
+      <div class="stitle">Mensajes</div>
+      <div class="chatwrap">
+        <div class="chatlog" id="chatLog"><div class="empty">Cargando mensajes…</div></div>
+        <div class="chatbar" id="chatBar">
+          <textarea id="chatTexto" rows="1" placeholder="Escríbele a ${esc(a?.nombre?.split(" ")[0] || "tu deportista")}…"></textarea>
+          <button id="chatSend" title="Enviar">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="stitle">Objetivos Fractale</div>
+      ${objError ? `<div class="panel"><div class="empty">${esc(objError)}</div></div>`
+                 : objetivosHTML(objs, objHechos)}
+      ${objError ? "" : `<button class="mini" style="margin-top:12px" id="addObj">+ Asignar objetivo</button>`}
+    </section>
+
+    ${med.ultima ? `<section>
+      <div class="stitle">Composición corporal</div>
+      <div class="stats">
+        <div class="stat"><b style="color:#2dd4bf">${un1(med.ultima.peso)}</b><span>Peso (kg) · ${fechaCorta(med.ultima.fecha)}</span></div>
+        <div class="stat"><b style="color:${deltaTxt(med.ultima.peso, med.antes?.peso, null).c}">${
+          deltaTxt(med.ultima.peso, med.antes?.peso, null).t}</b><span>Peso vs 30 d</span></div>
+        ${Number(med.ultima.grasa) ? `<div class="stat"><b>${un1(med.ultima.grasa)}%</b><span>Grasa · ${
+          un1(med.ultima.peso*med.ultima.grasa/100)} kg</span></div>
+        <div class="stat"><b style="color:${deltaTxt(Number(med.ultima.grasa), Number(med.antes?.grasa), false).c}">${
+          deltaTxt(Number(med.ultima.grasa), Number(med.antes?.grasa), false).t}</b><span>Grasa vs 30 d</span></div>` : ""}
+        ${Number(med.ultima.musculo) ? `<div class="stat"><b>${un1(med.ultima.musculo)}%</b><span>Músculo · ${
+          un1(med.ultima.peso*med.ultima.musculo/100)} kg</span></div>
+        <div class="stat"><b style="color:${deltaTxt(Number(med.ultima.musculo), Number(med.antes?.musculo), true).c}">${
+          deltaTxt(Number(med.ultima.musculo), Number(med.antes?.musculo), true).t}</b><span>Músculo vs 30 d</span></div>` : ""}
+      </div>
+      ${med.ultima.nota ? `<p style="font-size:12.5px;color:#6f7887;margin:10px 0 0">${esc(med.ultima.nota)}</p>` : ""}
+    </section>` : ""}
+
+    ${fMed ? `<section><div class="stitle">Ficha médica</div>${fMed}</section>` : ""}
+    ${fNut ? `<section><div class="stitle">Ficha nutricional</div>${fNut}</section>` : ""}
+
+    <section>
+      <div class="stitle">Documentos</div>
+      <div class="panel">${
+        docsError ? `<div class="empty">${esc(docsError)}</div>`
+        : !documentos.length ? `<div class="empty">Sin documentos cargados.</div>`
+        : documentos.map(d=>{
+            const t = TIPOS_DOC[d.tipo] || TIPOS_DOC.otro;
+            return `<div class="hrow">
+              <div class="m">${t.e}</div>
+              <div class="t"><b>${esc(d.titulo)}</b>
+                <span>${t.l} · ${fechaCorta(d.fecha)}${d.tam ? " · "+pesoArchivo(d.tam) : ""}</span></div>
+              <button class="mini" data-doc="${esc(d.ruta)}">Abrir</button>
+            </div>${d.notas ? `<p style="font-size:12px;color:#6f7887;margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
+          }).join("")}</div>
+    </section>
+
     <section>
       <div class="stitle">Cargas · últimos 45 días</div>
       <div class="stats">
@@ -168,6 +644,8 @@ async function verAtleta(id){
         <div class="stat"><b style="color:#fb923c">${dias.reduce((s,r)=>s+act(r.datos),0)}</b><span>Min de actividad</span></div>
         <div class="stat"><b style="color:#fb923c">${Math.round(dias.reduce((s,r)=>s+actKm(r.datos),0)*10)/10}</b><span>Km recorridos</span></div>
         <div class="stat"><b style="color:${colorChatarra(chat/6)}">${chat}</b><span>Chatarra total</span></div>
+        <div class="stat"><b style="color:${zc.c}">${carga.cr ? carga.r.toFixed(2) : "–"}</b><span>${
+          carga.cr ? zc.t : "Sin carga registrada"}</span></div>
       </div>
       <div class="panel" style="margin-top:12px">
         <div class="chart">
@@ -210,7 +688,20 @@ async function verAtleta(id){
       }).join("") : `<div class="empty">Sin registros todavía.</div>`}
     </section>`;
 
-  $("volver").onclick = verLista;
+  $("volver").onclick = ()=>{ cerrarChat(); verLista(); };
+  montarChat(id);
+
+  $("addObj")?.addEventListener("click", ()=> openObjetivo(null, id));
+  document.querySelectorAll("[data-obj]").forEach(b=>
+    b.onclick = ()=> openObjetivo(objs.find(o => o.id === b.dataset.obj), id));
+
+  /* Los archivos son privados: cada apertura pide un enlace firmado que caduca. */
+  document.querySelectorAll("[data-doc]").forEach(b=> b.onclick = async ()=>{
+    b.disabled = true; b.textContent = "…";
+    try{ window.open(await Nube.urlDoc(b.dataset.doc), "_blank", "noopener"); }
+    catch(e){ toast(Nube.traduce(e.message)); }
+    finally{ b.disabled = false; b.textContent = "Abrir"; }
+  });
   if(!mismaFicha) window.scrollTo({top:0});
 }
 

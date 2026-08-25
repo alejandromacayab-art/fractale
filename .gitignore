@@ -4,3 +4,6 @@ push/subscriptions.json
 index.backup.html
 push/.vapid.json
 push/CLAVES-SECRETAS.txt
+
+# copia de prueba generada por .claude/preview.py
+.claude/preview.html
