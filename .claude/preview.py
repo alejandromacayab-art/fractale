@@ -51,10 +51,23 @@ cuerpo = re.search(r"<body>(.*?)</body>", s, re.S).group(1)
 
 # El título va primero: solo se busca en los primeros 8 KB, y el CSS pesa más.
 estilo = re.search(r"<style>.*?</style>", cabeza, re.S).group(0)
+meta_vista = re.search(r'<meta name="viewport"[^>]*>', cabeza).group(0)
 # `applyTheme` lee esta etiqueta; dentro del cuerpo sigue siendo consultable.
 meta_color = '<meta name="theme-color" content="#0E0E11">'
 
-s = "\n".join(["<title>Fractale</title>", meta_color, estilo, cuerpo])
+# Sin `viewport` el celular asume 980 px de ancho y lo encoge todo. Va como
+# etiqueta y, además, inyectada desde el cuerpo: cuando el publicador envuelve
+# esto en su propio documento, la etiqueta ya no cae dentro de <head>.
+arregla_vista = """<script>
+(function(){
+  var m = document.querySelector('meta[name=viewport]');
+  if(!m){ m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+  m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+})();
+</script>"""
+
+s = "\n".join(["<title>Fractale</title>", meta_vista, meta_color,
+               arregla_vista, estilo, cuerpo])
 
 SALIDA.write_text(s)
 print("escrito %s · %.0f KB" % (SALIDA, SALIDA.stat().st_size / 1024))

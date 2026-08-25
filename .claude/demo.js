@@ -17,7 +17,9 @@
         values:{}, meals:{}, mt: Date.now()-i*1000,
         note: i%5 ? "" : "Buen entrenamiento, algo cansado al final.",
         mood: i%3 ? 4 : 3,
-        sleep: i%5 ? {hours:7.5, quality:4, feel:4, score:78} : null,
+        /* Hoy con sueño registrado a propósito: si no, al abrir la copia de
+           prueba salta solo el check-in de la mañana y tapa la pantalla. */
+        sleep: i % 5 !== 3 ? {hours:7.5, quality:4, feel:4, score:78} : null,
         workout:{ex:[
           {name:"Sentadilla", sets:[{w:80,r:8},{w:85,r:6},{w:90,r:5}]},
           {name:"Press banca", sets:[{w:60,r:10},{w:65,r:8}]},
@@ -102,12 +104,21 @@
 
   const ayer = new Date(Date.now()-86400000);
   const a = (d,h,m)=>{ const x = new Date(d); x.setHours(h,m,0,0); return x.toISOString(); };
+
+  /* En la bandeja escribe todo el equipo, así que cada mensaje va firmado. */
+  Object.assign(chatNombres, {
+    coach:  {id:"coach",  nombre:"Marcos Vidal",  rol:"coach"},
+    medico: {id:"medico", nombre:"Paula Herrera", rol:"medico"},
+    nutri:  {id:"nutri",  nombre:"Diego Soto",    rol:"nutricionista"}
+  });
   chatMsgs.push(
-    {id:"m1", autor_id:"coach", texto:"¿Cómo va el tendón después de la sesión del martes?", creado:a(ayer,9,12)},
-    {id:"m2", autor_id:null,    texto:"Mejor. Sigue molestando al bajar escaleras, pero corriendo en plano ya casi no lo siento.", creado:a(ayer,9,40)},
-    {id:"m3", autor_id:"coach", texto:"Bien. Mantenemos sin cuestas esta semana y lo revisamos el lunes antes de la corrida.", creado:a(ayer,9,44)},
-    {id:"m4", autor_id:null,    texto:"Dale. ¿Cambio algo del entrenamiento del jueves?", creado:a(new Date(),8,2)},
-    {id:"m5", autor_id:"coach", texto:"Sí: saca la pliometría y súmale 10 minutos de rodaje suave al final.", creado:a(new Date(),8,15)});
+    {id:"m1", autor_id:"coach",  texto:"¿Cómo va el tendón después de la sesión del martes?", creado:a(ayer,9,12)},
+    {id:"m2", autor_id:null,     texto:"Mejor. Sigue molestando al bajar escaleras, pero corriendo en plano ya casi no lo siento.", creado:a(ayer,9,40)},
+    {id:"m3", autor_id:"medico", texto:"Con eso me basta por ahora. Sigue con el hielo después de correr y no fuerces la bajada.", creado:a(ayer,10,5)},
+    {id:"m4", autor_id:"coach",  texto:"Entonces mantenemos sin cuestas esta semana y lo revisamos el lunes antes de la corrida.", creado:a(ayer,10,20)},
+    {id:"m5", autor_id:"nutri",  texto:"Te dejé la pauta para los días previos en tus documentos. Revisa la carga de hidratos del viernes.", creado:a(ayer,18,3)},
+    {id:"m6", autor_id:null,     texto:"Dale. ¿Cambio algo del entrenamiento del jueves?", creado:a(new Date(),8,2)},
+    {id:"m7", autor_id:"coach",  texto:"Sí: saca la pliometría y súmale 10 minutos de rodaje suave al final.", creado:a(new Date(),8,15)});
 
   /* La bandeja y los objetivos son de solo lectura en la prueba. */
   const pintaDemo = ()=>{
