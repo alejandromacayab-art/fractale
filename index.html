@@ -565,7 +565,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.08.25-4";
+const APP_VERSION = "2026.08.25-5";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2744,7 +2744,13 @@ function renderSyncPanel(){
 
   const R = syncErr ? RISK[2] : RISK[0];
   const correo = sesionUsuario.user?.email || "";
-  const esCoach = perfil && perfil.rol === "coach";
+  /* Quien no es deportista entra a la app y se encontraba su propio registro
+     vacío, sin manera de llegar al panel. Ahora se le ofrece el camino. */
+  const ROL = {
+    coach:         {e:"🏋️", l:"entrenador"},
+    medico:        {e:"🩺", l:"médico"},
+    nutricionista: {e:"🥗", l:"nutricionista"}
+  }[perfil?.rol];
   box.innerHTML = `
     <div class="risk ${R.cls}" style="margin:0 0 14px">
       <div class="lv" style="background:${R.c}1f">${syncErr ? "⚠️" : "☁️"}</div>
@@ -2752,13 +2758,13 @@ function renderSyncPanel(){
         <span>${syncErr ? esc(syncErr) : "Última vez " + hace(ultimaSync)}</span></div>
     </div>
     <div class="hrow">
-      <div class="m">${esCoach ? "🏋️" : "👤"}</div>
+      <div class="m">${ROL ? ROL.e : "👤"}</div>
       <div class="t"><b>${esc(perfil?.nombre || correo)}</b>
-        <span>${esc(correo)}${esCoach ? " · entrenador" : ""}</span></div>
+        <span>${esc(correo)}${ROL ? " · " + ROL.l : ""}</span></div>
     </div>
-    ${esCoach ? `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:12px"
+    ${ROL ? `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:12px"
         href="panel.html">Abrir el panel de deportistas</a>` : ""}
-    <button class="btn ghost" style="margin-top:${esCoach?8:12}px" id="syncGo">Sincronizar ahora</button>
+    <button class="btn ghost" style="margin-top:${ROL?8:12}px" id="syncGo">Sincronizar ahora</button>
     <button class="btn ghost" style="margin-top:8px" id="claveBtn">🔑 Poner o cambiar mi contraseña</button>
     <div id="claveBox" class="hidden" style="margin-top:10px">
       <label class="f"><span>Contraseña nueva</span>
