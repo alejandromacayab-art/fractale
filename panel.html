@@ -97,6 +97,13 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
       para que llegue ya identificado.</p>
     <label class="f"><span>Correo</span><input class="inp" id="invMail" type="email" placeholder="deportista@correo.com"></label>
     <label class="f"><span>Nombre (opcional)</span><input class="inp" id="invName" placeholder="Cómo lo llamas"></label>
+    <label class="f"><span>Entra como</span>
+      <div class="tags" id="invRol">
+        <button class="tag" data-rol="atleta">🏃 Deportista</button>
+        <button class="tag" data-rol="medico">🩺 Médico</button>
+        <button class="tag" data-rol="nutricionista">🥗 Nutricionista</button>
+        <button class="tag" data-rol="coach">🏋️ Entrenador</button>
+      </div></label>
     <button class="btn ghost" id="invSave">Reservar nombre</button>
     <button class="btn ghost" style="margin-top:8px" id="invClose">Cerrar</button>
     <div id="invList" style="margin-top:18px"></div>

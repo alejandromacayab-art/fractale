@@ -470,3 +470,4 @@ body.enchat{padding-bottom:74px;overflow:hidden}
 .objrow.listo .objn{color:var(--a)}
 .objedit{width:30px;flex:none;color:var(--tx3);font-size:14px;padding-top:8px}
 .objmas{font-size:12.5px;font-weight:700;color:var(--accent);padding:11px 0 4px;cursor:pointer}
+.burb .autor{font-size:11px;font-weight:800;color:var(--tx3);margin-bottom:3px;letter-spacing:.01em}

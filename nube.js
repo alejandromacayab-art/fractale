@@ -310,15 +310,62 @@ async function configDe(uid){
   if(error) throw new Error(traduce(error.message));
   return data ? data.datos : null;
 }
+/* ---------------- equipo de trabajo ---------------- */
+const ROLES_STAFF = ["coach","medico","nutricionista"];
+
+/* Quién trabaja con este deportista. */
+async function equipoDe(atletaId){
+  if(!sb) return [];
+  const {data, error} = await sb.from("equipo")
+    .select("staff_id, creado, perfiles!equipo_staff_id_fkey(id,nombre,correo,rol)")
+    .eq("atleta_id", atletaId);
+  if(error) throw new Error(traduce(error.message));
+  return (data||[]).map(r => ({...r.perfiles, desde:r.creado})).filter(x=>x.id);
+}
+
+/* Todos los profesionales del sistema, para que el entrenador reparta. */
+async function staffDisponible(){
+  if(!sb) return [];
+  const {data, error} = await sb.from("perfiles").select("id,nombre,correo,rol")
+    .in("rol", ROLES_STAFF).order("nombre");
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
+}
+
+async function asignar(atletaId, staffId){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  const {error} = await sb.from("equipo").insert({atleta_id:atletaId, staff_id:staffId});
+  if(error) throw new Error(traduce(error.message));
+}
+
+async function quitarDelEquipo(atletaId, staffId){
+  if(!sb) return;
+  const {error} = await sb.from("equipo").delete()
+    .eq("atleta_id", atletaId).eq("staff_id", staffId);
+  if(error) throw new Error(traduce(error.message));
+}
+
+/* Nombres de quienes escriben en la bandeja: ahora puede ser más de uno. */
+async function nombresDe(ids){
+  if(!sb || !ids.length) return {};
+  const {data, error} = await sb.from("perfiles").select("id,nombre,rol")
+    .in("id", [...new Set(ids)]);
+  if(error) return {};
+  const out = {};
+  (data||[]).forEach(p => out[p.id] = p);
+  return out;
+}
+
 async function invitaciones(){
   const {data, error} = await sb.from("invitaciones").select("*").order("creada",{ascending:false});
   if(error) throw new Error(traduce(error.message));
   return data || [];
 }
-async function invitar(correo, nombre){
+async function invitar(correo, nombre, rol){
   const u = await usuario(); if(!u) throw new Error("Sin sesión");
   const {error} = await sb.from("invitaciones").upsert({
-    correo: correo.trim().toLowerCase(), nombre: (nombre||"").trim() || null, coach_id: u.id
+    correo: correo.trim().toLowerCase(), nombre: (nombre||"").trim() || null,
+    rol: rol || "atleta", coach_id: u.id
   });
   if(error) throw new Error(traduce(error.message));
 }
@@ -367,6 +414,10 @@ function traduce(m){
   if(/exceeded the maximum allowed size|Payload too large/i.test(s))
                                               return "El archivo pesa más de 15 MB.";
   if(/mime type.*not supported|invalid_mime/i.test(s)) return "Solo se aceptan PDF e imágenes.";
+  if(/relation .*equipo.* does not exist|equipo.*not exist/i.test(s))
+                                              return "Falta el equipo de trabajo. "
+                                                   + "Ejecuta base-de-datos/equipo.sql en Supabase.";
+  if(/duplicate key.*equipo/i.test(s))        return "Esa persona ya está en el equipo de este deportista.";
   if(/row-level security|permission denied/i.test(s)) return "No tienes permiso para ver eso.";
   if(/Failed to fetch|NetworkError/i.test(s)) return "Sin conexión a internet.";
   if(/signup.*disabled/i.test(s))             return "El registro está cerrado. Pide una invitación.";
@@ -381,6 +432,7 @@ global.Nube = {
   mensajes, enviar, borrarMensaje, sinLeer, marcarLeido, escucharChat,
   objetivos, hechos, guardarObjetivo, borrarObjetivo, marcarObjetivo, desmarcarObjetivo,
   misAtletas, diasDe, configDe, invitaciones, invitar, quitarInvitacion,
+  equipoDe, staffDisponible, asignar, quitarDelEquipo, nombresDe, ROLES_STAFF,
   escuchar, dejarDeEscuchar, traduce
 };
 })(window);

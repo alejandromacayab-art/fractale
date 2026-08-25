@@ -2,7 +2,7 @@
    - cachea la app para que funcione sin internet
    - recibe las notificaciones push enviadas desde el servidor
    - lee el progreso del día desde IndexedDB para que el aviso sea específico */
-const CACHE = "app-v27";
+const CACHE = "app-v28";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",

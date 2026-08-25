@@ -39,6 +39,18 @@ function estadoActividad(dias){
 }
 function colorChatarra(n){ return n >= 5 ? "#fb7185" : n >= 3 ? "#fbbf24" : "#22e07a"; }
 
+/* ---------------- equipo ---------------- */
+const ROLES = {
+  coach:         {e:"🏋️", l:"Entrenador"},
+  medico:        {e:"🩺", l:"Médico"},
+  nutricionista: {e:"🥗", l:"Nutricionista"},
+  atleta:        {e:"🏃", l:"Deportista"}
+};
+const rotulo = r => ROLES[r] || ROLES.atleta;
+/* Repartir el equipo, invitar y asignar objetivos es cosa del entrenador.
+   El resto del equipo mira y escribe. */
+const soyCoach = () => perfil?.rol === "coach";
+
 /* ---------------- salud ---------------- */
 const TIPOS_DOC = {medico:{e:"🩺", l:"Médico"}, nutricional:{e:"🥗", l:"Nutricional"}, otro:{e:"📄", l:"Otro"}};
 /* Los mismos grupos y el mismo orden que la app: entrenador y deportista leen
@@ -208,7 +220,7 @@ function objetivosHTML(objs, hechos){
             `<i class="${i < a.n ? "f" : ""}"></i>`).join("")}</div>`}
       </div>
       <div class="objn">${a.n}/${a.meta}</div>
-      ${mio ? `<button class="objedit" data-obj="${o.id}" title="Editar">✎</button>` : ""}
+      ${mio && perfil?.rol === "coach" ? `<button class="objedit" data-obj="${o.id}" title="Editar">✎</button>` : ""}
     </div>`;
   }).join("")}</div>`;
 }
@@ -291,7 +303,20 @@ $("obDel").onclick = async ()=>{
 /* ---------------- mensajes ----------------
    El entrenador entra en la conversación del deportista, no al revés: la
    conversación se identifica siempre con el id del atleta. */
-let chatMsgs = [], chatCanal = null, chatConv = null;
+let chatMsgs = [], chatCanal = null, chatConv = null, chatNombres = {};
+
+/* Ahora escriben varios: cada burbuja necesita decir de quién es. */
+async function cargarNombres(){
+  const faltan = chatMsgs.map(m=>m.autor_id).filter(id => id && !chatNombres[id]);
+  if(!faltan.length) return;
+  Object.assign(chatNombres, await Nube.nombresDe(faltan));
+}
+function firmaDe(m){
+  const p = chatNombres[m.autor_id];
+  if(!p) return "";
+  const corto = String(p.nombre || "").trim().split(/\s+/)[0] || "Alguien";
+  return `<div class="autor">${rotulo(p.rol).e} ${esc(corto)}</div>`;
+}
 
 function horaCorta(iso){
   const d = new Date(iso);
@@ -319,6 +344,7 @@ function pintaChat(){
     /* "Mío" aquí es el entrenador: su burbuja va a la derecha. */
     const mio = m.autor_id === perfil?.id;
     return `${sep}<div class="burb ${mio ? "mia" : ""}">
+      ${mio ? "" : firmaDe(m)}
       <div class="tx">${esc(m.texto)}</div>
       <div class="hr">${horaCorta(m.creado)}</div></div>`;
   }).join("");
@@ -330,6 +356,7 @@ async function montarChat(atletaId){
   cerrarChat();
   try{
     chatMsgs = await Nube.mensajes(atletaId);
+    await cargarNombres();
   }catch(e){
     $("chatLog").innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
     $("chatBar")?.classList.add("hidden");
@@ -338,9 +365,10 @@ async function montarChat(atletaId){
   pintaChat();
   Nube.marcarLeido(atletaId).catch(()=>{});
 
-  chatCanal = Nube.escucharChat(atletaId, m=>{
+  chatCanal = Nube.escucharChat(atletaId, async m=>{
     if(chatMsgs.some(x => x.id === m.id)) return;
     chatMsgs.push(m);
+    await cargarNombres();
     pintaChat();
     if(m.autor_id !== perfil?.id) Nube.marcarLeido(atletaId).catch(()=>{});
   });
@@ -480,11 +508,11 @@ async function verLista(){
           </tbody></table>`
         : `<div class="empty">Todavía no tienes deportistas.<br>Invita al primero para empezar.</div>`}
       </div>
-      <button class="btn" style="margin-top:12px" id="invitar">+ Invitar deportista</button>
+      ${soyCoach() ? `<button class="btn" style="margin-top:12px" id="invitar">+ Invitar a alguien</button>` : ""}
     </section>`;
 
   document.querySelectorAll("[data-id]").forEach(tr=>tr.onclick=()=>verAtleta(tr.dataset.id));
-  $("invitar").onclick = abrirInvitar;
+  if(soyCoach()) $("invitar").onclick = abrirInvitar;
 }
 
 /* ============================================================
@@ -508,6 +536,12 @@ async function verAtleta(id){
   let documentos = [], docsError = "";
   try{ documentos = await Nube.docs(id); }
   catch(e){ docsError = Nube.traduce(e.message); }
+
+  let miEquipo = [], staffTodos = [], equipoError = "";
+  try{
+    miEquipo = await Nube.equipoDe(id);
+    if(soyCoach()) staffTodos = await Nube.staffDisponible();
+  }catch(e){ equipoError = Nube.traduce(e.message); }
 
   let objs = [], objHechos = [], objError = "";
   try{
@@ -580,6 +614,35 @@ async function verAtleta(id){
     ${flags}
 
     <section>
+      <div class="stitle">Equipo de trabajo</div>
+      <div class="panel">${
+        equipoError ? `<div class="empty">${esc(equipoError)}</div>`
+        : !miEquipo.length ? `<div class="empty">Nadie asignado todavía.</div>`
+        : miEquipo.map(m=>`<div class="hrow">
+            <div class="m">${rotulo(m.rol).e}</div>
+            <div class="t"><b>${esc(m.nombre || m.correo)}</b>
+              <span>${rotulo(m.rol).l}${m.id === perfil?.id ? " · eres tú" : ""}</span></div>
+            ${soyCoach() && m.id !== perfil?.id
+              ? `<button class="mini" data-quitar-staff="${m.id}" style="color:#fb7185">Quitar</button>` : ""}
+          </div>`).join("")}
+        ${soyCoach() && !equipoError ? (()=>{
+          const libres = staffTodos.filter(x => !miEquipo.some(m => m.id === x.id));
+          return libres.length
+            ? `<div style="display:flex;gap:8px;margin-top:12px">
+                 <select class="inp" id="staffSel" style="flex:1">
+                   ${libres.map(x=>`<option value="${x.id}">${rotulo(x.rol).e} ${
+                     esc(x.nombre || x.correo)} · ${rotulo(x.rol).l}</option>`).join("")}
+                 </select>
+                 <button class="mini" id="addStaff">Añadir</button>
+               </div>`
+            : `<p style="font-size:12px;color:#6f7887;margin:12px 0 0">
+                 Todos los profesionales del sistema ya están en este equipo.
+                 Invita a más desde la lista de deportistas.</p>`;
+        })() : ""}
+      </div>
+    </section>
+
+    <section>
       <div class="stitle">Mensajes</div>
       <div class="chatwrap">
         <div class="chatlog" id="chatLog"><div class="empty">Cargando mensajes…</div></div>
@@ -594,7 +657,7 @@ async function verAtleta(id){
       <div class="stitle">Objetivos Fractale</div>
       ${objError ? `<div class="panel"><div class="empty">${esc(objError)}</div></div>`
                  : objetivosHTML(objs, objHechos)}
-      ${objError ? "" : `<button class="mini" style="margin-top:12px" id="addObj">+ Asignar objetivo</button>`}
+      ${objError || !soyCoach() ? "" : `<button class="mini" style="margin-top:12px" id="addObj">+ Asignar objetivo</button>`}
     </section>
 
     ${med.ultima ? `<section>
@@ -691,9 +754,22 @@ async function verAtleta(id){
   $("volver").onclick = ()=>{ cerrarChat(); verLista(); };
   montarChat(id);
 
-  $("addObj")?.addEventListener("click", ()=> openObjetivo(null, id));
-  document.querySelectorAll("[data-obj]").forEach(b=>
-    b.onclick = ()=> openObjetivo(objs.find(o => o.id === b.dataset.obj), id));
+  if(soyCoach()){
+    $("addStaff")?.addEventListener("click", async ()=>{
+      const sid = $("staffSel").value;
+      try{ await Nube.asignar(id, sid); toast("Añadido al equipo"); verAtleta(id); }
+      catch(e){ toast(Nube.traduce(e.message)); }
+    });
+    document.querySelectorAll("[data-quitar-staff]").forEach(b=> b.onclick = async ()=>{
+      const m = miEquipo.find(x => x.id === b.dataset.quitarStaff);
+      if(!confirm(`¿Quitar a ${m?.nombre || "esta persona"} del equipo? Dejará de ver este panel.`)) return;
+      try{ await Nube.quitarDelEquipo(id, b.dataset.quitarStaff); toast("Quitado del equipo"); verAtleta(id); }
+      catch(e){ toast(Nube.traduce(e.message)); }
+    });
+    $("addObj")?.addEventListener("click", ()=> openObjetivo(null, id));
+    document.querySelectorAll("[data-obj]").forEach(b=>
+      b.onclick = ()=> openObjetivo(objs.find(o => o.id === b.dataset.obj), id));
+  }
 
   /* Los archivos son privados: cada apertura pide un enlace firmado que caduca. */
   document.querySelectorAll("[data-doc]").forEach(b=> b.onclick = async ()=>{
@@ -709,6 +785,8 @@ async function verAtleta(id){
    INVITACIONES
    ============================================================ */
 async function abrirInvitar(){
+  document.querySelectorAll("#invRol [data-rol]").forEach(b=>
+    b.classList.toggle("on", b.dataset.rol === "atleta"));
   $("invModal").classList.add("open");
   await pintarInvitaciones();
 }
@@ -719,7 +797,8 @@ async function pintarInvitaciones(){
         <div class="hrow">
           <div class="m">${i.usada ? "✅" : "⏳"}</div>
           <div class="t"><b>${esc(i.nombre||i.correo)}</b>
-            <span>${esc(i.correo)} · ${i.usada ? "ya entró" : "pendiente"}</span></div>
+            <span>${esc(i.correo)} · ${rotulo(i.rol).e} ${rotulo(i.rol).l.toLowerCase()} · ${
+              i.usada ? "ya entró" : "pendiente"}</span></div>
           <button class="mini" data-quitar="${esc(i.correo)}">Quitar</button>
         </div>`).join("")
     : `<div class="empty" style="padding:18px">Sin nombres reservados.</div>`;
@@ -729,13 +808,20 @@ async function pintarInvitaciones(){
     catch(e){ toast(Nube.traduce(e.message)); }
   });
 }
+document.querySelectorAll("#invRol [data-rol]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#invRol [data-rol]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
 $("invSave").onclick = async ()=>{
   const c = $("invMail").value.trim(), n = $("invName").value.trim();
+  const rol = document.querySelector("#invRol [data-rol].on")?.dataset.rol || "atleta";
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c)){ toast("Escribe un correo válido"); return; }
   try{
-    await Nube.invitar(c, n);
+    await Nube.invitar(c, n, rol);
     $("invMail").value = ""; $("invName").value = "";
-    toast("Nombre reservado para ese correo.");
+    toast(rol === "atleta"
+      ? "Nombre reservado para ese correo."
+      : `Al registrarse entrará como ${rotulo(rol).l.toLowerCase()}.`);
     await pintarInvitaciones();
   }catch(e){ toast(Nube.traduce(e.message)); }
 };
@@ -824,9 +910,9 @@ $("themeBtn").onclick = ()=>{
   try{ perfil = await Nube.miPerfil(); }
   catch(e){ $("main").innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`; return; }
 
-  if(!perfil || perfil.rol !== "coach"){
+  if(!perfil || !Nube.ROLES_STAFF.includes(perfil.rol)){
     $("main").innerHTML = `<div class="empty">
-      Este panel es solo para el entrenador.<br><br>
+      Este panel es para el equipo de trabajo.<br><br>
       <a class="btn" style="display:inline-block;text-decoration:none;width:auto;padding:12px 20px"
          href="index.html">Ir a mi registro</a></div>`;
     return;

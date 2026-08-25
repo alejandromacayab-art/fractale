@@ -154,7 +154,7 @@
     <div class="chatwrap">
       <div class="chatlog" id="chatLog"></div>
       <div class="chatbar" id="chatBar">
-        <textarea id="chatTexto" rows="1" placeholder="Escríbele a tu entrenador…"></textarea>
+        <textarea id="chatTexto" rows="1" placeholder="Escríbele a tu equipo…"></textarea>
         <button id="chatSend" title="Enviar">➤</button>
       </div>
     </div>
@@ -565,7 +565,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.08.25-2";
+const APP_VERSION = "2026.08.25-3";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2239,7 +2239,26 @@ document.getElementById("dcSave").onclick = async ()=>{
    Una sola conversación: tú y tu entrenador. Los mensajes viven en la
    nube, así que sin cuenta no hay bandeja.
    ============================================================ */
-let chatMsgs = [], chatCanal = null, chatPintado = "";
+let chatMsgs = [], chatCanal = null, chatPintado = "", chatNombres = {};
+
+/* En la bandeja puede escribir cualquiera de tu equipo, así que cada mensaje
+   que no es tuyo lleva de quién viene. */
+const ROLES_EQUIPO = {
+  coach:         {e:"🏋️", l:"Entrenador"},
+  medico:        {e:"🩺", l:"Médico"},
+  nutricionista: {e:"🥗", l:"Nutricionista"}
+};
+async function cargarNombresChat(){
+  const faltan = chatMsgs.map(m=>m.autor_id).filter(id => id && id !== miId() && !chatNombres[id]);
+  if(!faltan.length) return;
+  try{ Object.assign(chatNombres, await Nube.nombresDe(faltan)); }catch(e){}
+}
+function firmaDe(m){
+  const p = chatNombres[m.autor_id], r = ROLES_EQUIPO[p?.rol];
+  const corto = String(p?.nombre || "").trim().split(/\s+/)[0];
+  if(!corto && !r) return "";
+  return `<div class="autor">${r ? r.e + " " : ""}${esc(corto || r.l)}</div>`;
+}
 
 const chatListo = () => nubeOn() && !!sesionUsuario;
 const miId = () => sesionUsuario?.user?.id || null;
@@ -2261,7 +2280,8 @@ function pintaChat(){
   const log = document.getElementById("chatLog");
   if(!chatMsgs.length){
     log.innerHTML = `<div class="empty">Todavía no hay mensajes.<br>
-      Escribe lo que necesites: dudas, molestias, cómo te sentiste.</div>`;
+      Escribe lo que necesites: dudas, molestias, cómo te sentiste.<br>
+      Lo lee tu equipo: entrenador, médico y nutricionista.</div>`;
     return;
   }
   let ultimoDia = "";
@@ -2271,6 +2291,7 @@ function pintaChat(){
     ultimoDia = dia;
     const mio = m.autor_id === miId();
     return `${sep}<div class="burb ${mio ? "mia" : ""}" data-msg="${m.id}">
+      ${mio ? "" : firmaDe(m)}
       <div class="tx">${esc(m.texto)}</div>
       <div class="hr">${horaCorta(m.creado)}</div></div>`;
   }).join("");
@@ -2293,13 +2314,14 @@ async function abrirChat(){
   document.getElementById("chatBar").classList.toggle("hidden", !chatListo());
   if(!chatListo()){
     log.innerHTML = `<div class="empty">La bandeja vive en tu cuenta, para que tu
-      entrenador pueda responderte.<br>Entra con tu correo para usarla.</div>`;
+      equipo pueda responderte.<br>Entra con tu correo para usarla.</div>`;
     return;
   }
   if(chatPintado !== miId()){ log.innerHTML = `<div class="empty">Cargando mensajes…</div>`; }
   try{
     chatMsgs = await Nube.mensajes(miId());
     chatPintado = miId();
+    await cargarNombresChat();
     pintaChat();
     await Nube.marcarLeido(miId());
     pintarPipChat(0);
@@ -2313,16 +2335,18 @@ async function abrirChat(){
 /* Un solo canal abierto, aunque entres y salgas de la vista. */
 function escucharChatVivo(){
   if(chatCanal || !chatListo()) return;
-  chatCanal = Nube.escucharChat(miId(), m=>{
+  chatCanal = Nube.escucharChat(miId(), async m=>{
     if(chatMsgs.some(x => x.id === m.id)) return;   // el mío ya está puesto
     chatMsgs.push(m);
+    await cargarNombresChat();
     const enChat = !document.getElementById("view-chat").classList.contains("hidden");
     if(enChat){
       pintaChat();
       if(m.autor_id !== miId()) Nube.marcarLeido(miId());
     }else if(m.autor_id !== miId()){
       pintarPipChat(1);
-      toast("💬 Mensaje nuevo de tu entrenador");
+      const quien = chatNombres[m.autor_id]?.nombre;
+      toast(quien ? `💬 Mensaje nuevo de ${String(quien).split(" ")[0]}` : "💬 Mensaje nuevo de tu equipo");
     }
   });
 }
