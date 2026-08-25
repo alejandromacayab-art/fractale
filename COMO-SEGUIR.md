@@ -81,7 +81,10 @@ Pendiente:
   ahí por compatibilidad, pero ya no decide nada.
 - El rol con el que entra cada persona lo fija la invitación
   (`invitaciones.rol`). Invitar, repartir el equipo y asignar objetivos son del
-  entrenador; el resto del equipo mira y escribe en la bandeja.
+  entrenador; el resto del equipo mira, escribe en la bandeja y sube documentos.
+- Lo que sube el deportista va a `documentos/<su_id>/`; lo que sube el equipo,
+  a `documentos/<atleta_id>/<autor_id>/`. La ruta es la que decide quién puede
+  borrar el archivo: cada uno borra lo suyo y nada más.
 - En los objetivos manda quien los escribió: `obj_editar` y `obj_borrar` piden
   `autor_id = auth.uid()`, así que el deportista no puede rebajarse una meta que
   le puso el equipo. Marcar va en `objetivo_hechos`, una fila por cumplimiento,

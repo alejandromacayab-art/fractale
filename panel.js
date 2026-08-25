@@ -688,13 +688,20 @@ async function verAtleta(id){
         : !documentos.length ? `<div class="empty">Sin documentos cargados.</div>`
         : documentos.map(d=>{
             const t = TIPOS_DOC[d.tipo] || TIPOS_DOC.otro;
+            const quien = d.autor
+              ? (d.autor.id === perfil?.id ? "lo subiste tú"
+                 : `${rotulo(d.autor.rol).e} ${esc(String(d.autor.nombre||"").split(" ")[0])}`)
+              : "lo subió el deportista";
             return `<div class="hrow">
               <div class="m">${t.e}</div>
               <div class="t"><b>${esc(d.titulo)}</b>
-                <span>${t.l} · ${fechaCorta(d.fecha)}${d.tam ? " · "+pesoArchivo(d.tam) : ""}</span></div>
+                <span>${t.l} · ${fechaCorta(d.fecha)}${d.tam ? " · "+pesoArchivo(d.tam) : ""} · ${quien}</span></div>
               <button class="mini" data-doc="${esc(d.ruta)}">Abrir</button>
+              ${d.autor?.id === perfil?.id
+                ? `<button class="mini" data-borrar-doc="${d.id}" style="color:#fb7185">✕</button>` : ""}
             </div>${d.notas ? `<p style="font-size:12px;color:#6f7887;margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
           }).join("")}</div>
+      ${docsError ? "" : `<button class="mini" style="margin-top:12px" id="addDoc">+ Subir documento</button>`}
     </section>
 
     <section>
@@ -771,6 +778,17 @@ async function verAtleta(id){
       b.onclick = ()=> openObjetivo(objs.find(o => o.id === b.dataset.obj), id));
   }
 
+  $("addDoc")?.addEventListener("click", ()=>{
+    docPara = {id, nombre: a?.nombre || "el deportista"};
+    $("docFile").click();
+  });
+  document.querySelectorAll("[data-borrar-doc]").forEach(b=> b.onclick = async ()=>{
+    const d = documentos.find(x => x.id === b.dataset.borrarDoc);
+    if(!confirm(`¿Eliminar "${d.titulo}"? Dejará de verlo el deportista y el equipo.`)) return;
+    try{ await Nube.borrarDoc(d); toast("Documento eliminado"); verAtleta(id); }
+    catch(e){ toast(Nube.traduce(e.message)); }
+  });
+
   /* Los archivos son privados: cada apertura pide un enlace firmado que caduca. */
   document.querySelectorAll("[data-doc]").forEach(b=> b.onclick = async ()=>{
     b.disabled = true; b.textContent = "…";
@@ -780,6 +798,60 @@ async function verAtleta(id){
   });
   if(!mismaFicha) window.scrollTo({top:0});
 }
+
+/* ============================================================
+   SUBIR DOCUMENTOS
+   El equipo sube informes y pautas a la ficha de su deportista.
+   ============================================================ */
+let docPara = null, docArchivo = null;
+
+$("docFile").onchange = e=>{
+  const f = e.target.files?.[0];
+  e.target.value = "";
+  if(!f || !docPara) return;
+  if(f.size > 15*1024*1024){ toast("El archivo pesa más de 15 MB"); return; }
+  docArchivo = f;
+  $("dcPara").textContent = `Se añade a la ficha de ${docPara.nombre}. PDF o imagen, hasta 15 MB.`;
+  $("dcArchivo").innerHTML = `<div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:22px">${f.type.includes("pdf") ? "📄" : "🖼"}</div>
+      <div style="min-width:0"><b style="display:block;font-size:13.5px;word-break:break-all">${esc(f.name)}</b>
+        <span style="font-size:12px;color:#6f7887">${pesoArchivo(f.size)}</span></div>
+    </div>`;
+  $("dcTitulo").value = f.name.replace(/\.[^.]+$/, "").slice(0, 80);
+  $("dcFecha").value  = hoyKey();
+  $("dcNotas").value  = "";
+  /* Por defecto, el tipo de tu especialidad. */
+  const porDefecto = perfil?.rol === "nutricionista" ? "nutricional"
+                   : perfil?.rol === "medico" ? "medico" : "otro";
+  document.querySelectorAll("#dcTipo [data-tp]").forEach(b=>
+    b.classList.toggle("on", b.dataset.tp === porDefecto));
+  $("docModal").classList.add("open");
+};
+document.querySelectorAll("#dcTipo [data-tp]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#dcTipo [data-tp]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
+$("dcCancel").onclick = ()=>{ docArchivo = null; $("docModal").classList.remove("open"); };
+$("dcSave").onclick = async ()=>{
+  const titulo = $("dcTitulo").value.trim();
+  if(!docArchivo){ toast("Elige un archivo"); return; }
+  if(!titulo){ toast("Ponle un título al documento"); return; }
+  $("dcSave").disabled = true; $("dcSave").textContent = "Subiendo…";
+  try{
+    await Nube.subirDoc(docArchivo, {
+      titulo,
+      tipo:  document.querySelector("#dcTipo [data-tp].on")?.dataset.tp || "otro",
+      fecha: $("dcFecha").value || hoyKey(),
+      notas: $("dcNotas").value.trim(),
+      atletaId: docPara.id
+    });
+    docArchivo = null;
+    $("docModal").classList.remove("open");
+    toast("Documento subido");
+    verAtleta(docPara.id);
+  }catch(e){ toast(Nube.traduce(e.message)); }
+  finally{ $("dcSave").disabled = false; $("dcSave").textContent = "Subir"; }
+};
 
 /* ============================================================
    INVITACIONES

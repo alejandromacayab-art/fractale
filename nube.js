@@ -127,14 +127,22 @@ async function docs(uid){
   const {data, error} = await sb.from("documentos").select("*")
     .eq("user_id", id).order("fecha", {ascending:false});
   if(error) throw new Error(traduce(error.message));
-  return data || [];
+  const lista = data || [];
+  /* Quién subió cada uno: ahora puede haberlo hecho el equipo. */
+  const autores = await nombresDe(lista.map(d=>d.autor_id).filter(Boolean));
+  return lista.map(d => ({...d, autor: autores[d.autor_id] || null}));
 }
 
-async function subirDoc(archivo, {titulo, tipo, fecha, notas}){
+/* `atletaId` solo hace falta cuando sube alguien del equipo: si se omite, el
+   documento es para uno mismo. La ruta cambia según el caso, porque es la
+   propia ruta la que decide después quién puede borrar el archivo. */
+async function subirDoc(archivo, {titulo, tipo, fecha, notas, atletaId}){
   if(!sb) throw new Error("Sin conexión con la base de datos.");
   const u = await usuario(); if(!u) throw new Error("Sin sesión");
-  const ext  = (archivo.name.split(".").pop() || "pdf").toLowerCase();
-  const ruta = `${u.id}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const dueño = atletaId || u.id;
+  const ext   = (archivo.name.split(".").pop() || "pdf").toLowerCase();
+  const nombre = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const ruta  = dueño === u.id ? `${dueño}/${nombre}` : `${dueño}/${u.id}/${nombre}`;
 
   const sub = await sb.storage.from(BUCKET).upload(ruta, archivo, {
     contentType: archivo.type || "application/pdf", upsert:false
@@ -142,7 +150,7 @@ async function subirDoc(archivo, {titulo, tipo, fecha, notas}){
   if(sub.error) throw new Error(traduce(sub.error.message));
 
   const {data, error} = await sb.from("documentos").insert({
-    user_id:u.id, tipo: tipo||"medico", titulo, ruta,
+    user_id:dueño, autor_id:u.id, tipo: tipo||"medico", titulo, ruta,
     tam: archivo.size, fecha: fecha || new Date().toISOString().slice(0,10),
     notas: notas || null
   }).select().single();

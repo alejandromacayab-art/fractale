@@ -150,6 +150,36 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
   </div>
 </div>
 
+<!-- subir documento -->
+<div class="modal" id="docModal">
+  <div class="sheet">
+    <h3>Subir documento</h3>
+    <p class="sub" id="dcPara">PDF o imagen, hasta 15 MB. Lo verá el deportista y el resto del equipo.</p>
+
+    <div class="panel" id="dcArchivo" style="padding:13px;margin-bottom:14px"></div>
+
+    <label class="f"><span>Título</span>
+      <input class="inp" id="dcTitulo" placeholder="Ej: Informe de resonancia"></label>
+
+    <label class="f"><span>Tipo</span>
+      <div class="tags" id="dcTipo">
+        <button class="tag" data-tp="medico">🩺 Médico</button>
+        <button class="tag" data-tp="nutricional">🥗 Nutricional</button>
+        <button class="tag" data-tp="otro">📄 Otro</button>
+      </div></label>
+
+    <label class="f"><span>Fecha del documento</span>
+      <input class="inp" id="dcFecha" type="date"></label>
+
+    <label class="f"><span>Notas</span>
+      <textarea class="inp" id="dcNotas" rows="2" placeholder="Qué contiene, qué hay que mirar…" style="resize:vertical"></textarea></label>
+
+    <button class="btn" id="dcSave">Subir</button>
+    <button class="btn ghost" style="margin-top:8px" id="dcCancel">Cancelar</button>
+  </div>
+</div>
+<input type="file" id="docFile" accept="application/pdf,image/png,image/jpeg,image/webp" style="display:none">
+
 <div class="toast" id="toast"></div>
 
 <script src="config.js"></script>

@@ -565,7 +565,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.08.25-3";
+const APP_VERSION = "2026.08.25-4";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2150,18 +2150,23 @@ async function renderDocs(){
   }
   if(!docsCache.length){
     box.innerHTML = `<div class="empty">Sin documentos todavía.<br>
-      Sube exámenes, informes o pautas en PDF.</div>`;
+      Sube exámenes, informes o pautas en PDF. Tu equipo también puede subirlos.</div>`;
     return;
   }
   box.innerHTML = docsCache.map(d=>{
     const t = TIPOS_DOC[d.tipo] || TIPOS_DOC.otro, f = parseKey(d.fecha);
+    /* Sin autor son los que subiste tú antes de que el equipo pudiera hacerlo. */
+    const mio = !d.autor_id || d.autor_id === miId();
+    const r = ROLES_EQUIPO[d.autor?.rol];
+    const quien = mio ? "" : ` · ${r ? r.e + " " : ""}${
+      esc(String(d.autor?.nombre || "tu equipo").split(" ")[0])}`;
     return `<div class="hrow">
       <div class="m">${t.e}</div>
       <div class="t"><b>${esc(d.titulo)}</b>
         <span>${t.l} · ${f.getDate()} ${MESES[f.getMonth()]} ${f.getFullYear()}${
-          d.tam ? " · "+pesoArchivo(d.tam) : ""}</span></div>
+          d.tam ? " · "+pesoArchivo(d.tam) : ""}${quien}</span></div>
       <button class="mini" data-abrir="${d.id}">Abrir</button>
-      <button class="mini" data-borrar="${d.id}" style="color:#fb7185">✕</button>
+      ${mio ? `<button class="mini" data-borrar="${d.id}" style="color:#fb7185">✕</button>` : ""}
     </div>${d.notas ? `<p style="font-size:12px;color:var(--tx3);margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
   }).join("");
 
