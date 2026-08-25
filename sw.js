@@ -2,7 +2,7 @@
    - cachea la app para que funcione sin internet
    - recibe las notificaciones push enviadas desde el servidor
    - lee el progreso del día desde IndexedDB para que el aviso sea específico */
-const CACHE = "app-v26";
+const CACHE = "app-v27";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
@@ -75,16 +75,14 @@ self.addEventListener("push", e=>{
 
     if(kind === "habits"){
       if(fresh && st.pct >= 100){
-        title = "¡Día completo! 🎉";
-        body  = "Ya cerraste todos tus círculos de hoy. Descansa tranquilo.";
+        title = "Día registrado 🎉";
+        body  = "Ya anotaste todo lo de hoy. Descansa tranquilo.";
       }else if(fresh){
-        title = `Vas ${st.pct}% del día 🏋️`;
+        title = "Te falta registrar el día 🏋️";
         body  = st.detail
-          ? `${st.detail}. Te quedan ${st.pending} hábito${st.pending===1?"":"s"} por cerrar.`
-          : `Te quedan ${st.pending} hábito${st.pending===1?"":"s"} por cerrar.`;
+          ? `${st.detail}${st.pending > 1 ? ` y ${st.pending-1} cosa${st.pending>2?"s":""} más` : ""}.`
+          : `Te quedan ${st.pending} cosa${st.pending===1?"":"s"} por registrar.`;
       }
-    }else if(kind === "screens" && fresh && st.screensDone){
-      return;   // ya marcaste "sin pantallas": no molestamos
     }
 
     await self.registration.showNotification(title, {

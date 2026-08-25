@@ -69,7 +69,7 @@ function pendientes(){
       if(dentro(hh)){
         out.push({kind:"habits",
           title:"Fractale 🏋️",
-          body:"¿Cómo van tus círculos de hoy? Abre la app y completa lo que falte."});
+          body:"¿Ya registraste el día? Entrenamiento, actividad, alimentación y sueño."});
         break;
       }
     }

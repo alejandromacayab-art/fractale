@@ -565,8 +565,8 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.08.25-1";
-const PUSH_PUBLIC_KEY = "";
+const APP_VERSION = "2026.08.25-2";
+const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
   rem:{on:false, from:"08:00", to:"22:00", every:120, lastAt:0},
@@ -855,8 +855,7 @@ async function mirrorState(){
       date: t,
       pct: Math.round(registroDe(t)/4*100),
       pending: p ? p.n : 0,
-      detail: p ? p.detalle : "",
-      screensDone: true          // el hábito de pantallas ya no existe
+      detail: p ? p.detalle : ""
     };
     const db = await idb();
     db.transaction("kv","readwrite").objectStore("kv").put(data, "today");
