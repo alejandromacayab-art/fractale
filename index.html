@@ -178,6 +178,16 @@ section{padding:64px 0}
   linear-gradient(115deg,#111,#2b2b2b 50%,#111)}
 .art-e{background:linear-gradient(140deg,#f4f4f4,#dcdcdc)}
 
+/* fotos del perfil de @fractale.cl */
+.foto{background-position:center;background-size:cover;background-color:#111}
+.f-karate{background-image:url("assets/fotos/karate.jpg")}
+.f-patagonia{background-image:url("assets/fotos/patagonia.jpg")}
+.f-ua{background-image:url("assets/fotos/under-armour.jpg")}
+.f-meta{background-image:url("assets/fotos/meta.jpg")}
+.f-podio{background-image:url("assets/fotos/podio.jpg")}
+.f-trail{background-image:url("assets/fotos/trail.jpg")}
+.f-futbol{background-image:url("assets/fotos/futbol.jpg")}
+
 /* carrusel */
 .rail{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
   padding-bottom:8px;scrollbar-width:none}
@@ -217,17 +227,38 @@ section{padding:64px 0}
 @media(max-width:900px){.split{grid-template-columns:1fr}}
 
 /* alianzas */
-.allies{display:grid;grid-template-columns:repeat(4,1fr);
+.allies{display:grid;grid-template-columns:repeat(3,1fr);
   border-top:1px solid #e6e6e6}
-.allies article{padding:30px 26px 34px;border-bottom:1px solid #e6e6e6;
+.allies article{padding:34px 30px 36px;border-bottom:1px solid #e6e6e6;
   border-right:1px solid #e6e6e6}
 .allies article:last-child{border-right:0}
-.allies h4{margin:0 0 8px;font-size:22px;font-weight:700;letter-spacing:-.025em}
+/* el logo manda: alto fijo y ancho libre, para que todos pesen igual */
+.allies .logo{height:56px;display:flex;align-items:center;margin-bottom:22px}
+.allies .logo img{max-height:100%;width:auto;max-width:210px;object-fit:contain}
+/* ajuste óptico: cada logo pesa distinto a la misma altura */
+.allies article:nth-child(1) .logo img{max-height:50px}
+.allies article:nth-child(2) .logo img{max-height:60px}
+.allies article:nth-child(3) .logo img{max-height:48px}
+.allies h4{margin:0 0 8px;font-size:20px;font-weight:700;letter-spacing:-.025em}
 .allies p{margin:0;font-size:15px;color:#666}
-@media(max-width:900px){.allies{grid-template-columns:1fr 1fr}
-  .allies article:nth-child(2n){border-right:0}}
-@media(max-width:560px){.allies{grid-template-columns:1fr}
-  .allies article{border-right:0}}
+@media(max-width:900px){.allies{grid-template-columns:1fr}
+  .allies article{border-right:0}
+  .allies .logo{height:48px}}
+
+/* la nota de pertenencia, bajo el muro */
+.pertenencia{border-bottom:1px solid #e6e6e6;padding:26px 30px 30px;
+  display:grid;grid-template-columns:210px 1fr;gap:24px;align-items:baseline}
+.pertenencia b{font-size:20px;font-weight:700;letter-spacing:-.025em}
+.pertenencia p{margin:0;color:#666;max-width:70ch}
+@media(max-width:900px){.pertenencia{grid-template-columns:1fr;gap:6px}}
+
+/* galería del perfil */
+.galeria{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.galeria a{position:relative;aspect-ratio:4/5;overflow:hidden;display:block}
+.galeria .foto{position:absolute;inset:0;transition:transform .6s ease}
+.galeria a:hover .foto{transform:scale(1.05)}
+@media(max-width:760px){.galeria{grid-template-columns:1fr 1fr}
+  .galeria a:last-child{display:none}}
 
 /* beneficios b2b */
 .bene{border-top:2px solid #111}
@@ -285,6 +316,7 @@ footer{background:#111;color:#fff;padding:56px 0 0;font-size:14px}
       <a href="#atletas">Atletas</a>
       <a href="#alianzas">Alianzas</a>
       <a href="#eventos">Eventos</a>
+      <a href="#terreno">En terreno</a>
       <a href="#marcas">Marcas</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -312,6 +344,7 @@ footer{background:#111;color:#fff;padding:56px 0 0;font-size:14px}
   <a href="#atletas">Atletas</a>
   <a href="#alianzas">Alianzas</a>
   <a href="#eventos">Eventos</a>
+  <a href="#terreno">En terreno</a>
   <a href="#marcas">Marcas</a>
   <a href="#contacto">Agendar reunión</a>
   <a href="app.html">Soy deportista</a>
@@ -393,21 +426,24 @@ footer{background:#111;color:#fff;padding:56px 0 0;font-size:14px}
 
       <div class="rail" id="rail">
         <article class="card">
-          <div class="art art-c" aria-hidden="true"></div>
+          <div class="art foto f-karate" role="img"
+               aria-label="Deportista de karate en competencia"></div>
           <h4>Performance</h4>
           <p>Programas de entrenamiento de alta exigencia, planificación
              técnica y monitoreo de cargas bajo metodologías de estándar
              internacional.</p>
         </article>
         <article class="card">
-          <div class="art art-e" aria-hidden="true"></div>
+          <div class="art foto f-patagonia" role="img"
+               aria-label="Centro médico Patagonia Medical"></div>
           <h4>Salud &amp; Bienestar</h4>
           <p>Cobertura médica especializada y nutrición deportiva orientada a
              la optimización biomecánica, metabólica y a la aceleración de la
              recuperación.</p>
         </article>
         <article class="card">
-          <div class="art art-d" aria-hidden="true"></div>
+          <div class="art foto f-ua" role="img"
+               aria-label="Marca Under Armour junto a FRACTALE"></div>
           <h4>Marketing &amp; Gestión Comercial</h4>
           <p>Posicionamiento de marca personal, gestión de prensa, patrocinio y
              consecución de financiamiento privado.</p>
@@ -428,25 +464,32 @@ footer{background:#111;color:#fff;padding:56px 0 0;font-size:14px}
       </p>
       <div class="allies">
         <article>
+          <div class="logo"><img src="assets/marcas/fthaus.png" alt="FThaus"></div>
           <h4>Fthaus</h4>
           <p>Centro clínico y de entrenamiento de vanguardia técnica y
              metodológica.</p>
         </article>
         <article>
+          <div class="logo"><img src="assets/marcas/patagonia-medical.png"
+                                 alt="Patagonia Medical"></div>
           <h4>Patagonia Medical</h4>
           <p>Laboratorio de exámenes y centro médico integral especializado en
              alta competencia.</p>
         </article>
         <article>
+          <div class="logo"><img src="assets/marcas/under-armour.png"
+                                 alt="Under Armour"></div>
           <h4>Under Armour</h4>
           <p>Indumentaria e ingeniería deportiva de alto rendimiento que viste y
              equipa el talento de nuestra nómina.</p>
         </article>
-        <article>
-          <h4>Sentido de pertenencia</h4>
-          <p>Atletas orgullosos de su origen, con una estructura que nada tiene
-             que envidiar a las grandes capitales latinoamericanas.</p>
-        </article>
+      </div>
+
+      <div class="pertenencia">
+        <b>Sentido de pertenencia</b>
+        <p>Formamos atletas orgullosos de su origen, respaldados por una
+           estructura que nada tiene que envidiar a las grandes capitales
+           latinoamericanas.</p>
       </div>
     </div>
   </section>
@@ -464,7 +507,8 @@ footer{background:#111;color:#fff;padding:56px 0 0;font-size:14px}
   <!-- eventos -->
   <section id="eventos" style="padding:0">
     <div class="split">
-      <div class="art art-d" aria-hidden="true"></div>
+      <div class="art foto f-meta" role="img"
+           aria-label="Largada de la corrida, arco de meta"></div>
       <div class="copy">
         <p class="eyebrow">02 · Eventos deportivos de alto estándar</p>
         <h2 class="h2 big">Conexión real<br>y territorio</h2>
@@ -531,6 +575,40 @@ footer{background:#111;color:#fff;padding:56px 0 0;font-size:14px}
           <p>FRACTALE actúa como su agencia ejecutora: gestionamos, activamos y
              reportamos la presencia de su marca de principio a fin.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- galería del perfil -->
+  <section id="terreno">
+    <div class="wrap">
+      <div class="railhead">
+        <div>
+          <p class="eyebrow">En terreno</p>
+          <h2 class="h2" style="margin:0">Lo que hacemos, semana a semana</h2>
+          <p class="sub" style="margin:12px 0 0">
+            Competencias, eventos y trabajo con las marcas. Todo esto salió de
+            nuestro Instagram.
+          </p>
+        </div>
+        <a class="btn btn-line" href="https://instagram.com/fractale.cl"
+           target="_blank" rel="noopener"
+           style="height:44px;padding:0 22px;flex:0 0 auto">@fractale.cl</a>
+      </div>
+
+      <div class="galeria">
+        <a href="https://instagram.com/fractale.cl" target="_blank" rel="noopener"
+           aria-label="Podio de nuestras deportistas, en Instagram">
+          <div class="foto f-podio"></div>
+        </a>
+        <a href="https://instagram.com/fractale.cl" target="_blank" rel="noopener"
+           aria-label="Trail de 65 kilómetros, en Instagram">
+          <div class="foto f-trail"></div>
+        </a>
+        <a href="https://instagram.com/fractale.cl" target="_blank" rel="noopener"
+           aria-label="Evento de fútbol gestionado por FRACTALE, en Instagram">
+          <div class="foto f-futbol"></div>
+        </a>
       </div>
     </div>
   </section>
