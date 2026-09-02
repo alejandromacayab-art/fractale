@@ -2,11 +2,12 @@
    - cachea la app para que funcione sin internet
    - recibe las notificaciones push enviadas desde el servidor
    - lee el progreso del día desde IndexedDB para que el aviso sea específico */
-const CACHE = "app-v30";
+const CACHE = "app-v32";
 const SHELL = [
-  "./", "./index.html", "./manifest.webmanifest",
+  "./", "./index.html", "./app.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
   "./assets/symbol-dark.png", "./assets/symbol-light.png", "./assets/logo-dark.png",
+  "./assets/fotos/puerto-montt-900.jpg",
   "./estilos.css", "./config.js", "./nube.js", "./vendor/supabase.js",
   "./panel.html", "./panel.js"
 ];
@@ -35,7 +36,7 @@ self.addEventListener("fetch", e=>{
       const copy = res.clone();
       caches.open(CACHE).then(c=>c.put(req, copy)).catch(()=>{});
       return res;
-    }).catch(()=> caches.match(req).then(r=> r || caches.match("./index.html")))
+    }).catch(()=> caches.match(req).then(r=> r || caches.match("./app.html")))
   );
 });
 
@@ -91,7 +92,7 @@ self.addEventListener("push", e=>{
       badge: "./icons/icon-192.png",
       tag: "bienestar-" + kind,
       renotify: true,
-      data: {url: "./index.html"}
+      data: {url: "./app.html"}
     });
   })());
 });
@@ -100,6 +101,6 @@ self.addEventListener("notificationclick", e=>{
   e.notification.close();
   e.waitUntil(clients.matchAll({type:"window", includeUncontrolled:true}).then(list=>{
     for(const c of list){ if("focus" in c) return c.focus(); }
-    return clients.openWindow((e.notification.data && e.notification.data.url) || "./index.html");
+    return clients.openWindow((e.notification.data && e.notification.data.url) || "./app.html");
   }));
 });

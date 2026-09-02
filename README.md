@@ -64,7 +64,7 @@ pone `TU-DIRECCION-AQUI`.
 cd push && npm install && npm run keys
 ```
 
-La clave pública va en `index.html` (`PUSH_PUBLIC_KEY`); las dos van como
+La clave pública va en `app.html` (`PUSH_PUBLIC_KEY`); las dos van como
 secretos del repositorio. Horarios en `push/config.json`.
 
 ### 5. Compruébalo
@@ -76,7 +76,8 @@ secretos del repositorio. Horarios en `push/config.json`.
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | La app completa: hábitos, entrenamiento, alimentación, sueño |
+| `index.html` | La portada pública: qué es, para quién y por dónde entrar |
+| `app.html` | La app completa: hábitos, entrenamiento, alimentación, sueño |
 | `panel.html` · `panel.js` | El panel de quien supervisa |
 | `estilos.css` | Los estilos de ambos |
 | `nube.js` | Cuentas y sincronización |
@@ -88,7 +89,7 @@ secretos del repositorio. Horarios en `push/config.json`.
 
 ## Si cambias los hábitos por defecto
 
-Están en `DEF_HABITS`, dentro de `index.html`. Si los cambias **después** de que
+Están en `DEF_HABITS`, dentro de `app.html`. Si los cambias **después** de que
 alguien ya use la app, sube `S.v` y añade tu cambio a `CAMBIOS_HABITOS`: eso
 convierte los registros existentes en vez de romperlos.
 

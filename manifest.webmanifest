@@ -2,7 +2,7 @@
   "name": "Fractale · Registro personal",
   "short_name": "Fractale",
   "description": "Fractale · Entrenamiento online. Registro diario de hábitos, entrenamiento, alimentación y sueño.",
-  "start_url": "./index.html",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

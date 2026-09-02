@@ -1,6 +1,6 @@
 /* ============================================================
    Fractale · capa de datos en la nube
-   Lo usan tanto la app (index.html) como el panel (panel.html).
+   Lo usan tanto la app (app.html) como el panel (panel.html).
    Si no hay configuración, todo esto queda inactivo y la app
    sigue funcionando solo con el almacenamiento del dispositivo.
    ============================================================ */

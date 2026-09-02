@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Arma una copia de la app en un solo archivo, para mirarla en el celular.
 
-No toca nada de lo publicado: lee index.html y escribe preview.html con el CSS
+No toca nada de lo publicado: lee app.html y escribe preview.html con el CSS
 y los logos dentro, sin service worker, sin base de datos y con datos de
 ejemplo para que las pantallas se vean con contenido.
 """
@@ -14,7 +14,7 @@ def datauri(rel):
     b = (RAIZ / rel).read_bytes()
     return "data:image/png;base64," + base64.b64encode(b).decode()
 
-s = (RAIZ / "index.html").read_text()
+s = (RAIZ / "app.html").read_text()
 
 # --- CSS dentro
 s = s.replace('<link rel="stylesheet" href="estilos.css">',

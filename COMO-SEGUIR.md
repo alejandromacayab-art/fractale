@@ -21,7 +21,7 @@ git add . && git commit -m "lo que cambió" && git push
 GitHub Pages tarda 1 o 2 minutos. La app avisa a quien la tenga instalada y se
 actualiza sola: no hay que pedirle a nadie que reinstale.
 
-Al tocar `index.html`, sube `APP_VERSION`; al tocar cualquier archivo cacheado,
+Al tocar `app.html`, sube `APP_VERSION`; al tocar cualquier archivo cacheado,
 sube también el número de `CACHE` en `sw.js`. Así el service worker se renueva.
 
 ## Ver la app sin publicar

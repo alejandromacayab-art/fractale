@@ -104,7 +104,7 @@ def main():
 
     print("Poniendo el nombre…")
     cambios = [("Mi App", a.nombre)]
-    for f in ("index.html","panel.html","manifest.webmanifest","sw.js","nube.js",
+    for f in ("index.html","app.html","panel.html","manifest.webmanifest","sw.js","nube.js",
               "push/send.js","push/package.json",".github/workflows/reminders.yml",
               "README.md","base-de-datos/README.md"):
         reemplazar(os.path.join(RAIZ,f), cambios)
@@ -116,7 +116,7 @@ def main():
     t = re.sub(r'"background_color":\s*"[^"]*"', f'"background_color": "{a.fondo}"', t)
     open(m,"w",encoding="utf-8").write(t)
 
-    ix = os.path.join(RAIZ,"index.html")
+    ix = os.path.join(RAIZ,"app.html")
     t = open(ix, encoding="utf-8").read()
     t = re.sub(r'<meta name="theme-color" content="[^"]*">',
                f'<meta name="theme-color" content="{a.fondo}">', t)

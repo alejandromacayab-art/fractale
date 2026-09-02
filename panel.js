@@ -986,7 +986,7 @@ $("themeBtn").onclick = ()=>{
     $("main").innerHTML = `<div class="empty">
       Este panel es para el equipo de trabajo.<br><br>
       <a class="btn" style="display:inline-block;text-decoration:none;width:auto;padding:12px 20px"
-         href="index.html">Ir a mi registro</a></div>`;
+         href="app.html">Ir a mi registro</a></div>`;
     return;
   }
   await verLista();
