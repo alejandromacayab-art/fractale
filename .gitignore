@@ -7,3 +7,7 @@ push/CLAVES-SECRETAS.txt
 
 # copia de prueba generada por .claude/preview.py
 .claude/preview.html
+
+# copias en un archivo, generadas por .claude/compartir.py y artefacto.py
+.claude/portada.html
+.claude/artefacto.html
