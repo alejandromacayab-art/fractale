@@ -37,7 +37,7 @@ cambios de pantalla sin tocar la base de datos ni el `config.js` de verdad.
 ## Estado
 
 Ejecutados en Supabase: `esquema.sql`, `registro-abierto.sql`, `salud.sql`,
-`chat.sql`, `objetivos.sql` y `equipo.sql`.
+`chat.sql`, `objetivos.sql` y `equipo.sql`. **Falta ejecutar `beneficios.sql`.**
 
 Funcionando: base de datos con permisos por fila, registro abierto a cualquiera,
 panel en vivo, cuentas con correo y contraseña sin confirmación por correo,
@@ -47,7 +47,8 @@ y nutricional y documentos (pestaña **Salud**), registro diario de
 entrenamiento, actividad y alimentación en **Hoy**, y bandeja de mensajes entre cada
 deportista y su entrenador (botón 💬 de la cabecera) y checklist de objetivos
 que el equipo asigna (pestaña **Plan**, con recordatorio en **Hoy**). Todo se
-refleja en la ficha del panel del entrenador.
+refleja en la ficha del panel del entrenador. También los descuentos de las marcas
+aliadas (botón 🎁 de la cabecera), que el entrenador mantiene desde el panel.
 
 Pendiente:
 - Invitar al médico y al nutricionista desde el panel, y asignarlos a cada
@@ -92,4 +93,8 @@ Pendiente:
 - Los documentos sí: tabla `documentos` y bucket privado `documentos`, ambos en
   `base-de-datos/salud.sql`. El entrenador los lee, no los edita, y cada
   apertura usa un enlace firmado que caduca a los 5 minutos.
+- Los beneficios de las marcas son **iguales para todos**: la tabla `beneficios` no
+  lleva `atleta_id`. Cualquiera con cuenta los lee mientras estén `activo`; crearlos,
+  editarlos y borrarlos pide `soy_coach()`. Los logos viven en `assets/marcas/` y se
+  pintan sobre una pastilla clara, porque están hechos para fondo blanco.
 - La plantilla limpia de la que salió esto está en `/Users/alejandromacaya/plantilla-app`.

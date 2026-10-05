@@ -177,6 +177,37 @@ async function borrarDoc(doc){
   await sb.storage.from(BUCKET).remove([doc.ruta]).catch(()=>{});
 }
 
+/* ---------------- beneficios de las marcas ----------------
+   Son iguales para todos los deportistas: el entrenador los mantiene y el
+   resto los ve. Por eso no llevan atleta_id. */
+async function beneficios(todos){
+  if(!sb) return [];
+  let q = sb.from("beneficios").select("*").order("orden").order("creado", {ascending:false});
+  if(!todos) q = q.eq("activo", true);
+  const {data, error} = await q;
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
+}
+
+async function guardarBeneficio(b){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  if(b.id){
+    const {id, ...campos} = b;
+    const {data, error} = await sb.from("beneficios").update(campos).eq("id", id).select().single();
+    if(error) throw new Error(traduce(error.message));
+    return data;
+  }
+  const {data, error} = await sb.from("beneficios").insert(b).select().single();
+  if(error) throw new Error(traduce(error.message));
+  return data;
+}
+
+async function borrarBeneficio(id){
+  if(!sb) return;
+  const {error} = await sb.from("beneficios").delete().eq("id", id);
+  if(error) throw new Error(traduce(error.message));
+}
+
 /* ---------------- objetivos ----------------
    El equipo asigna, el deportista marca. Editar el objetivo solo puede quien
    lo escribió; marcarlo, solo el deportista. */
@@ -410,6 +441,9 @@ function traduce(m){
   if(/invalid.*email|email.*invalid/i.test(s))return "Ese correo no parece válido.";
   if(/Bucket not found/i.test(s))             return "Falta crear el almacén de documentos. "
                                                    + "Ejecuta base-de-datos/salud.sql en Supabase.";
+  if(/relation .*beneficios.* does not exist|beneficios.*not exist/i.test(s))
+                                              return "Faltan los beneficios de las marcas. "
+                                                   + "Ejecuta base-de-datos/beneficios.sql en Supabase.";
   if(/relation .*objetivo.* does not exist|objetivos.*not exist/i.test(s))
                                               return "Falta el checklist de objetivos. "
                                                    + "Ejecuta base-de-datos/objetivos.sql en Supabase.";
@@ -439,6 +473,7 @@ global.Nube = {
   docs, subirDoc, urlDoc, borrarDoc,
   mensajes, enviar, borrarMensaje, sinLeer, marcarLeido, escucharChat,
   objetivos, hechos, guardarObjetivo, borrarObjetivo, marcarObjetivo, desmarcarObjetivo,
+  beneficios, guardarBeneficio, borrarBeneficio,
   misAtletas, diasDe, configDe, invitaciones, invitar, quitarInvitacion,
   equipoDe, staffDisponible, asignar, quitarDelEquipo, nombresDe, ROLES_STAFF,
   escuchar, dejarDeEscuchar, traduce

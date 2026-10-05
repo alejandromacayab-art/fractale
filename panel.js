@@ -508,12 +508,119 @@ async function verLista(){
           </tbody></table>`
         : `<div class="empty">Todavía no tienes deportistas.<br>Invita al primero para empezar.</div>`}
       </div>
-      ${soyCoach() ? `<button class="btn" style="margin-top:12px" id="invitar">+ Invitar a alguien</button>` : ""}
+      ${soyCoach() ? `<button class="btn" style="margin-top:12px" id="invitar">+ Invitar a alguien</button>
+        <button class="btn ghost" style="margin-top:8px" id="verBen">🎁 Beneficios de las marcas</button>` : ""}
     </section>`;
 
   document.querySelectorAll("[data-id]").forEach(tr=>tr.onclick=()=>verAtleta(tr.dataset.id));
-  if(soyCoach()) $("invitar").onclick = abrirInvitar;
+  if(soyCoach()){
+    $("invitar").onclick = abrirInvitar;
+    $("verBen").onclick  = verBeneficios;
+  }
 }
+
+/* ============================================================
+   BENEFICIOS DE LAS MARCAS
+   Iguales para todos los deportistas; solo el entrenador los toca.
+   ============================================================ */
+const LOGOS = [
+  {f:"", l:"Sin logo"},
+  {f:"assets/marcas/under-armour.png",     l:"Under Armour"},
+  {f:"assets/marcas/fthaus.png",           l:"FThaus"},
+  {f:"assets/marcas/patagonia-medical.png",l:"Patagonia Medical"},
+  {f:"assets/marcas/winkler-nutrition.png",l:"Winkler Nutrition"}
+];
+const CATS_BEN = {ropa:"👕 Ropa", nutricion:"🥗 Nutrición", salud:"✚ Salud",
+                  entrenamiento:"🏋️ Entrenamiento", otro:"⭐️ Otro"};
+let bens = [], benEdit = null;
+
+async function verBeneficios(){
+  vista = {tipo:"beneficios", id:null};
+  $("main").innerHTML = `<div class="empty">Cargando beneficios…</div>`;
+  try{ bens = await Nube.beneficios(true); }
+  catch(e){ $("main").innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`; return; }
+
+  $("main").innerHTML = `
+    <a class="volver" id="benVolver">‹ Todos los deportistas</a>
+    <section>
+      <div class="stitle">🎁 Beneficios de las marcas</div>
+      <div class="panel">
+        ${bens.length ? bens.map(b=>`
+          <div class="hrow" data-ben="${b.id}" style="cursor:pointer">
+            <div class="m">${b.logo ? `<img src="${esc(b.logo)}" alt="" style="width:100%;height:100%;object-fit:contain">` : "🎁"}</div>
+            <div class="t"><b>${esc(b.marca)} · ${esc(b.descuento)}</b>
+              <span>${esc(b.detalle || CATS_BEN[b.categoria] || "")}${
+                b.vence ? " · caduca " + fechaCorta(b.vence) : ""}${
+                b.activo ? "" : " · oculto"}</span></div>
+            <button class="mini">Editar</button>
+          </div>`).join("")
+        : `<div class="empty">Aún no has cargado ningún beneficio.</div>`}
+      </div>
+      <button class="btn" style="margin-top:12px" id="benNuevo">+ Añadir beneficio</button>
+    </section>`;
+
+  $("benVolver").onclick = verLista;
+  $("benNuevo").onclick  = ()=>abrirBeneficio(null);
+  document.querySelectorAll("[data-ben]").forEach(el=>el.onclick=()=>
+    abrirBeneficio(bens.find(b=>b.id === el.dataset.ben)));
+}
+
+function abrirBeneficio(b){
+  benEdit = b || null;
+  $("benTitulo").textContent = b ? "Editar beneficio" : "Nuevo beneficio";
+  $("bMarca").value   = b?.marca || "";
+  $("bDto").value     = b?.descuento || "";
+  $("bDetalle").value = b?.detalle || "";
+  $("bCodigo").value  = b?.codigo || "";
+  $("bInstr").value   = b?.instrucciones || "";
+  $("bEnlace").value  = b?.enlace || "";
+  $("bVence").value   = b?.vence || "";
+  document.querySelectorAll("[data-cat]").forEach(x=>
+    x.classList.toggle("on", x.dataset.cat === (b?.categoria || "otro")));
+  $("bLogo").innerHTML = LOGOS.map(o=>
+    `<button class="tag ${(b?.logo||"") === o.f ? "on" : ""}" data-logo="${esc(o.f)}">${esc(o.l)}</button>`).join("");
+  document.querySelectorAll("[data-cat]").forEach(x=>x.onclick=()=>{
+    document.querySelectorAll("[data-cat]").forEach(y=>y.classList.remove("on")); x.classList.add("on"); });
+  document.querySelectorAll("[data-logo]").forEach(x=>x.onclick=()=>{
+    document.querySelectorAll("[data-logo]").forEach(y=>y.classList.remove("on")); x.classList.add("on"); });
+  $("bBorrar").classList.toggle("hidden", !b);
+  $("benModal").classList.add("open");
+}
+
+$("bGuardar").onclick = async ()=>{
+  const marca = $("bMarca").value.trim(), dto = $("bDto").value.trim();
+  if(!marca){ toast("Falta el nombre de la marca"); return; }
+  if(!dto){ toast("Falta el descuento"); return; }
+  const datos = {
+    marca, descuento: dto,
+    detalle:       $("bDetalle").value.trim() || null,
+    codigo:        $("bCodigo").value.trim() || null,
+    instrucciones: $("bInstr").value.trim() || null,
+    enlace:        $("bEnlace").value.trim() || null,
+    vence:         $("bVence").value || null,
+    categoria:     document.querySelector("[data-cat].on")?.dataset.cat || "otro",
+    logo:          document.querySelector("[data-logo].on")?.dataset.logo || null,
+    activo: true
+  };
+  try{
+    await Nube.guardarBeneficio(benEdit ? {...datos, id:benEdit.id} : datos);
+    $("benModal").classList.remove("open");
+    toast("Beneficio guardado");
+    verBeneficios();
+  }catch(e){ toast(Nube.traduce(e.message)); }
+};
+$("bBorrar").onclick = async ()=>{
+  if(!benEdit) return;
+  if(!confirm(`¿Quitar el beneficio de ${benEdit.marca}? Tus deportistas dejarán de verlo.`)) return;
+  try{
+    await Nube.borrarBeneficio(benEdit.id);
+    $("benModal").classList.remove("open");
+    toast("Beneficio quitado");
+    verBeneficios();
+  }catch(e){ toast(Nube.traduce(e.message)); }
+};
+$("bCerrar").onclick = ()=> $("benModal").classList.remove("open");
+$("benModal").onclick = e=>{ if(e.target.id === "benModal") $("benModal").classList.remove("open"); };
 
 /* ============================================================
    FICHA DE UN DEPORTISTA

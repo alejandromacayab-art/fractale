@@ -1,0 +1,81 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<style>
+:root{
+  --ground:#0B0B0D; --surface:#141419; --ink:#F3F3F5; --mute:#9A9AA4;
+  --line:#26262E; --bright:#FFFFFF; --band:#F3F3F5; --band-ink:#131318;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{
+  background:var(--ground);color:var(--ink);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+.frame{position:relative;width:1080px;height:1920px;overflow:hidden}
+/* la foto de fondo, siempre bajo un velo que deja legible el texto */
+.bg{position:absolute;inset:0;background-size:cover;background-position:center;
+    filter:grayscale(1) contrast(1.05) blur(3px);transform:scale(1.05)}
+.bg::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(11,11,13,.93),rgba(11,11,13,.82) 42%,rgba(11,11,13,.97))}
+/* la portada si lleva foto de verdad: alta resolucion y sin marcas encima */
+.bg.limpio{filter:grayscale(.18) contrast(1.06);transform:none}
+.bg.limpio::after{background:
+  linear-gradient(180deg,rgba(0,0,0,.78),rgba(0,0,0,.42) 40%,rgba(0,0,0,.92)),
+  radial-gradient(70% 60% at 50% 45%,rgba(0,0,0,.5),transparent 75%)}
+/* zona segura: Instagram tapa ~250px arriba y ~300px abajo */
+.inner{position:relative;height:100%;padding:230px 88px 300px;
+       display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo img{height:34px;width:auto;opacity:.95}
+.num{font-size:20px;letter-spacing:.22em;color:var(--mute)}
+.mid{margin-top:auto;margin-bottom:auto}
+.eyebrow{font-size:22px;letter-spacing:.24em;text-transform:uppercase;
+  font-weight:600;color:var(--mute);margin-bottom:34px}
+.rule{width:96px;height:4px;background:var(--bright);margin-bottom:40px}
+h1{font-weight:800;text-transform:uppercase;letter-spacing:-.045em;
+   line-height:.88;font-size:112px}
+h1.xl{font-size:150px}
+h1.sm{font-size:88px}
+.lead{margin-top:40px;font-size:34px;line-height:1.35;color:#DCDCE2;max-width:27ch}
+.lead b{color:#fff;font-weight:700}
+ul{margin-top:56px;list-style:none;border-top:1px solid var(--line)}
+li{border-bottom:1px solid var(--line);padding:26px 0;font-size:32px;
+   display:flex;gap:22px;align-items:baseline}
+li span{font-size:20px;letter-spacing:.18em;color:var(--mute);min-width:56px}
+li b{font-weight:600}
+li i{font-style:normal;color:var(--mute);font-size:26px;display:block;margin-top:6px}
+.foot{position:absolute;left:88px;right:88px;bottom:150px;
+      display:flex;justify-content:space-between;align-items:flex-end;
+      font-size:24px;color:var(--mute);letter-spacing:.04em}
+.pill{display:inline-flex;align-items:center;height:78px;padding:0 44px;
+  border-radius:999px;background:var(--bright);color:#0B0B0D;
+  font-size:30px;font-weight:600;margin-top:56px}
+.pill.ghost{background:none;color:#fff;border:2px solid rgba(255,255,255,.55)}
+/* la banda clara donde viven los logos de las marcas */
+.marcas{margin-top:56px;background:var(--band);border-radius:28px;
+  padding:56px 48px;display:grid;grid-template-columns:1fr 1fr;gap:52px 44px}
+.marcas div{display:flex;align-items:center;justify-content:center;height:120px}
+.marcas img{max-height:96px;max-width:100%;width:auto;object-fit:contain}
+.dosb{margin-top:auto;display:grid;gap:22px}
+.caja{border:1px solid var(--line);background:rgba(20,20,25,.72);
+  border-radius:28px;padding:46px 44px}
+.caja h3{font-size:44px;font-weight:800;text-transform:uppercase;
+  letter-spacing:-.03em;margin-bottom:14px}
+.caja p{font-size:28px;color:var(--mute);line-height:1.35}
+.tags{margin-top:44px;font-size:26px;color:var(--mute);letter-spacing:.06em}
+.retrato{position:absolute;right:0;top:0;width:520px;height:100%;
+  background-size:cover;background-position:center;
+  filter:grayscale(1) contrast(1.05) blur(2px)}
+.retrato::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(90deg,var(--ground),rgba(11,11,13,.35) 45%,rgba(11,11,13,.85))}
+</style></head><body><div class="frame"><div class="bg " style="background-image:url('/Users/alejandromacaya/Desktop/FRACTALE/assets/fotos/under-armour.jpg')"></div>
+<div class="inner"><div class="top"><div class="logo"><img src="/Users/alejandromacaya/Desktop/FRACTALE/assets/logo-dark.png" alt="FRACTALE"></div><div class="num">06</div></div>
+  <div class="mid">
+    <div class="eyebrow">Marketing &amp; gestión comercial</div>
+    <h1>Buscamos<br>los auspicios<br>que tu<br>carrera<br>necesita</h1>
+    <p class="lead">Posicionamiento de marca personal, gestión de prensa,
+      patrocinio y <b>consecución de financiamiento privado</b>.
+      El atleta no tiene que negociar solo.</p>
+  </div>
+</div><div class="foot"><div>@fractale.cl</div><div>Puerto Montt · Chile</div></div></div></body></html>

@@ -24,6 +24,7 @@
         <span class="wm"><b>Fractale</b></span>
       </div>
       <div class="spacer"></div>
+      <button class="iconbtn" id="benBtn" title="Beneficios">🎁</button>
       <button class="iconbtn" id="chatBtn" title="Mensajes">💬</button>
       <button class="iconbtn" id="bellBtn" title="Recordatorios">🔔</button>
       <button class="iconbtn" id="themeBtn" title="Tema">☀️</button>
@@ -158,6 +159,17 @@
         <button id="chatSend" title="Enviar">➤</button>
       </div>
     </div>
+  </div>
+
+  <!-- ================= BENEFICIOS ================= -->
+  <div id="view-ben" class="hidden">
+    <button class="volver" id="benVolver">‹ Volver</button>
+    <section>
+      <div class="stitle">🎁 Tus beneficios</div>
+      <p class="benintro">Descuentos de las marcas que acompañan a Fractale.
+        Son tuyos por ser parte del equipo.</p>
+      <div id="benLista"></div>
+    </section>
   </div>
 
   <!-- ================= HISTORIAL ================= -->
@@ -565,7 +577,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.09.02-1";
+const APP_VERSION = "2026.10.05-1";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2385,6 +2397,8 @@ async function enviarChat(){
   }
 }
 
+document.getElementById("benBtn").onclick    = ()=> go("ben");
+document.getElementById("benVolver").onclick = ()=> go("hoy");
 document.getElementById("chatBtn").onclick    = ()=> go("chat");
 document.getElementById("chatVolver").onclick = ()=> go("hoy");
 document.getElementById("chatSend").onclick   = enviarChat;
@@ -3315,10 +3329,87 @@ $$("lgOlvide").onclick = async ()=>{
 });
 
 /* ============================================================
+   BENEFICIOS DE LAS MARCAS
+   ============================================================ */
+const CAT_BEN = {
+  ropa:          {e:"👕", l:"Ropa y equipamiento"},
+  nutricion:     {e:"🥗", l:"Nutrición"},
+  salud:         {e:"✚",  l:"Salud"},
+  entrenamiento: {e:"🏋️", l:"Entrenamiento"},
+  otro:          {e:"⭐️", l:"Otros"}
+};
+
+let _ben = null;
+
+async function renderBeneficios(){
+  const box = document.getElementById("benLista");
+  if(!nubeOn() || !sesionUsuario){
+    box.innerHTML = `<div class="empty">Entra con tu cuenta para ver tus beneficios.</div>`;
+    return;
+  }
+  if(!_ben) box.innerHTML = `<div class="empty">Cargando…</div>`;
+  try{
+    _ben = await Nube.beneficios();
+  }catch(e){
+    box.innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    return;
+  }
+  if(!_ben.length){
+    box.innerHTML = `<div class="empty">Todavía no hay beneficios cargados.<br>
+      Tu entrenador los irá sumando aquí.</div>`;
+    return;
+  }
+
+  const hoy = todayKey();
+  const vivos = _ben.filter(b=>!b.vence || b.vence >= hoy);
+  const grupos = {};
+  vivos.forEach(b=>{ (grupos[b.categoria||"otro"] ||= []).push(b); });
+
+  box.innerHTML = Object.entries(grupos).map(([cat, lista])=>{
+    const c = CAT_BEN[cat] || CAT_BEN.otro;
+    return `<div class="bengrupo">${c.e} ${c.l}</div>` + lista.map(b=>tarjetaBeneficio(b)).join("");
+  }).join("") || `<div class="empty">Los beneficios cargados ya caducaron.</div>`;
+
+  box.querySelectorAll("[data-copiar]").forEach(btn=>btn.onclick=async ()=>{
+    try{
+      await navigator.clipboard.writeText(btn.dataset.copiar);
+      const antes = btn.textContent;
+      btn.textContent = "✓ Copiado";
+      setTimeout(()=>{ btn.textContent = antes; }, 1600);
+    }catch(e){ toast("Mantén pulsado el código para copiarlo"); }
+  });
+}
+
+function tarjetaBeneficio(b){
+  const quedan = b.vence ? Math.ceil((new Date(b.vence) - new Date(todayKey()))/86400000) : null;
+  return `<div class="bencard">
+    <div class="benhead">
+      ${b.logo ? `<img class="benlogo" src="${esc(b.logo)}" alt="${esc(b.marca)}" loading="lazy">`
+               : `<div class="benlogo sinlogo">${esc((b.marca||"?")[0])}</div>`}
+      <div class="benmarca">
+        <b>${esc(b.marca)}</b>
+        ${b.detalle ? `<span>${esc(b.detalle)}</span>` : ""}
+      </div>
+      <div class="bendto">${esc(b.descuento)}</div>
+    </div>
+    ${b.codigo ? `<button class="bencodigo" data-copiar="${esc(b.codigo)}">
+        <span class="et">Código</span>${esc(b.codigo)}</button>` : ""}
+    ${b.instrucciones ? `<p class="beninstr">${esc(b.instrucciones)}</p>` : ""}
+    <div class="benpie">
+      ${b.enlace ? `<a class="benlink" href="${esc(b.enlace)}" target="_blank" rel="noopener">Ir a la tienda ↗</a>` : "<span></span>"}
+      ${quedan !== null
+        ? `<span class="benvence ${quedan <= 14 ? "pronto" : ""}">${
+             quedan <= 0 ? "Caduca hoy" : quedan === 1 ? "Queda 1 día" : `Quedan ${quedan} días`}</span>`
+        : ""}
+    </div>
+  </div>`;
+}
+
+/* ============================================================
    NAVEGACIÓN Y EVENTOS
    ============================================================ */
 function go(v){
-  ["hoy","plan","salud","chat","hist","stats","set"].forEach(x=>
+  ["hoy","plan","salud","chat","ben","hist","stats","set"].forEach(x=>
     document.getElementById("view-"+x).classList.toggle("hidden", x!==v));
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
   document.getElementById("datebar").classList.toggle("hidden", v!=="hoy");
@@ -3326,6 +3417,7 @@ function go(v){
   if(v==="plan") renderPlan();
   if(v==="salud") renderSalud();
   if(v==="chat") abrirChat();
+  if(v==="ben") renderBeneficios();
   if(v==="hist") renderHist();
   if(v==="stats") renderStats();
   if(v==="set") renderSettings();

@@ -110,6 +110,44 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
   </div>
 </div>
 
+<!-- beneficios de las marcas -->
+<div class="modal" id="benModal">
+  <div class="sheet">
+    <h3 id="benTitulo">Beneficio de marca</h3>
+    <p class="sub">Lo verán todos tus deportistas en su app.</p>
+    <div class="two">
+      <label class="f"><span>Marca</span><input class="inp" id="bMarca" placeholder="Under Armour"></label>
+      <label class="f"><span>Descuento</span><input class="inp" id="bDto" placeholder="20%"></label>
+    </div>
+    <label class="f"><span>En qué aplica</span>
+      <input class="inp" id="bDetalle" placeholder="En toda la tienda online"></label>
+    <label class="f"><span>Categoría</span>
+      <div class="tags" id="bCat">
+        <button class="tag" data-cat="ropa">👕 Ropa</button>
+        <button class="tag" data-cat="nutricion">🥗 Nutrición</button>
+        <button class="tag" data-cat="salud">✚ Salud</button>
+        <button class="tag" data-cat="entrenamiento">🏋️ Entrenamiento</button>
+        <button class="tag" data-cat="otro">⭐️ Otro</button>
+      </div></label>
+    <label class="f"><span>Código (opcional)</span>
+      <input class="inp" id="bCodigo" placeholder="FRACTALE20"></label>
+    <label class="f"><span>Cómo se usa (opcional)</span>
+      <textarea class="inp" id="bInstr" rows="2" style="resize:vertical"
+        placeholder="Al pagar, escribe el código en el campo de cupón."></textarea></label>
+    <div class="two">
+      <label class="f"><span>Enlace (opcional)</span>
+        <input class="inp" id="bEnlace" placeholder="https://..."></label>
+      <label class="f"><span>Caduca (opcional)</span>
+        <input class="inp" id="bVence" type="date"></label>
+    </div>
+    <label class="f"><span>Logo</span>
+      <div class="tags" id="bLogo"></div></label>
+    <button class="btn" id="bGuardar">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="bCerrar">Cancelar</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="bBorrar">Quitar este beneficio</button>
+  </div>
+</div>
+
 <!-- asignar objetivo -->
 <div class="modal" id="objModal">
   <div class="sheet">
