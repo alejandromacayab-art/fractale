@@ -461,7 +461,13 @@ function traduce(m){
                                                    + "Ejecuta base-de-datos/equipo.sql en Supabase.";
   if(/duplicate key.*equipo/i.test(s))        return "Esa persona ya está en el equipo de este deportista.";
   if(/row-level security|permission denied/i.test(s)) return "No tienes permiso para ver eso.";
-  if(/Failed to fetch|NetworkError/i.test(s)) return "Sin conexión a internet.";
+  /* Un proyecto de Supabase en pausa deja de responder igual que una caída de
+     red, y decirle a alguien "sin internet" cuando su internet va bien manda
+     a buscar el problema al sitio equivocado. */
+  if(/Failed to fetch|NetworkError/i.test(s))
+    return navigator.onLine
+      ? "La base de datos no responde. Puede estar en pausa: entra a Supabase y reactívala."
+      : "Sin conexión a internet.";
   if(/signup.*disabled/i.test(s))             return "El registro está cerrado. Pide una invitación.";
   return s;
 }
