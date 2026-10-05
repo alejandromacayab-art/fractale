@@ -60,6 +60,12 @@ Pendiente:
 
 ## Cuidado con esto
 
+- Los **beneficios de las marcas** son iguales para todos: no llevan
+  `atleta_id`. Cualquiera con cuenta ve los que estén activos, y solo el
+  entrenador los crea y los edita. Los logos salen de `assets/marcas/`, y la
+  lista de los disponibles está en la constante `LOGOS` de `panel.js`: al
+  añadir una marca nueva hay que poner el archivo ahí y sumarlo a esa lista.
+
 - La clave de `config.js` es **pública por diseño**. Lo que protege los datos son
   los permisos por fila del esquema, no esconderla.
 - La clave `service_role` de Supabase **no debe entrar nunca** en este repositorio.
