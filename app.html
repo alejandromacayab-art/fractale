@@ -79,8 +79,8 @@
     </section>
 
     <section>
-      <div class="stitle">😴 Al despertar</div>
-      <div class="sleepcard" id="sleepCard"></div>
+      <div class="stitle">🎁 Tus beneficios</div>
+      <div id="benHoy"></div>
     </section>
 
     <section>
@@ -124,6 +124,10 @@
   <!-- ================= SALUD ================= -->
   <div id="view-salud" class="hidden">
     <div id="saludFlags"></div>
+    <section>
+      <div class="stitle">😴 Al despertar</div>
+      <div class="sleepcard" id="sleepCard"></div>
+    </section>
     <section>
       <div class="stitle">⚖️ Composición corporal</div>
       <div id="cuerpoResumen"></div>
@@ -577,7 +581,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.05-2";
+const APP_VERSION = "2026.10.07-1";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -1148,7 +1152,7 @@ function marcarAnimo(){
 
 function renderToday(){
   renderDate(); renderCompStrip(); renderHero(); renderObjStrip();
-  renderRegistro(); renderSleepCard();
+  renderRegistro(); renderBenHoy();
 }
 
 /* ============================================================
@@ -1792,7 +1796,7 @@ function delta(actual, antes, mejorSube){
 }
 
 function renderSalud(){
-  renderCuerpo(); renderCuerpoGrafico(); renderFichas(); renderDocs();
+  renderSleepCard(); renderCuerpo(); renderCuerpoGrafico(); renderFichas(); renderDocs();
 }
 
 function renderCuerpo(){
@@ -3340,6 +3344,49 @@ const CAT_BEN = {
 };
 
 let _ben = null;
+
+/* En Hoy van los mismos beneficios, pero sin agrupar por categoría y sin
+   pasar de tres: ahí compiten con el registro del día. El resto se ve en la
+   pantalla completa, a la que se llega desde el 🎁 de la cabecera. */
+const TOPE_BEN_HOY = 3;
+
+async function renderBenHoy(){
+  const box = document.getElementById("benHoy");
+  if(!box) return;
+  if(!nubeOn() || !sesionUsuario){
+    box.innerHTML = `<div class="panel"><div class="empty">
+      Entra con tu cuenta para ver los descuentos de las marcas.</div></div>`;
+    return;
+  }
+  /* Si ya se bajaron antes, se pintan al momento y se refresca por detrás. */
+  if(_ben) pintaBenHoy();
+  else box.innerHTML = `<div class="panel"><div class="empty">Cargando…</div></div>`;
+  try{
+    _ben = await Nube.beneficios();
+  }catch(e){
+    if(!_ben) box.innerHTML = `<div class="panel"><div class="empty">${esc(Nube.traduce(e.message))}</div></div>`;
+    return;
+  }
+  pintaBenHoy();
+}
+
+function pintaBenHoy(){
+  const box = document.getElementById("benHoy");
+  if(!box) return;
+  const hoy = todayKey();
+  const vivos = (_ben || []).filter(b => !b.vence || b.vence >= hoy);
+  if(!vivos.length){
+    box.innerHTML = `<div class="panel"><div class="empty">
+      Todavía no hay beneficios cargados.<br>Tu entrenador los irá sumando aquí.</div></div>`;
+    return;
+  }
+  box.innerHTML = vivos.slice(0, TOPE_BEN_HOY).map(tarjetaBeneficio).join("")
+    + (vivos.length > TOPE_BEN_HOY
+        ? `<div class="objmas" id="benMas">y ${vivos.length - TOPE_BEN_HOY} más · ver todos</div>`
+        : "");
+  const mas = document.getElementById("benMas");
+  if(mas) mas.onclick = ()=> go("ben");
+}
 
 async function renderBeneficios(){
   const box = document.getElementById("benLista");
