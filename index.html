@@ -254,22 +254,30 @@ section{padding:64px 0}
 .banda-clara{background:var(--band);color:var(--band-ink)}
 .banda-clara .eyebrow{color:var(--band-mute)}
 .banda-clara .sub{color:var(--band-mute)}
-.allies{display:grid;grid-template-columns:repeat(4,1fr);
+.allies{display:grid;grid-template-columns:repeat(3,1fr);
   border-top:1px solid var(--band-line)}
 .allies article{padding:34px 30px 36px;border-bottom:1px solid var(--band-line);
   border-right:1px solid var(--band-line)}
-.allies article:last-child{border-right:0}
+.allies article:nth-child(3n){border-right:0}
 /* el logo manda: alto fijo y ancho libre, para que todos pesen igual */
 .allies .logo{height:56px;display:flex;align-items:center;margin-bottom:22px}
 .allies .logo img{max-height:100%;width:auto;max-width:210px;object-fit:contain}
-/* ajuste óptico: cada logo pesa distinto a la misma altura */
-.allies article:nth-child(1) .logo img{max-height:50px}
-.allies article:nth-child(2) .logo img{max-height:60px}
-.allies article:nth-child(3) .logo img{max-height:48px}
-.allies article:nth-child(4) .logo img{max-height:58px}
+/* Ajuste óptico, por marca y no por posición: cada logo pesa distinto a la
+   misma altura, y así el ajuste no se descoloca al reordenarlos. */
+.l-patagonia{max-height:60px}
+.l-ua       {max-height:48px}
+.l-winkler  {max-height:58px}
+.l-fthaus   {max-height:50px}
+.l-redbull  {max-height:56px}
+.l-oxxean   {max-height:30px}
+
+/* el segundo grupo: quienes acompañan sin beneficio para el atleta */
+.allies-tit{margin:38px 0 0;font-size:13px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--band-mute)}
 .allies h4{margin:0 0 8px;font-size:20px;font-weight:700;letter-spacing:-.025em}
 .allies p{margin:0;font-size:15px;color:var(--band-mute)}
 @media(max-width:1080px){.allies{grid-template-columns:1fr 1fr}
+  .allies article:nth-child(3n){border-right:1px solid var(--band-line)}
   .allies article:nth-child(2n){border-right:0}}
 @media(max-width:620px){.allies{grid-template-columns:1fr}
   .allies article{border-right:0}
@@ -585,30 +593,48 @@ footer{background:var(--ground);color:var(--ink);padding:56px 0 0;font-size:14px
       </p>
       <div class="allies">
         <article>
-          <div class="logo"><img src="assets/marcas/fthaus.png" alt="FThaus"></div>
-          <h4>Fthaus</h4>
-          <p>Centro clínico y de entrenamiento de vanguardia técnica y
-             metodológica.</p>
-        </article>
-        <article>
-          <div class="logo"><img src="assets/marcas/patagonia-medical.png"
+          <div class="logo"><img class="l-patagonia" src="assets/marcas/patagonia-medical.png"
                                  alt="Patagonia Medical"></div>
           <h4>Patagonia Medical</h4>
           <p>Laboratorio de exámenes y centro médico integral especializado en
              alta competencia.</p>
         </article>
         <article>
-          <div class="logo"><img src="assets/marcas/under-armour.png"
+          <div class="logo"><img class="l-ua" src="assets/marcas/under-armour.png"
                                  alt="Under Armour"></div>
           <h4>Under Armour</h4>
           <p>Indumentaria e ingeniería deportiva de alto rendimiento que viste y
              equipa el talento de nuestra nómina.</p>
         </article>
         <article>
-          <div class="logo"><img src="assets/marcas/winkler-nutrition.png"
+          <div class="logo"><img class="l-winkler" src="assets/marcas/winkler-nutrition.png"
                                  alt="Winkler Nutrition"></div>
           <h4>Winkler Nutrition</h4>
           <p>Empresa chilena de suplementos deportivos y alimenticios.</p>
+        </article>
+      </div>
+
+      <p class="allies-tit">Colaboradores</p>
+      <div class="allies">
+        <article>
+          <div class="logo"><img class="l-fthaus" src="assets/marcas/fthaus.png" alt="FThaus"></div>
+          <h4>Fthaus</h4>
+          <p>Centro clínico y de entrenamiento de vanguardia técnica y
+             metodológica.</p>
+        </article>
+        <article>
+          <div class="logo"><img class="l-redbull" src="assets/marcas/red-bull.png"
+                                 alt="Red Bull"></div>
+          <h4>Red Bull</h4>
+          <p>Marca global de bebidas energéticas, referente mundial en el apoyo
+             al deporte de alto rendimiento.</p>
+        </article>
+        <article>
+          <div class="logo"><img class="l-oxxean" src="assets/marcas/oxxean.png"
+                                 alt="Oxxean"></div>
+          <h4>Oxxean</h4>
+          <p>Empresa del sur de Chile que respalda el desarrollo de nuestros
+             atletas en su propio territorio.</p>
         </article>
       </div>
 
