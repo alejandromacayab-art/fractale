@@ -179,6 +179,7 @@
 
   <!-- ================= HISTORIAL ================= -->
   <div id="view-hist" class="hidden">
+    <button class="volver" id="histVolver">‹ Volver a Progreso</button>
     <section>
       <div class="stitle">Últimos 30 días</div>
       <div class="panel" id="histList"></div>
@@ -218,6 +219,9 @@
           <b style="background:color-mix(in srgb,var(--accent) 60%,var(--line))"></b>
           <b style="background:var(--accent)"></b><span>más</span></div>
       </div>
+    </section>
+    <section>
+      <button class="btn ghost" id="verHist">▤ Ver el historial día a día</button>
     </section>
   </div>
 
@@ -267,7 +271,6 @@
   <button data-v="hoy" class="on"><i>◎</i>Hoy</button>
   <button data-v="plan"><i>◈</i>Plan</button>
   <button data-v="salud"><i>✚</i>Salud</button>
-  <button data-v="hist"><i>▤</i>Historial</button>
   <button data-v="stats"><i>◑</i>Progreso</button>
   <button data-v="set"><i>⚙</i>Ajustes</button>
 </nav>
@@ -582,7 +585,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.07-3";
+const APP_VERSION = "2026.10.07-4";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2403,6 +2406,8 @@ async function enviarChat(){
 }
 
 document.getElementById("benBtn").onclick    = ()=> go("ben");
+document.getElementById("verHist").onclick   = ()=> go("hist");
+document.getElementById("histVolver").onclick = ()=> go("stats");
 document.getElementById("benVolver").onclick = ()=> go("hoy");
 document.getElementById("chatBtn").onclick    = ()=> go("chat");
 document.getElementById("chatVolver").onclick = ()=> go("hoy");
