@@ -581,7 +581,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.07-1";
+const APP_VERSION = "2026.10.07-2";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -3248,8 +3248,27 @@ function mostrarLogin(ver){
   document.body.style.overflow = ver ? "hidden" : "";
 }
 
+/* Al volver del correo de recuperación, Supabase deja el usuario dentro con una
+   sesión válida. Sin esto se encontraba la app abierta sin saber por qué, y
+   tenía que adivinar que la contraseña nueva se pone en Ajustes. */
+const vengoARecuperar = () => /type=recovery/.test(location.hash || "");
+
+function llevarACambiarClave(){
+  go("set");
+  setTimeout(()=>{
+    const caja = document.getElementById("claveBox");
+    const btn  = document.getElementById("claveBtn");
+    if(!caja || !btn) return;
+    caja.classList.remove("hidden");
+    btn.scrollIntoView({behavior:"smooth", block:"center"});
+    document.getElementById("clave1")?.focus();
+    toast("🔑 Escribe tu contraseña nueva");
+  }, 400);
+}
+
 async function initSesion(){
   if(!nubeOn()){ mostrarLogin(false); return; }     // sin configurar: modo solo local
+  const recuperando = vengoARecuperar();
   try{
     sesionUsuario = await Nube.sesion();
     Nube.alCambiarSesion(async (s)=>{
@@ -3261,6 +3280,7 @@ async function initSesion(){
     if(!sesionUsuario){ mostrarLogin(true); return; }
     mostrarLogin(false);
     await trasEntrar();
+    if(recuperando) llevarACambiarClave();
   }catch(e){ console.warn(e); mostrarLogin(true); }
 }
 
