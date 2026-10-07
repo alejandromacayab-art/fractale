@@ -14,7 +14,7 @@ Resumen para retomar el proyecto desde cero, en esta sesión o en otra.
 ## Cómo se publica un cambio
 
 ```bash
-cd "/Users/alejandromacaya/Desktop/FRACTALE"
+cd "/Users/alejandromacaya/Desktop/03 FRACTALE/FRACTALE"
 git add . && git commit -m "lo que cambió" && git push
 ```
 
@@ -37,7 +37,7 @@ cambios de pantalla sin tocar la base de datos ni el `config.js` de verdad.
 ## Estado
 
 Ejecutados en Supabase: `esquema.sql`, `registro-abierto.sql`, `salud.sql`,
-`chat.sql`, `objetivos.sql` y `equipo.sql`. **Falta ejecutar `beneficios.sql`.**
+`chat.sql`, `objetivos.sql`, `equipo.sql` y `beneficios.sql`.
 
 Funcionando: base de datos con permisos por fila, registro abierto a cualquiera,
 panel en vivo, cuentas con correo y contraseña sin confirmación por correo,
