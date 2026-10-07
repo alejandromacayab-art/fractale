@@ -173,6 +173,7 @@
       <p class="benintro">Descuentos de las marcas que acompañan a Fractale.
         Son tuyos por ser parte del equipo.</p>
       <div id="benLista"></div>
+      <div id="benColab"></div>
     </section>
   </div>
 
@@ -581,7 +582,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.07-2";
+const APP_VERSION = "2026.10.07-3";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -3370,6 +3371,32 @@ let _ben = null;
    pantalla completa, a la que se llega desde el 🎁 de la cabecera. */
 const TOPE_BEN_HOY = 3;
 
+/* Marcas que acompañan a Fractale sin dar un descuento. No vienen de la base
+   de datos: son pocas y fijas, igual que en la portada. Al sumar una, se añade
+   aquí y en index.html. */
+const COLABORADORES = [
+  {logo:"assets/marcas/fthaus.png",   marca:"FThaus",
+   que:"Centro clínico y de entrenamiento"},
+  {logo:"assets/marcas/red-bull.png", marca:"Red Bull",
+   que:"Apoyo al deporte de alto rendimiento"},
+  {logo:"assets/marcas/oxxean.png",   marca:"Oxxean",
+   que:"Respaldo al deporte del sur de Chile"}
+];
+
+function renderColaboradores(){
+  const box = document.getElementById("benColab");
+  if(!box) return;
+  box.innerHTML = `<div class="bengrupo">🤝 Colaboradores</div>
+    <p class="benintro">Marcas que acompañan a Fractale. No llevan descuento, pero
+      hacen posible el resto.</p>` +
+    COLABORADORES.map(c=>`<div class="bencard">
+      <div class="benhead">
+        <img class="benlogo" src="${esc(c.logo)}" alt="${esc(c.marca)}" loading="lazy">
+        <div class="benmarca"><b>${esc(c.marca)}</b><span>${esc(c.que)}</span></div>
+      </div>
+    </div>`).join("");
+}
+
 async function renderBenHoy(){
   const box = document.getElementById("benHoy");
   if(!box) return;
@@ -3409,6 +3436,7 @@ function pintaBenHoy(){
 }
 
 async function renderBeneficios(){
+  renderColaboradores();          // no dependen de la nube: se pintan siempre
   const box = document.getElementById("benLista");
   if(!nubeOn() || !sesionUsuario){
     box.innerHTML = `<div class="empty">Entra con tu cuenta para ver tus beneficios.</div>`;
