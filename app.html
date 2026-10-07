@@ -197,30 +197,6 @@
       <div class="panel" id="trainBox"></div>
     </section>
     <section>
-      <div class="stitle">🍔 Alimentación · últimos 30 días</div>
-      <div class="panel" id="foodBox"></div>
-    </section>
-    <section>
-      <div class="stitle">🏃 Actividad física · últimos 14 días</div>
-      <div class="panel"><div class="chart" id="chart14"></div></div>
-    </section>
-    <section>
-      <div class="stitle">😴 Calidad de sueño · últimos 14 días</div>
-      <div class="panel"><div class="chart" id="chartSleep"></div>
-        <div class="hlbl" id="sleepAvg"></div></div>
-    </section>
-    <section>
-      <div class="stitle">Mapa de registro · 12 semanas</div>
-      <div class="panel">
-        <div class="heat" id="heat"></div>
-        <div class="hlbl"><span>Cada columna = 1 semana · 4 = día completo</span><span style="flex:1"></span><span>menos</span>
-          <b style="background:var(--line)"></b>
-          <b style="background:color-mix(in srgb,var(--accent) 30%,var(--line))"></b>
-          <b style="background:color-mix(in srgb,var(--accent) 60%,var(--line))"></b>
-          <b style="background:var(--accent)"></b><span>más</span></div>
-      </div>
-    </section>
-    <section>
       <button class="btn ghost" id="verHist">▤ Ver el historial día a día</button>
     </section>
   </div>
@@ -585,7 +561,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.07-4";
+const APP_VERSION = "2026.10.07-5";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2469,7 +2445,6 @@ function renderStats(){
   const completos = days.filter(d=>registroDe(d) === 4).length;
   const sleeps = days.map(d=>S.logs[d]?.sleep).filter(Boolean);
   const avgSleep = sleeps.length ? Math.round(sleeps.reduce((a,s)=>a+s.score,0)/sleeps.length) : 0;
-  const avgHrs = sleeps.length ? Math.round(sleeps.reduce((a,s)=>a+s.hours,0)/sleeps.length*10)/10 : 0;
   const totKg = days.reduce((a,d)=>a+wkVolume(S.logs[d]?.workout), 0);
   const jw = junkWeek(todayKey());
   const agCarga = cargaAguda(), crCarga = cargaCronica();
@@ -2506,55 +2481,6 @@ function renderStats(){
       <div class="hn">${(sesiones.length/30*7).toFixed(1)}/sem</div></div>`
     : `<div class="empty">Aún no registras entrenamientos con peso.</div>`;
 
-  const j30 = days.reduce((a,d)=>a+junkCount(d),0);
-  const dias0 = days.filter(d=>junkCount(d)===0).length;
-  const R = RISK[riskLevel(junkCount(todayKey()), jw)];
-  const topJunk = {};
-  days.forEach(d=>(S.logs[d]?.food?.junk||[]).forEach(x=>topJunk[x.e+" "+x.l]=(topJunk[x.e+" "+x.l]||0)+x.n));
-  const rank = Object.entries(topJunk).sort((a,b)=>b[1]-a[1]).slice(0,4);
-  document.getElementById("foodBox").innerHTML = `
-    <div class="risk ${R.cls}" style="margin:0 0 12px">
-      <div class="lv" style="background:${R.c}1f">${R.e}</div>
-      <div><b style="color:${R.c}">${R.t}</b>
-        <span>${jw} porciones en los últimos 7 días · límite de riesgo ${S.settings.junk.weekRisk}</span></div>
-    </div>
-    <div class="hist" style="cursor:default"><div class="hd">🧼 Días limpios</div>
-      <div class="hp"><i style="width:${dias0/30*100}%"></i></div><div class="hn">${dias0}/30</div></div>
-    <div class="hist" style="cursor:default"><div class="hd">🍔 Total 30 días</div>
-      <div class="hp"><i style="width:${Math.min(100,j30/(S.settings.junk.weekRisk*4)*100)}%;background:${R.c}"></i></div>
-      <div class="hn">${j30}</div></div>
-    ${rank.length?`<div style="font-size:12px;color:var(--tx3);margin-top:10px">Lo que más repites: ${rank.map(([k,v])=>`${k} ×${v}`).join(" · ")}</div>`:""}`;
-
-  const last14 = days.slice(0,14).reverse();
-  const mins = last14.map(d=>acTotal(S.logs[d]||{actividad:{items:{}}}));
-  const topMin = Math.max(metaAct(), ...mins) || 1;
-  document.getElementById("chart14").innerHTML = last14.map((d,i)=>{
-    const v = mins[i], dt = parseKey(d);
-    return `<div class="cb" title="${d} · ${v} min">
-      <div class="cbar ${v===0?'empty':''}" style="height:${Math.max(3, v/topMin*100)}%"></div>
-      <div class="cbl">${dt.getDate()}</div></div>`;
-  }).join("");
-
-  document.getElementById("chartSleep").innerHTML = last14.map(d=>{
-    const s = S.logs[d]?.sleep, dt = parseKey(d), v = s? s.score : 0;
-    return `<div class="cb" title="${d}${s?` · ${s.score} · ${fmt(s.hours)}h`:" · sin registro"}">
-      <div class="cbar sleep ${v===0?'empty':''}" style="height:${Math.max(3,v)}%"></div>
-      <div class="cbl">${dt.getDate()}</div></div>`;
-  }).join("");
-  document.getElementById("sleepAvg").innerHTML = sleeps.length
-    ? `<span>Promedio: <b style="width:auto;color:#a5b4fc;background:none">${avgSleep}/100</b> · ${fmt(avgHrs)} h por noche · ${sleeps.length} registros</span>`
-    : `<span>Aún sin check-ins de sueño registrados.</span>`;
-
-  const cells=[]; const end=parseKey(todayKey());
-  const off=(end.getDay()+6)%7;
-  const start=new Date(end); start.setDate(end.getDate()-off-7*11);
-  for(let i=0;i<84;i++){
-    const d=new Date(start); d.setDate(start.getDate()+i);
-    const key=todayKey(d), n=registroDe(key);
-    const lvl = d>end ? "" : n;
-    cells.push(`<div class="hcell" data-l="${lvl}" title="${key} · ${n} de 4 registrados" style="${d>end?'opacity:.2':''}"></div>`);
-  }
-  document.getElementById("heat").innerHTML = cells.join("");
 
 }
 
