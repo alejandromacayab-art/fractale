@@ -50,7 +50,7 @@
 
     <div id="compStrip"></div>
 
-    <div class="hero">
+    <div class="hero" id="hero">
       <div class="ring">
         <svg width="92" height="92">
           <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
@@ -763,7 +763,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-1";
+const APP_VERSION = "2026.10.08-2";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -1218,6 +1218,10 @@ function renderHero(){
   const l = dayLog(cur);
   const C = 2*Math.PI*38;
   const hay = objs.length > 0;
+  /* Sin objetivos el anillo marca un guion y ocupa media pantalla diciendo
+     nada. Vuelve en cuanto el equipo asigne el primero. */
+  document.getElementById("hero").classList.toggle("hidden", !hay);
+  if(!hay) return;
   const cumplidos = objs.filter(o => avance(o).listo).length;
   const pct = hay
     ? Math.round(objs.reduce((a,o)=> a + avance(o).pct, 0) / objs.length * 100)
