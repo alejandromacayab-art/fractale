@@ -976,7 +976,9 @@ async function verAtleta(id){
   $("main").innerHTML = `
     <a class="volver" id="volver">‹ Todos los deportistas</a>
     <div class="hero" style="margin-top:6px">
-      <div class="ava" style="width:64px;height:64px;border-radius:18px;font-size:22px">${esc(iniciales(a?.nombre))}</div>
+      <div class="ava" style="width:64px;height:64px;border-radius:18px;font-size:22px${
+        salud.foto ? `;background:url('${salud.foto}') center/cover no-repeat;color:transparent` : ""}">${
+        esc(iniciales(a?.nombre))}</div>
       <div class="hero-info">
         <h2>${esc(a?.nombre || "Deportista")}</h2>
         <p>${esc(a?.correo||"")}</p>

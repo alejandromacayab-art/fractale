@@ -215,6 +215,7 @@
     <section>
       <div class="stitle">🪪 Credencial de atleta</div>
       <div id="carnetBox"></div>
+      <input type="file" id="fotoFile" accept="image/*" class="hidden">
     </section>
     <section>
       <div class="stitle">👨‍👩‍👧 Mi familia</div>
@@ -763,7 +764,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-2";
+const APP_VERSION = "2026.10.08-3";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -778,7 +779,7 @@ const DEF_SETTINGS = {
    las fichas ya escritas: lo nuevo se suma, no reemplaza. */
 const DEF_SALUD = {
   /* identificación y contacto */
-  nacimiento:"", rut:"", grupo:"", estatura:"", prevision:"", contacto:"", contacto2:"", tratante:"",
+  nacimiento:"", rut:"", foto:"", grupo:"", estatura:"", prevision:"", contacto:"", contacto2:"", tratante:"",
   /* alergias */
   alergiaMed:"", alergiaAlim:"", alergias:"",
   /* antecedentes */
@@ -2444,19 +2445,32 @@ function renderCarnet(){
         <span class="cn-rot">Credencial de atleta</span>
       </div>
       <div class="cn-id">
-        <div class="cn-ava">${esc(inicialesDe(nombre))}</div>
+        <button class="cn-foto ${f.foto ? "con" : ""}" id="cnFoto"
+          title="${f.foto ? "Cambiar la foto" : "Añadir una foto"}"
+          ${f.foto ? `style="background-image:url('${f.foto}')"` : ""}>
+          ${f.foto ? "" : `<span class="ini">${esc(inicialesDe(nombre))}</span>
+            <span class="add">Añadir foto</span>`}
+        </button>
         <div class="cn-nm">
+          <span class="rot">Nombre</span>
           <b>${esc(nombre)}</b>
-          <span>${f.rut ? "RUT " + esc(f.rut) : esc((sesionUsuario?.user?.email) || "")}</span>
+          <span class="rot" style="margin-top:9px">RUT</span>
+          <b class="rut">${f.rut ? esc(f.rut) : "—"}</b>
+          <span class="rot" style="margin-top:9px">Nacimiento</span>
+          <b class="rut">${f.nacimiento
+            ? `${(()=>{ const d = parseKey(f.nacimiento);
+                return `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`; })()} · ${
+              edad(f.nacimiento)} años` : "—"}</b>
         </div>
       </div>
       <div class="cn-pie">
-        <div><b>${f.nacimiento ? edad(f.nacimiento) + " años" : "—"}</b><span>Edad</span></div>
         <div><b>${f.grupo ? esc(f.grupo) : "—"}</b><span>Sangre</span></div>
         <div><b>${f.estatura ? fmt(f.estatura) + " cm" : "—"}</b><span>Estatura</span></div>
         <div><b>${(()=>{ const m = ultimaMedicion(); return m ? fmt(m.peso) + " kg" : "—"; })()}</b><span>Peso</span></div>
+        <div><b>${f.prevision ? esc(String(f.prevision).split(" ")[0]) : "—"}</b><span>Previsión</span></div>
       </div>
     </div>
+    ${f.foto ? `<button class="minilink" id="cnQuitarFoto">Quitar la foto</button>` : ""}
 
     <div class="panel" style="margin-top:12px">
       <div class="deb-g">✚ Salud relevante</div>
@@ -2475,8 +2489,55 @@ function renderCarnet(){
       cédula de identidad.</p>`;
 
   document.getElementById("cnEditar").onclick = ()=>{ go("salud"); openFicha("fichaMedica"); };
+  document.getElementById("cnFoto").onclick = ()=> document.getElementById("fotoFile").click();
+  const quitar = document.getElementById("cnQuitarFoto");
+  if(quitar) quitar.onclick = ()=>{
+    if(!confirm("¿Quitar la foto de tu credencial?")) return;
+    S.salud.foto = ""; save(); renderCarnet(); toast("Foto quitada");
+  };
   renderFamilia();
 }
+
+/* ---------- la foto del carnet ----------
+   Se guarda dentro de la ficha, como un dato más: así viaja con la cuenta y
+   aparece en el panel del equipo. Por eso hay que dejarla pequeña antes de
+   guardarla; la foto original de un celular pesa varios megabytes. */
+function recortarFoto(archivo, ancho = 420, alto = 540){
+  return new Promise((listo, falla)=>{
+    const img = new Image(), url = URL.createObjectURL(archivo);
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      const c = document.createElement("canvas");
+      c.width = ancho; c.height = alto;
+      const g = c.getContext("2d");
+      /* Recorte central que llene el marco sin deformar la cara. */
+      const escala = Math.max(ancho/img.width, alto/img.height);
+      const w = img.width*escala, h = img.height*escala;
+      g.drawImage(img, (ancho-w)/2, (alto-h)/2, w, h);
+      listo(c.toDataURL("image/jpeg", 0.8));
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); falla(new Error("No se pudo leer la imagen")); };
+    img.src = url;
+  });
+}
+
+document.getElementById("fotoFile").onchange = async e=>{
+  const archivo = e.target.files?.[0];
+  e.target.value = "";
+  if(!archivo) return;
+  if(!/^image\//.test(archivo.type)){ toast("Elige una imagen"); return; }
+  toast("Preparando la foto…");
+  try{
+    const data = await recortarFoto(archivo);
+    /* Si aun así sale enorme, mejor no guardarla: el estado completo viaja
+       a la nube en una sola fila. */
+    if(data.length > 600000){ toast("Esa foto es demasiado pesada"); return; }
+    S.salud.foto = data;
+    save();
+    renderCarnet();
+    toast("📷 Foto guardada");
+  }catch(err){ toast(err.message); }
+};
 
 function renderFamilia(){
   const box = document.getElementById("familiaPanel");
