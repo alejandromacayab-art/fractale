@@ -1,0 +1,52 @@
+name: Mantener despierta la base de datos
+
+# Supabase pausa los proyectos del plan gratuito tras una semana sin recibir
+# ninguna petición, y entonces nadie puede entrar a la app. Esto le hace una
+# llamada mínima cada dos días para que no se duerma.
+#
+# No usa secretos: la clave publicable de config.js es pública por diseño, es
+# la misma que lleva la app en el navegador.
+
+on:
+  schedule:
+    - cron: "17 12 */2 * *"      # cada dos días, a las 12:17 UTC
+  workflow_dispatch:
+
+jobs:
+  latido:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Llamar a Supabase
+        run: |
+          set -euo pipefail
+
+          # Se leen del propio config.js para que no haya dos sitios que mantener.
+          URL=$(node -e 'global.window={};require("./config.js");process.stdout.write(window.APP_CONFIG.url||"")')
+          KEY=$(node -e 'global.window={};require("./config.js");process.stdout.write(window.APP_CONFIG.key||"")')
+
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "config.js no tiene url o key. Nada que despertar."
+            exit 1
+          fi
+          echo "Proyecto: $URL"
+
+          # 1) ¿responde la autenticación?
+          SALUD=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 \
+                  "$URL/auth/v1/health" -H "apikey: $KEY")
+          echo "auth/v1/health -> $SALUD"
+
+          # 2) Una consulta de verdad, para que la base también se entere.
+          #    Devuelve 0 filas por los permisos, y da igual: lo que cuenta es
+          #    que la petición llegue hasta Postgres.
+          DATOS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 \
+                  "$URL/rest/v1/beneficios?select=id&limit=1" \
+                  -H "apikey: $KEY" -H "Authorization: Bearer $KEY")
+          echo "rest/v1 -> $DATOS"
+
+          if [ "$SALUD" != "200" ]; then
+            echo "::error::La base de datos no responde. Puede estar en pausa: entra a Supabase y reactívala."
+            exit 1
+          fi
+          echo "Despierta."

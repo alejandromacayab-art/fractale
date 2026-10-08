@@ -60,6 +60,13 @@ Pendiente:
 
 ## Cuidado con esto
 
+- Supabase **pausa los proyectos gratuitos tras una semana sin peticiones**, y
+  entonces nadie puede entrar: la app queda perfecta pero sin con qué comprobar
+  las cuentas. Para evitarlo corre `.github/workflows/latido.yml` cada dos días.
+  Es un apaño: GitHub desactiva las tareas programadas si el repositorio pasa 60
+  días sin actividad, y la garantía de verdad es el plan de pago de Supabase.
+  Si algún día no se puede entrar, mira primero si el proyecto está en pausa.
+
 - Los **beneficios de las marcas** son iguales para todos: no llevan
   `atleta_id`. Cualquiera con cuenta ve los que estén activos, y solo el
   entrenador los crea y los edita. Los logos salen de `assets/marcas/`, y la
