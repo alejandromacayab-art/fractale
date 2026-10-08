@@ -501,6 +501,22 @@
 </div>
 
 <!-- ===== Pantalla de acceso ===== -->
+<!-- ===== Instalar: Fractale se usa instalada, no como página ===== -->
+<div id="instalar" class="hidden" style="position:fixed;inset:0;z-index:400;background:var(--bg);
+     display:flex;align-items:center;justify-content:center;padding:28px 24px;overflow:auto">
+  <div style="width:100%;max-width:380px;text-align:center">
+    <img src="assets/logo-dark.png" alt="Fractale" style="width:180px;max-width:58%;margin:0 auto 26px;display:block">
+    <h2 style="margin:0 0 8px;font-size:21px;letter-spacing:-.03em">Instala Fractale</h2>
+    <p style="margin:0 0 24px;color:var(--tx2);font-size:13.5px;line-height:1.6">
+      Se usa como app, desde tu pantalla de inicio. Así entra a pantalla
+      completa, guarda tu sesión y te llegan los avisos.</p>
+    <div id="instalarPasos" style="text-align:left"></div>
+    <button class="btn hidden" id="instalarYa" style="margin-top:16px">Instalar ahora</button>
+    <button id="seguirWeb" style="margin-top:18px;font-size:12.5px;color:var(--tx3);text-decoration:underline">
+      Seguir en el navegador</button>
+  </div>
+</div>
+
 <div id="login" class="hidden" style="position:fixed;inset:0;z-index:300;background:var(--bg);
      display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto">
   <div style="width:100%;max-width:380px">
@@ -561,7 +577,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.07-5";
+const APP_VERSION = "2026.10.07-6";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -3173,6 +3189,79 @@ function hace(ms){
 }
 
 /* ---------------- acceso ---------------- */
+/* ---------------- Fractale se usa instalada ----------------
+   Abierta como página en un celular, enseña a instalarla en vez del registro.
+   En el computador no estorba: ahí el navegador es la forma normal de usarla,
+   y el panel del equipo vive en otra pestaña. */
+const instalada = () =>
+  ["standalone","fullscreen","minimal-ui"].some(m => matchMedia(`(display-mode: ${m})`).matches)
+  || navigator.standalone === true;
+
+const enCelular = () => matchMedia("(pointer: coarse)").matches && innerWidth < 900;
+
+/* Dentro del navegador de Instagram o WhatsApp no se puede instalar nada:
+   hay que salir al navegador de verdad primero. */
+const navegadorIncrustado = () => /FBAN|FBAV|Instagram|Line\/|wv\)/i.test(navigator.userAgent);
+const esIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+let promptInstalar = null;
+addEventListener("beforeinstallprompt", e=>{
+  e.preventDefault();
+  promptInstalar = e;
+  const b = document.getElementById("instalarYa");
+  if(b && !document.getElementById("instalar").classList.contains("hidden")) b.classList.remove("hidden");
+});
+
+function tocaInstalar(){
+  if(window.__PRUEBA) return false;                      // la copia de prueba, no
+  if(instalada()) return false;
+  if(!enCelular()) return false;
+  /* El enlace del correo de recuperación abre el navegador: nunca se bloquea. */
+  if(/access_token|type=recovery/.test(location.hash || "")) return false;
+  if(sessionStorage.getItem("seguirEnWeb")) return false;
+  return true;
+}
+
+function mostrarInstalar(){
+  const pasos = navegadorIncrustado()
+    ? `<ol class="steps">
+         <li>Toca el menú <b>⋯</b> de arriba.</li>
+         <li>Elige <b>Abrir en ${esIOS() ? "Safari" : "Chrome"}</b>.</li>
+         <li>Vuelve a esta pantalla y sigue los pasos.</li>
+       </ol>
+       <p style="font-size:12px;color:var(--tx3);margin:4px 0 0;line-height:1.5">
+         Estás dentro del navegador de otra app, y desde ahí no se puede instalar.</p>`
+    : esIOS()
+    ? `<ol class="steps">
+         <li>Toca el botón <b>compartir</b> de abajo.</li>
+         <li>Baja y elige <b>Añadir a pantalla de inicio</b>.</li>
+         <li>Abre Fractale desde su icono.</li>
+       </ol>
+       <p style="font-size:12px;color:var(--tx3);margin:4px 0 0;line-height:1.5">
+         En iPhone tiene que ser Safari. Desde Chrome no aparece la opción.</p>`
+    : `<ol class="steps">
+         <li>Toca el menú <b>⋮</b> de arriba a la derecha.</li>
+         <li>Elige <b>Instalar aplicación</b>.</li>
+         <li>Abre Fractale desde su icono.</li>
+       </ol>`;
+  document.getElementById("instalarPasos").innerHTML = pasos;
+  if(promptInstalar) document.getElementById("instalarYa").classList.remove("hidden");
+  document.getElementById("instalar").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+document.getElementById("instalarYa").onclick = async ()=>{
+  if(!promptInstalar) return;
+  promptInstalar.prompt();
+  await promptInstalar.userChoice;
+  promptInstalar = null;
+};
+document.getElementById("seguirWeb").onclick = ()=>{
+  sessionStorage.setItem("seguirEnWeb", "1");
+  document.getElementById("instalar").classList.add("hidden");
+  document.body.style.overflow = "";
+};
+
 function mostrarLogin(ver){
   const vEl = document.getElementById("lgVer");
   if(vEl) vEl.textContent = "versión " + APP_VERSION;
@@ -3570,6 +3659,7 @@ try{
   }
 }catch(e){}
 touch();                       // firma inicial: evita marcar cambios falsos
+if(tocaInstalar()) mostrarInstalar();
 initSesion();
 setInterval(()=>syncNow(false), 300000);
 maybeAskSleep();

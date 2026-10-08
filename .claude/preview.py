@@ -59,6 +59,7 @@ meta_color = '<meta name="theme-color" content="#0E0E11">'
 # etiqueta y, además, inyectada desde el cuerpo: cuando el publicador envuelve
 # esto en su propio documento, la etiqueta ya no cae dentro de <head>.
 arregla_vista = """<script>
+window.__PRUEBA = true;   // copia de prueba: no pide instalarse
 (function(){
   var m = document.querySelector('meta[name=viewport]');
   if(!m){ m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
