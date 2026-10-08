@@ -596,3 +596,6 @@ body.enchat{padding-bottom:74px;overflow:hidden}
 .sw .t span{display:block;line-height:1.45}
 /* Negritas dentro del texto de una fila: resaltan la palabra, no abren línea */
 .hrow .t span b{display:inline;font-size:inherit;color:var(--tx2);font-weight:800}
+/* Anotar el peso: campo y botón en la misma línea */
+.pesorapido{display:flex;align-items:flex-end;gap:10px;margin-top:12px;padding:14px}
+.pesorapido .mini{flex:none;height:44px;padding:0 18px}

@@ -147,34 +147,31 @@
     <section>
       <div class="stitle">⚖️ Peso y composición corporal</div>
       <div id="cuerpoResumen"></div>
-      <button class="btn" style="margin-top:12px" id="addPeso">⚖️ Anotar solo mi peso</button>
-      <button class="btn ghost" style="margin-top:8px" id="addMedida">+ Medición completa</button>
+      <div class="panel pesorapido">
+        <label class="f" style="margin:0;flex:1"><span>Anotar mi peso de hoy</span>
+          <input class="inp" id="pesoHoy" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ej: 74,5"></label>
+        <button class="mini" id="pesoGuardar">Guardar</button>
+      </div>
+      <button class="btn ghost" style="margin-top:10px" id="addMedida">+ Medición completa (grasa y músculo)</button>
     </section>
     <section>
       <div class="stitle">📉 Peso · últimas mediciones</div>
       <div class="panel" id="cuerpoGrafico"></div>
     </section>
     <section>
+      <div class="stitle">🥗 Informes nutricionales</div>
+      <div class="panel" id="docsNutri"></div>
+      <button class="btn ghost" style="margin-top:12px" id="addDocNutri">+ Adjuntar informe nutricional</button>
+    </section>
+    <section>
       <div class="stitle">🩺 Ficha médica</div>
       <div class="panel" id="fichaMedica"></div>
     </section>
     <section>
-      <div class="stitle">🥗 Ficha nutricional</div>
-      <div class="panel" id="fichaNutri"></div>
-    </section>
-    <section>
-      <div class="stitle">🪪 Mi credencial</div>
-      <div class="acceso" id="irCarnet2">
-        <div class="m">🪪</div>
-        <div class="t"><b>Credencial de atleta Fractale</b>
-          <span>Tus datos de salud y tu familia, para identificarte</span></div>
-        <div class="fl">›</div>
-      </div>
-    </section>
-    <section>
-      <div class="stitle">📎 Documentos del equipo</div>
-      <div class="panel" id="docsPanel"></div>
-      <button class="btn" style="margin-top:12px" id="addDoc">+ Subir documento</button>
+      <div class="stitle">📎 Documentos médicos</div>
+      <div class="panel" id="docsMed"></div>
+      <button class="btn ghost" style="margin-top:12px" id="addDocMed">+ Adjuntar documento médico</button>
       <input type="file" id="docFile" accept="application/pdf,.pdf" class="hidden">
     </section>
   </div>
@@ -599,13 +596,13 @@
     <label class="f"><span>Fecha</span><input class="inp" id="mdDate" type="date"></label>
 
     <label class="f"><span>Peso (kg)</span>
-      <input class="inp" id="mdPeso" type="number" step="0.1" min="0" inputmode="decimal" placeholder="Ej: 74.5"></label>
+      <input class="inp" id="mdPeso" type="text" inputmode="decimal" autocomplete="off" placeholder="Ej: 74,5"></label>
 
     <div class="two">
       <label class="f"><span>% de grasa</span>
-        <input class="inp" id="mdGrasa" type="number" step="0.1" min="0" max="70" inputmode="decimal" placeholder="Ej: 14.2"></label>
+        <input class="inp" id="mdGrasa" type="text" inputmode="decimal" autocomplete="off" placeholder="Ej: 14,2"></label>
       <label class="f"><span>% de músculo</span>
-        <input class="inp" id="mdMusculo" type="number" step="0.1" min="0" max="80" inputmode="decimal" placeholder="Ej: 42.0"></label>
+        <input class="inp" id="mdMusculo" type="text" inputmode="decimal" autocomplete="off" placeholder="Ej: 42,0"></label>
     </div>
 
     <div id="mdCalc" class="panel" style="padding:12px;margin-bottom:14px"></div>
@@ -764,7 +761,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-3";
+const APP_VERSION = "2026.10.08-4";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2262,8 +2259,6 @@ function renderFichas(){
   renderBanderas();
   pintaFicha("fichaMedica", FICHA_MED,
     "Sin datos médicos todavía. Esto es lo que tu equipo necesita saber antes de exigirte, y a quién llamar si algo pasa.");
-  pintaFicha("fichaNutri", FICHA_NUT,
-    "Sin datos nutricionales todavía.");
 }
 
 let fichaAbierta = null;
@@ -2296,7 +2291,9 @@ function campoHTML(c){
 function openFicha(id){
   shutModals();
   fichaAbierta = id;
-  const med = id === "fichaMedica";
+  /* La ficha nutricional ya no se edita desde la app; lo que se escribió
+     antes sigue guardado y el equipo lo ve en su panel. */
+  const med = id !== "fichaNutri";
   const secs = med ? FICHA_MED : FICHA_NUT;
   document.getElementById("fcTitle").textContent = med ? "Ficha médica" : "Ficha nutricional";
   document.getElementById("fcSub").textContent = med
@@ -2358,15 +2355,30 @@ function openMedida(fecha){
 ["mdPeso","mdGrasa","mdMusculo"].forEach(id=>
   document.getElementById(id).oninput = calcMed);
 document.getElementById("addMedida").onclick = ()=> openMedida(null);
-/* Anotar el peso tiene que costar un toque: lo demás es opcional y se
-   deja en blanco solo. */
-document.getElementById("addPeso").onclick = ()=>{
-  openMedida(null);
-  document.getElementById("mdGrasa").value   = "";
-  document.getElementById("mdMusculo").value = "";
-  calcMed();
-  setTimeout(()=> document.getElementById("mdPeso").focus(), 120);
-};
+
+/* Anotar el peso no debería costar abrir una ventana: se escribe y se
+   guarda ahí mismo. La grasa y el músculo siguen en la medición completa,
+   para cuando alguien los mida de verdad. */
+function guardarPesoHoy(){
+  const campo = document.getElementById("pesoHoy");
+  const peso = num(campo.value);
+  if(!peso || peso < 20 || peso > 300){ toast("Escribe un peso entre 20 y 300 kg"); return; }
+  const antes = cur;
+  cur = todayKey();
+  const previo = dayLog(cur).cuerpo || {};
+  /* Si hoy ya había una medición completa, el peso se corrige sin borrar
+     lo demás. */
+  dayLog(cur).cuerpo = Object.assign({}, previo, {peso, at:Date.now()});
+  save();
+  cur = antes;
+  campo.value = "";
+  renderSalud();
+  toast(`⚖️ ${fmt(peso)} kg registrados`);
+}
+document.getElementById("pesoGuardar").onclick = guardarPesoHoy;
+document.getElementById("pesoHoy").addEventListener("keydown", e=>{
+  if(e.key === "Enter"){ e.preventDefault(); guardarPesoHoy(); }
+});
 document.getElementById("mdCancel").onclick  = ()=>
   document.getElementById("medModal").classList.remove("open");
 document.getElementById("mdSave").onclick = ()=>{
@@ -2614,30 +2626,45 @@ let docsCache = [], docArchivo = null;
 
 const pesoArchivo = b => b >= 1048576 ? (b/1048576).toFixed(1)+" MB" : Math.max(1, Math.round(b/1024))+" KB";
 
+/* Los documentos son una sola bandeja; aquí se reparten en dos listas por
+   tipo, cada una junto a lo que explica. Los de tu equipo aparecen en la
+   que les corresponda, igual que los tuyos. */
 async function renderDocs(){
-  const box = document.getElementById("docsPanel");
-  const btn = document.getElementById("addDoc");
+  const cajas = [
+    {box:"docsNutri", btn:"addDocNutri", tipos:["nutricional"],
+     vacio:"Sin informes nutricionales.<br>Adjunta en PDF las pautas o evaluaciones de tu nutricionista."},
+    {box:"docsMed", btn:"addDocMed", tipos:["medico","otro"],
+     vacio:"Sin documentos médicos.<br>Adjunta en PDF exámenes, informes o certificados."}
+  ];
+  const poner = (c, html)=> document.getElementById(c.box).innerHTML = html;
+
   if(!nubeOn() || !sesionUsuario){
-    btn.classList.add("hidden");
-    box.innerHTML = `<div class="empty">Los documentos se guardan en tu cuenta
-      para que tu equipo pueda verlos.<br>Entra con tu correo para usarlos.</div>`;
+    cajas.forEach(c=>{
+      document.getElementById(c.btn).classList.add("hidden");
+      poner(c, `<div class="empty">Los documentos se guardan en tu cuenta
+        para que tu equipo pueda verlos.<br>Entra con tu correo para usarlos.</div>`);
+    });
     return;
   }
-  btn.classList.remove("hidden");
-  box.innerHTML = `<div class="empty">Cargando documentos…</div>`;
+  cajas.forEach(c=>{
+    document.getElementById(c.btn).classList.remove("hidden");
+    poner(c, `<div class="empty">Cargando…</div>`);
+  });
   try{
     docsCache = await Nube.docs();
   }catch(e){
-    box.innerHTML = `<div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    cajas.forEach(c=> poner(c, `<div class="empty">${esc(Nube.traduce(e.message))}</div>`));
     return;
   }
-  if(!docsCache.length){
-    box.innerHTML = `<div class="empty">Sin documentos todavía.<br>
-      Sube exámenes, informes o pautas de salud y nutrición, en PDF.
-      Tu equipo también puede subirlos.</div>`;
-    return;
-  }
-  box.innerHTML = docsCache.map(d=>{
+  cajas.forEach(c=>{
+    const suyos = docsCache.filter(d => c.tipos.includes(d.tipo || "otro"));
+    poner(c, suyos.length ? filasDoc(suyos) : `<div class="empty">${c.vacio}</div>`);
+  });
+  cablearDocs();
+}
+
+function filasDoc(lista){
+  return lista.map(d=>{
     const t = TIPOS_DOC[d.tipo] || TIPOS_DOC.otro, f = parseKey(d.fecha);
     /* Sin autor son los que subiste tú antes de que el equipo pudiera hacerlo. */
     const mio = !d.autor_id || d.autor_id === miId();
@@ -2653,15 +2680,17 @@ async function renderDocs(){
       ${mio ? `<button class="mini" data-borrar="${d.id}" style="color:#fb7185">✕</button>` : ""}
     </div>${d.notas ? `<p style="font-size:12px;color:var(--tx3);margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
   }).join("");
+}
 
-  box.querySelectorAll("[data-abrir]").forEach(b=> b.onclick = async ()=>{
+function cablearDocs(){
+  document.querySelectorAll("#view-salud [data-abrir]").forEach(b=> b.onclick = async ()=>{
     const d = docsCache.find(x=>x.id === b.dataset.abrir);
     b.disabled = true; b.textContent = "…";
     try{ window.open(await Nube.urlDoc(d.ruta), "_blank", "noopener"); }
     catch(e){ toast(Nube.traduce(e.message)); }
     finally{ b.disabled = false; b.textContent = "Abrir"; }
   });
-  box.querySelectorAll("[data-borrar]").forEach(b=> b.onclick = async ()=>{
+  document.querySelectorAll("#view-salud [data-borrar]").forEach(b=> b.onclick = async ()=>{
     const d = docsCache.find(x=>x.id === b.dataset.borrar);
     if(!confirm(`¿Eliminar "${d.titulo}"? Tu equipo dejará de verlo.`)) return;
     try{ await Nube.borrarDoc(d); toast("Documento eliminado"); renderDocs(); }
@@ -2669,7 +2698,15 @@ async function renderDocs(){
   });
 }
 
-document.getElementById("addDoc").onclick = ()=> document.getElementById("docFile").click();
+/* Cada botón abre el selector con su tipo ya elegido: se sube desde donde
+   corresponde y casi nunca hay que tocar la etiqueta. */
+let docTipoPre = "medico";
+document.getElementById("addDocNutri").onclick = ()=>{
+  docTipoPre = "nutricional"; document.getElementById("docFile").click();
+};
+document.getElementById("addDocMed").onclick = ()=>{
+  docTipoPre = "medico"; document.getElementById("docFile").click();
+};
 document.getElementById("docFile").onchange = e=>{
   const f = e.target.files?.[0];
   e.target.value = "";
@@ -2691,7 +2728,7 @@ document.getElementById("docFile").onchange = e=>{
   document.getElementById("dcFecha").value  = todayKey();
   document.getElementById("dcNotas").value  = "";
   document.querySelectorAll("#dcTipo [data-tp]").forEach(b=>
-    b.classList.toggle("on", b.dataset.tp === "medico"));
+    b.classList.toggle("on", b.dataset.tp === docTipoPre));
   document.getElementById("docModal").classList.add("open");
 };
 document.querySelectorAll("#dcTipo [data-tp]").forEach(b=> b.onclick = ()=>{
@@ -2875,7 +2912,7 @@ async function enviarChat(){
 }
 
 document.getElementById("benBtn").onclick    = ()=> go("ben");
-["irCarnet","irCarnet2","irCarnet3","irCarnet4"].forEach(id=>{
+["irCarnet","irCarnet3","irCarnet4"].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.onclick = ()=> go("carnet");
 });
