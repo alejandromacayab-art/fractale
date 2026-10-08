@@ -330,6 +330,18 @@ async function sinLeer(atletaId){
   return Number(data) || 0;
 }
 
+/* Hasta dónde ha leído el OTRO lado. La tabla solo deja ver la marca propia,
+   así que esto pasa por una función que comprueba el permiso por dentro.
+   Devuelve {user_id: fechaISO}. */
+async function lecturasDe(atletaId){
+  if(!sb) return {};
+  const {data, error} = await sb.rpc("lecturas_de", {conv: atletaId});
+  if(error) throw new Error(traduce(error.message));
+  const out = {};
+  (data || []).forEach(r => out[r.user_id] = r.leido_hasta);
+  return out;
+}
+
 async function marcarLeido(atletaId){
   if(!sb) return;
   const u = await usuario(); if(!u) return;
@@ -347,6 +359,31 @@ function escucharChat(atletaId, alLlegar){
         p => alLlegar && alLlegar(p.new))
     .subscribe();
   return canal;
+}
+
+/* Todos los mensajes que te toca ver, de cualquier conversación. Lo que
+   llega lo filtra la base por fila: de ahí solo salen las conversaciones
+   de tus deportistas. Sirve para la bandeja del panel. */
+function escucharMensajes(alLlegar){
+  if(!sb) return null;
+  const canal = sb.channel("bandeja-mensajes")
+    .on("postgres_changes", {event:"INSERT", schema:"public", table:"mensajes"},
+        p => alLlegar && alLlegar(p.new))
+    .subscribe();
+  return canal;
+}
+
+/* El último trozo de conversación de cada deportista, en una sola consulta.
+   Pedir el último mensaje uno por uno serían tantas idas y vueltas como
+   deportistas. */
+async function ultimosMensajes(limite = 400){
+  if(!sb) return [];
+  const {data, error} = await sb.from("mensajes")
+    .select("id,atleta_id,autor_id,texto,creado")
+    .order("creado", {ascending:false})
+    .limit(limite);
+  if(error) throw new Error(traduce(error.message));
+  return data || [];
 }
 
 /* ---------------- entrenador ---------------- */
@@ -497,7 +534,8 @@ global.Nube = {
   entrar, registrarse, recuperar, cambiarClave,
   miPerfil, ponerNombre, bajar, subir,
   docs, subirDoc, urlDoc, borrarDoc,
-  mensajes, enviar, borrarMensaje, sinLeer, marcarLeido, escucharChat,
+  mensajes, enviar, borrarMensaje, sinLeer, marcarLeido, lecturasDe,
+  escucharChat, escucharMensajes, ultimosMensajes,
   objetivos, hechos, guardarObjetivo, borrarObjetivo, marcarObjetivo, desmarcarObjetivo,
   beneficios, guardarBeneficio, borrarBeneficio,
   modulos, guardarModulo,

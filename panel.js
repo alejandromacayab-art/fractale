@@ -6,6 +6,7 @@
 
 let perfil = null, atletas = [], invs = [];
 let canal = null, vista = {tipo:"lista", id:null}, refrescoTimer = null, enVivo = false;
+let vistaPrevia = "lista";
 const $ = id => document.getElementById(id);
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const kg  = n => Math.round(Number(n)||0).toLocaleString("es-CL");
@@ -310,6 +311,8 @@ $("obDel").onclick = async ()=>{
    El entrenador entra en la conversación del deportista, no al revés: la
    conversación se identifica siempre con el id del atleta. */
 let chatMsgs = [], chatCanal = null, chatConv = null, chatNombres = {};
+/* Hasta dónde ha leído el deportista: {user_id: fechaISO}. */
+let chatLecturas = {}, chatLatido = null;
 
 /* Ahora escriben varios: cada burbuja necesita decir de quién es. */
 async function cargarNombres(){
@@ -335,6 +338,24 @@ function separadorDiaP(iso){
   return fechaLargaP(k);
 }
 
+/* ¿Ya lo leyó el deportista? Solo en el último mensaje propio: es lo que
+   uno quiere saber después de escribir una indicación. */
+function acuseDeP(m){
+  const t = new Date(m.creado).getTime();
+  const leyo = Object.values(chatLecturas).some(iso => new Date(iso).getTime() >= t);
+  return leyo ? ` · <span class="acuse leido">✓✓ Leído</span>`
+              : ` · <span class="acuse">Enviado</span>`;
+}
+
+async function refrescarLecturasP(){
+  if(!chatConv) return;
+  try{
+    const antes = JSON.stringify(chatLecturas);
+    chatLecturas = await Nube.lecturasDe(chatConv);
+    if(JSON.stringify(chatLecturas) !== antes) pintaChat();
+  }catch(e){}
+}
+
 function pintaChat(){
   const log = $("chatLog");
   if(!log) return;
@@ -342,6 +363,8 @@ function pintaChat(){
     log.innerHTML = `<div class="empty">Sin mensajes todavía. Escríbele tú primero.</div>`;
     return;
   }
+  const mios = chatMsgs.filter(m => m.autor_id === perfil?.id);
+  const ultimoMio = mios.length ? mios[mios.length-1].id : null;
   let ultimo = "";
   log.innerHTML = chatMsgs.map(m=>{
     const dia = separadorDiaP(m.creado);
@@ -352,7 +375,8 @@ function pintaChat(){
     return `${sep}<div class="burb ${mio ? "mia" : ""}">
       ${mio ? "" : firmaDe(m)}
       <div class="tx">${esc(m.texto)}</div>
-      <div class="hr">${horaCorta(m.creado)}</div></div>`;
+      <div class="hr">${horaCorta(m.creado)}${
+        mio && m.id === ultimoMio ? acuseDeP(m) : ""}</div></div>`;
   }).join("");
   log.scrollTop = log.scrollHeight;
 }
@@ -370,6 +394,8 @@ async function montarChat(atletaId){
   }
   pintaChat();
   Nube.marcarLeido(atletaId).catch(()=>{});
+  refrescarLecturasP();
+  chatLatido = setInterval(refrescarLecturasP, 30000);
 
   chatCanal = Nube.escucharChat(atletaId, async m=>{
     if(chatMsgs.some(x => x.id === m.id)) return;
@@ -403,6 +429,7 @@ async function montarChat(atletaId){
 /* Al salir de la ficha hay que soltar el canal o quedan varios escuchando. */
 function cerrarChat(){
   if(chatCanal){ Nube.dejarDeEscuchar(chatCanal); chatCanal = null; }
+  clearInterval(chatLatido); chatLatido = null;
 }
 
 /* ---------------- competencias y carga ----------------
@@ -704,17 +731,186 @@ async function verLista(){
           </tbody></table>`
         : `<div class="empty">Todavía no tienes deportistas.<br>Invita al primero para empezar.</div>`}
       </div>
-      ${soyCoach() ? `<button class="btn" style="margin-top:12px" id="invitar">+ Invitar a alguien</button>
+      <button class="btn ghost" style="margin-top:12px" id="verBandeja">💬 Bandeja de mensajes</button>
+      ${soyCoach() ? `<button class="btn" style="margin-top:8px" id="invitar">+ Invitar a alguien</button>
         <button class="btn ghost" style="margin-top:8px" id="verBen">🎁 Beneficios de las marcas</button>
         <button class="btn ghost" style="margin-top:8px" id="verMods">⬢ Módulos de la app</button>` : ""}
     </section>`;
 
   document.querySelectorAll("[data-id]").forEach(tr=>tr.onclick=()=>verAtleta(tr.dataset.id));
+  $("verBandeja").onclick = verBandeja;
+  /* El contador vive de lo que ya se consultó para la tabla. */
+  sinLeerTotal = pendientes;
+  pintarAvisoMensajes();
   if(soyCoach()){
     $("invitar").onclick = abrirInvitar;
     $("verBen").onclick  = verBeneficios;
     $("verMods").onclick = verModulos;
   }
+}
+
+/* ============================================================
+   BANDEJA DE MENSAJES
+   Todas las conversaciones en una pantalla, por orden de lo último
+   que llegó. Sin esto hay que entrar deportista por deportista para
+   descubrir quién escribió.
+   ============================================================ */
+let bandeja = [], canalBandeja = null, sinLeerTotal = {};
+
+async function cargarBandeja(){
+  if(!atletas.length) atletas = await Nube.misAtletas();
+  const ultimos = await Nube.ultimosMensajes();
+  /* Vienen del más nuevo al más viejo: el primero de cada conversación
+     es el último que se dijo. */
+  const porAtleta = {};
+  ultimos.forEach(m=>{ if(!porAtleta[m.atleta_id]) porAtleta[m.atleta_id] = m; });
+
+  const pendientes = {};
+  await Promise.all(atletas.map(async a=>{
+    try{ pendientes[a.id] = await Nube.sinLeer(a.id); }catch(e){ pendientes[a.id] = 0; }
+  }));
+  sinLeerTotal = pendientes;
+
+  /* Nombres de quien escribió, para poder firmar la última línea. */
+  const autores = Object.values(porAtleta).map(m=>m.autor_id)
+    .filter(id => id && id !== perfil?.id && !chatNombres[id]);
+  if(autores.length){
+    try{ Object.assign(chatNombres, await Nube.nombresDe(autores)); }catch(e){}
+  }
+
+  bandeja = atletas.map(a => ({
+    atleta: a,
+    ultimo: porAtleta[a.id] || null,
+    sinLeer: pendientes[a.id] || 0
+  })).sort((x, y)=>{
+    if(!!y.sinLeer !== !!x.sinLeer) return y.sinLeer - x.sinLeer;   // lo no leído, arriba
+    return String(y.ultimo?.creado || "").localeCompare(String(x.ultimo?.creado || ""));
+  });
+  pintarAvisoMensajes();
+}
+
+/* "hace 5 min", "ayer": en una bandeja importa cuán reciente es, no la hora. */
+function haceCuanto(iso){
+  if(!iso) return "";
+  const min = Math.floor((Date.now() - new Date(iso)) / 60000);
+  if(min < 1)  return "ahora";
+  if(min < 60) return `hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if(h < 24)   return `hace ${h} h`;
+  const d = Math.floor(h / 24);
+  if(d === 1)  return "ayer";
+  if(d < 7)    return `hace ${d} días`;
+  return fechaCorta(hoyKey(new Date(iso)));
+}
+
+async function verBandeja(){
+  vista = {tipo:"bandeja", id:null};
+  if(!document.querySelector(".bzlista")) $("main").innerHTML = `<div class="empty">Cargando mensajes…</div>`;
+  try{ await cargarBandeja(); }
+  catch(e){
+    $("main").innerHTML = `
+      <a class="volver" id="volver">‹ Todos los deportistas</a>
+      <div class="empty">${esc(Nube.traduce(e.message))}</div>`;
+    $("volver").onclick = verLista; return;
+  }
+
+  const conMensajes = bandeja.filter(x => x.ultimo);
+  const sinNada     = bandeja.filter(x => !x.ultimo);
+  const totalSin    = bandeja.reduce((a, x)=> a + x.sinLeer, 0);
+  const avisosOff   = ("Notification" in window) && Notification.permission !== "granted";
+
+  $("main").innerHTML = `
+    <a class="volver" id="volver">‹ Todos los deportistas</a>
+    <section>
+      <div class="stitle">Mensajes${totalSin ? ` · ${totalSin} sin leer` : ""}</div>
+      ${avisosOff ? `<div class="acceso" id="pedirAvisos">
+        <div class="m">🔔</div>
+        <div class="t"><b>Activa los avisos del navegador</b>
+          <span>Te avisa cuando un deportista escribe, aunque el panel esté en otra pestaña.</span></div>
+        <div class="fl">›</div>
+      </div>` : ""}
+      <div class="panel bzlista" style="margin-top:12px">${
+        conMensajes.length
+          ? conMensajes.map(filaBandeja).join("")
+          : `<div class="empty">Nadie ha escrito todavía.</div>`}
+      </div>
+    </section>
+    ${sinNada.length ? `<section>
+      <div class="stitle">Sin conversación todavía</div>
+      <div class="panel bzlista">${sinNada.map(filaBandeja).join("")}</div>
+    </section>` : ""}`;
+
+  $("volver").onclick = verLista;
+  $("pedirAvisos")?.addEventListener("click", pedirAvisos);
+  document.querySelectorAll("[data-conv]").forEach(fila=>
+    fila.onclick = ()=> verAtleta(fila.dataset.conv));
+}
+
+function filaBandeja(x){
+  const m = x.ultimo;
+  const mio = m && m.autor_id === perfil?.id;
+  const suyo = m && m.autor_id === x.atleta.id;
+  const quien = !m ? "" : mio ? "Tú: " : suyo ? "" :
+    `${esc(String(chatNombres[m.autor_id]?.nombre || "Equipo").split(" ")[0])}: `;
+  return `<div class="bzfila ${x.sinLeer ? "nueva" : ""}" data-conv="${x.atleta.id}">
+    <div class="ava">${esc(iniciales(x.atleta.nombre))}</div>
+    <div class="t">
+      <b>${esc(x.atleta.nombre || x.atleta.correo)}</b>
+      <span>${m ? quien + esc(String(m.texto).slice(0, 90))
+                : "Sin mensajes. Escríbele tú primero."}</span>
+    </div>
+    <div class="meta">
+      <span class="cuando">${m ? haceCuanto(m.creado) : ""}</span>
+      ${x.sinLeer ? `<span class="sinleer">${x.sinLeer}</span>` : ""}
+    </div>
+  </div>`;
+}
+
+/* El aviso de la cabecera: se ve desde cualquier pantalla del panel. */
+function pintarAvisoMensajes(){
+  const b = $("bandejaBtn");
+  if(!b) return;
+  const total = Object.values(sinLeerTotal).reduce((a, n)=> a + Number(n || 0), 0);
+  b.innerHTML = total ? `💬<span class="pip"></span>` : "💬";
+  b.title = total ? `${total} ${total === 1 ? "mensaje" : "mensajes"} sin leer` : "Mensajes";
+}
+
+/* Un solo canal para todas las conversaciones: el aviso llega aunque estés
+   mirando la ficha de otro deportista. La base ya filtra por fila, así que
+   de aquí solo salen las conversaciones que te tocan. */
+function escucharBandeja(){
+  if(canalBandeja) return;
+  canalBandeja = Nube.escucharMensajes(async m=>{
+    if(m.autor_id === perfil?.id) return;          // lo acabo de escribir yo
+    if(chatConv === m.atleta_id) return;           // esa conversación ya tiene su canal
+    sinLeerTotal[m.atleta_id] = (Number(sinLeerTotal[m.atleta_id]) || 0) + 1;
+    pintarAvisoMensajes();
+    const a = atletas.find(x => x.id === m.atleta_id);
+    const nombre = String(a?.nombre || "").split(" ")[0];
+    toast(nombre ? `💬 ${nombre}: ${String(m.texto).slice(0, 60)}`
+                 : "💬 Mensaje nuevo de un deportista");
+    avisarEnElSistema(nombre, m.texto);
+    if(vista.tipo === "bandeja") verBandeja();
+  });
+}
+
+/* Aviso del sistema, para cuando el panel quedó en otra pestaña. Solo si el
+   entrenador dio permiso: no se pide solo al entrar. */
+function avisarEnElSistema(nombre, texto){
+  try{
+    if(!("Notification" in window) || Notification.permission !== "granted") return;
+    if(!document.hidden) return;
+    new Notification(nombre ? `Mensaje de ${nombre}` : "Mensaje nuevo · Fractale",
+      {body: String(texto).slice(0, 120), icon: "icons/icon-192.png", tag: "fractale-chat"});
+  }catch(e){}
+}
+
+async function pedirAvisos(){
+  if(!("Notification" in window)){ toast("Este navegador no admite avisos"); return; }
+  if(Notification.permission === "granted"){ toast("Los avisos ya están activos"); return; }
+  const r = await Notification.requestPermission();
+  toast(r === "granted" ? "Avisos activados" : "Avisos no permitidos");
+  if(vista.tipo === "bandeja") verBandeja();
 }
 
 /* ============================================================
@@ -886,6 +1082,9 @@ $("benModal").onclick = e=>{ if(e.target.id === "benModal") $("benModal").classL
 async function verAtleta(id){
   const a = atletas.find(x=>x.id === id);
   const mismaFicha = vista.tipo === "ficha" && vista.id === id;
+  /* De dónde se entró, para que «volver» devuelva al mismo sitio. */
+  const desdeBandeja = vista.tipo === "bandeja" || (mismaFicha && vistaPrevia === "bandeja");
+  if(!mismaFicha) vistaPrevia = vista.tipo;
   vista = {tipo:"ficha", id};
   if(!mismaFicha) $("main").innerHTML = `<div class="empty">Cargando ficha…</div>`;
   let dias = [], cfg = null;
@@ -1171,8 +1370,12 @@ async function verAtleta(id){
       }).join("") : `<div class="empty">Sin registros todavía.</div>`}
     </section>`;
 
-  $("volver").onclick = ()=>{ cerrarChat(); verLista(); };
+  $("volver").textContent = desdeBandeja ? "‹ Bandeja de mensajes" : "‹ Todos los deportistas";
+  $("volver").onclick = ()=>{ cerrarChat(); desdeBandeja ? verBandeja() : verLista(); };
   montarChat(id);
+  /* Entrar a la ficha es leer: el contador de esa conversación se vacía. */
+  sinLeerTotal[id] = 0;
+  pintarAvisoMensajes();
 
   if(soyCoach()){
     $("addStaff")?.addEventListener("click", async ()=>{
@@ -1409,6 +1612,11 @@ $("themeBtn").onclick = ()=>{
   await cargarModulos();
   await verLista();
   conectarEnVivo();
+  escucharBandeja();
+  $("bandejaBtn").onclick = verBandeja;
   Nube.alCambiarSesion(s=>{ if(!s) location.reload(); });
-  addEventListener("beforeunload", ()=>Nube.dejarDeEscuchar(canal));
+  addEventListener("beforeunload", ()=>{
+    Nube.dejarDeEscuchar(canal);
+    if(canalBandeja) Nube.dejarDeEscuchar(canalBandeja);
+  });
 })();

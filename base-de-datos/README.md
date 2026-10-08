@@ -12,6 +12,7 @@
 | `equipo.sql` | Qué profesionales ven a qué deportista. |
 | `beneficios.sql` | Descuentos de las marcas aliadas. |
 | `modulos.sql` | Interruptores de entrenamiento y nutrición. |
+| `lecturas.sql` | Saber si el otro ya leyó la conversación. |
 
 Se ejecutan en ese orden, cada uno una sola vez.
 

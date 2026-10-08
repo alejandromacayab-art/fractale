@@ -774,7 +774,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-7";
+const APP_VERSION = "2026.10.08-8";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2898,6 +2898,9 @@ let sinLeerChat = 0;
    para que un fallo de red no ensucie la conversación de verdad. */
 let chatPend = [];
 let chatEquipo = null;
+/* Hasta dónde leyó cada miembro del equipo: {user_id: fechaISO}. */
+let chatLecturas = {};
+let chatLatido = null;
 
 /* En la bandeja puede escribir cualquiera de tu equipo, así que cada mensaje
    que no es tuyo lleva de quién viene. */
@@ -2957,6 +2960,9 @@ function pintaChat(irAlFinal){
     return;
   }
 
+  const mios = chatMsgs.filter(m => m.autor_id === miId());
+  const ultimoMio = mios.length ? mios[mios.length-1].id : null;
+
   let ultimoDia = "";
   log.innerHTML = todo.map((m, i)=>{
     const dia = diaDe(m.creado);
@@ -2972,11 +2978,14 @@ function pintaChat(irAlFinal){
     const primero = nuevoDia || !mismo(ant, m);
     const ultimo  = !mismo(m, sig);
 
+    /* El acuse va solo en el último mensaje propio: repetirlo en cada
+       burbuja es ruido, y lo que importa es si llegó lo último que dijiste. */
+    const acuse = (mio && !m.tmp && m.id === ultimoMio) ? acuseDe(m) : "";
     const pie = m.estado === "enviando" ? `<div class="hr pend">enviando…</div>`
       : m.estado === "error" ? `<div class="hr err">No se envió · ${esc(m.motivo || "")}
           <button class="rein" data-rein="${m.tmp}">Reintentar</button>
           <button class="rein" data-tirar="${m.tmp}">Descartar</button></div>`
-      : ultimo ? `<div class="hr">${horaCorta(m.creado)}</div>` : "";
+      : ultimo || acuse ? `<div class="hr">${ultimo ? horaCorta(m.creado) : ""}${acuse}</div>` : "";
 
     return `${sep}<div class="burb ${mio ? "mia" : ""} ${primero ? "ini" : ""} ${
         ultimo ? "fin" : ""} ${m.estado === "error" ? "malo" : ""} ${
@@ -3012,6 +3021,37 @@ function pintaChat(irAlFinal){
     b.oncontextmenu = e=>{ e.preventDefault(); pedir(); };
     pulsaLargo(b, pedir);
   });
+}
+
+/* Quién de tu equipo ya leyó este mensaje. Sin nadie que haya leído, se
+   dice que está enviado: es información, no un adorno. */
+function acuseDe(m){
+  const t = new Date(m.creado).getTime();
+  const quienes = Object.entries(chatLecturas)
+    .filter(([, iso]) => new Date(iso).getTime() >= t)
+    .map(([id]) => chatNombres[id]?.nombre || (chatEquipo || []).find(x=>x.id===id)?.nombre)
+    .filter(Boolean)
+    .map(n => String(n).split(" ")[0]);
+  if(!quienes.length) return ` · <span class="acuse">Enviado</span>`;
+  return ` · <span class="acuse leido">✓✓ Leído${
+    quienes.length <= 2 ? " por " + esc(quienes.join(" y ")) : ` por ${quienes.length} personas`}</span>`;
+}
+
+/* Las marcas de lectura no llegan en vivo: se preguntan al entrar y cada
+   medio minuto mientras la conversación esté abierta. */
+async function refrescarLecturas(){
+  if(!chatListo()) return;
+  try{
+    const antes = JSON.stringify(chatLecturas);
+    chatLecturas = await Nube.lecturasDe(miId());
+    if(JSON.stringify(chatLecturas) !== antes) pintaChat();
+  }catch(e){}                      // sin la función instalada, no se muestra nada
+}
+
+function latidoLecturas(encender){
+  clearInterval(chatLatido);
+  chatLatido = null;
+  if(encender) chatLatido = setInterval(refrescarLecturas, 30000);
 }
 
 async function borrarMensajeChat(id){
@@ -3080,6 +3120,8 @@ async function abrirChat(){
     return;
   }
   cargarEquipoChat();
+  refrescarLecturas();
+  latidoLecturas(true);
   if(chatPintado !== miId()){ log.innerHTML = `<div class="empty">Cargando mensajes…</div>`; }
   try{
     chatMsgs = await Nube.mensajes(miId());
@@ -4339,6 +4381,7 @@ function go(v){
   if(v==="plan") renderPlan();
   if(v==="salud") renderSalud();
   if(v==="chat") abrirChat();
+  else latidoLecturas(false);        // nadie mira: no hay que preguntar
   if(v==="ben") renderBeneficios();
   if(v==="carnet") renderCarnet();
   if(v==="hist") renderHist();
