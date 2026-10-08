@@ -743,6 +743,12 @@
   </div>
 </div>
 
+<!-- ===== Credencial a pantalla completa ===== -->
+<div class="cnfull" id="cnFull" role="dialog" aria-modal="true" aria-label="Credencial de atleta">
+  <button class="cnfull-x" id="cnFullX" aria-label="Cerrar">✕</button>
+  <div class="cnfull-caja"><div class="cnfull-tarjeta" id="cnFullTarjeta"></div></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="config.js"></script>
@@ -761,7 +767,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-4";
+const APP_VERSION = "2026.10.08-5";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2438,6 +2444,7 @@ function renderCarnet(){
   const f = S.salud || {};
   const box = document.getElementById("carnetBox");
   const nombre = miNombre();
+  const fam = Array.isArray(f.familiares) ? f.familiares : [];
   /* Solo lo que de verdad hay que leer en treinta segundos. */
   const filas = [
     ["🩸", "Grupo sanguíneo", f.grupo],
@@ -2451,18 +2458,17 @@ function renderCarnet(){
   const criticas = new Set(["Alergia a medicamentos","Alergia alimentaria","Lesión o molestia activa"]);
 
   box.innerHTML = `
-    <div class="carnet">
+    <div class="carnet" id="carnetChica" role="button" tabindex="0"
+         title="Tócala para verla en grande">
       <div class="cn-top">
         <img src="assets/symbol-dark.png" alt="" class="cn-lg" aria-hidden="true">
         <span class="cn-rot">Credencial de atleta</span>
       </div>
       <div class="cn-id">
-        <button class="cn-foto ${f.foto ? "con" : ""}" id="cnFoto"
-          title="${f.foto ? "Cambiar la foto" : "Añadir una foto"}"
+        <div class="cn-foto ${f.foto ? "con" : ""}"
           ${f.foto ? `style="background-image:url('${f.foto}')"` : ""}>
-          ${f.foto ? "" : `<span class="ini">${esc(inicialesDe(nombre))}</span>
-            <span class="add">Añadir foto</span>`}
-        </button>
+          ${f.foto ? "" : `<span class="ini">${esc(inicialesDe(nombre))}</span>`}
+        </div>
         <div class="cn-nm">
           <span class="rot">Nombre</span>
           <b>${esc(nombre)}</b>
@@ -2481,8 +2487,17 @@ function renderCarnet(){
         <div><b>${(()=>{ const m = ultimaMedicion(); return m ? fmt(m.peso) + " kg" : "—"; })()}</b><span>Peso</span></div>
         <div><b>${f.prevision ? esc(String(f.prevision).split(" ")[0]) : "—"}</b><span>Previsión</span></div>
       </div>
+      ${fam.length ? `<div class="cn-fam">
+        <span class="rot">Beneficios extensivos a</span>
+        <b>${fam.slice(0,3).map(x=>esc(x.nombre.split(" ").slice(0,2).join(" "))).join(" · ")}${
+          fam.length > 3 ? ` · +${fam.length-3}` : ""}</b>
+      </div>` : ""}
+      <div class="cn-toca">Tócala para mostrarla en grande</div>
     </div>
-    ${f.foto ? `<button class="minilink" id="cnQuitarFoto">Quitar la foto</button>` : ""}
+    <div class="cn-acciones">
+      <button class="minilink" id="cnFoto">${f.foto ? "Cambiar la foto" : "📷 Añadir mi foto"}</button>
+      ${f.foto ? `<button class="minilink" id="cnQuitarFoto">Quitar la foto</button>` : ""}
+    </div>
 
     <div class="panel" style="margin-top:12px">
       <div class="deb-g">✚ Salud relevante</div>
@@ -2502,6 +2517,9 @@ function renderCarnet(){
 
   document.getElementById("cnEditar").onclick = ()=>{ go("salud"); openFicha("fichaMedica"); };
   document.getElementById("cnFoto").onclick = ()=> document.getElementById("fotoFile").click();
+  const chica = document.getElementById("carnetChica");
+  chica.onclick = abrirCarnetGrande;
+  chica.onkeydown = e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); abrirCarnetGrande(); } };
   const quitar = document.getElementById("cnQuitarFoto");
   if(quitar) quitar.onclick = ()=>{
     if(!confirm("¿Quitar la foto de tu credencial?")) return;
@@ -2550,6 +2568,100 @@ document.getElementById("fotoFile").onchange = async e=>{
     toast("📷 Foto guardada");
   }catch(err){ toast(err.message); }
 };
+
+
+/* ---------- la credencial en grande ----------
+   Se muestra apaisada y ocupando toda la pantalla, que es como se enseña
+   un carnet en un mostrador: el otro la mira de frente, sin tocarla. En
+   un teléfono vertical se gira sola, para que llene la pantalla al
+   voltearlo. */
+function abrirCarnetGrande(){
+  const f = S.salud || {};
+  const nombre = miNombre();
+  const fam = Array.isArray(f.familiares) ? f.familiares : [];
+  const m = ultimaMedicion();
+  const nac = f.nacimiento
+    ? (()=>{ const d = parseKey(f.nacimiento);
+             return `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`; })()
+    : "—";
+  /* Lo urgente va en la tarjeta grande, en rojo: si alguien la mira es
+     porque pasó algo o porque va a atenderlo. */
+  const alertas = [
+    f.alergiaMed   && "Alergia a medicamentos: " + f.alergiaMed,
+    f.alergiaAlim  && "Alergia alimentaria: " + f.alergiaAlim,
+    f.lesionActual && "Lesión activa: " + f.lesionActual
+  ].filter(Boolean);
+
+  document.getElementById("cnFullTarjeta").innerHTML = `
+    <div class="xl-top">
+      <img src="assets/symbol-dark.png" alt="Fractale" class="xl-lg">
+      <span class="xl-rot">Credencial de atleta</span>
+    </div>
+    <div class="xl-cuerpo">
+      <div class="xl-foto ${f.foto ? "con" : ""}"
+        ${f.foto ? `style="background-image:url('${f.foto}')"` : ""}>
+        ${f.foto ? "" : `<span>${esc(inicialesDe(nombre))}</span>`}
+      </div>
+      <div class="xl-datos">
+        <div class="xl-nombre">
+          <span class="rot">Nombre</span>
+          <b>${esc(nombre)}</b>
+        </div>
+        <div class="xl-par">
+          <div><span class="rot">RUT</span><b>${f.rut ? esc(f.rut) : "—"}</b></div>
+          <div><span class="rot">Nacimiento</span><b>${nac}${
+            f.nacimiento ? ` · ${edad(f.nacimiento)} años` : ""}</b></div>
+        </div>
+        <div class="xl-par">
+          <div><span class="rot">Previsión</span><b>${f.prevision ? esc(f.prevision) : "—"}</b></div>
+          <div><span class="rot">Sangre · Estatura · Peso</span><b>${
+            f.grupo ? esc(f.grupo) : "—"} · ${f.estatura ? fmt(f.estatura) + " cm" : "—"} · ${
+            m ? fmt(m.peso) + " kg" : "—"}</b></div>
+        </div>
+        ${alertas.length ? `<div class="xl-alerta">${alertas.map(esc).join(" · ")}</div>` : ""}
+      </div>
+    </div>
+    <div class="xl-pie">
+      <div class="xl-fam">
+        <span class="rot">Beneficios extensivos a</span>
+        ${fam.length
+          ? `<div class="xl-lista">${fam.map(x=>`<span><b>${esc(x.nombre)}</b> · ${
+              relDe(x.rel).l}${x.rut ? " · " + esc(x.rut) : ""}</span>`).join("")}</div>`
+          : `<div class="xl-lista"><span class="vacio">Sin familiares declarados</span></div>`}
+      </div>
+      ${f.contacto ? `<div class="xl-emg">
+        <span class="rot">Emergencia</span><b>${esc(f.contacto)}</b></div>` : ""}
+    </div>`;
+
+  document.getElementById("cnFull").classList.add("open");
+  document.body.classList.add("sinscroll");
+  ajustarCarnetGrande();
+}
+
+/* La tarjeta escala como una sola pieza: todo dentro va en em y aquí se
+   fija el em a partir del ancho que acabó teniendo. */
+function ajustarCarnetGrande(){
+  const t = document.getElementById("cnFullTarjeta");
+  if(!t.offsetWidth) return;
+  t.style.fontSize = Math.max(9, Math.min(26, t.offsetWidth / 34)) + "px";
+}
+addEventListener("resize", ()=>{
+  if(document.getElementById("cnFull").classList.contains("open")) ajustarCarnetGrande();
+});
+addEventListener("orientationchange", ()=> setTimeout(ajustarCarnetGrande, 250));
+
+function cerrarCarnetGrande(){
+  document.getElementById("cnFull").classList.remove("open");
+  document.body.classList.remove("sinscroll");
+}
+document.getElementById("cnFullX").onclick = cerrarCarnetGrande;
+document.getElementById("cnFull").onclick = e=>{
+  if(e.target.id === "cnFull" || e.target.classList.contains("cnfull-caja")) cerrarCarnetGrande();
+};
+addEventListener("keydown", e=>{
+  if(e.key === "Escape" && document.getElementById("cnFull").classList.contains("open"))
+    cerrarCarnetGrande();
+});
 
 function renderFamilia(){
   const box = document.getElementById("familiaPanel");
