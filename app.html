@@ -178,13 +178,20 @@
 
   <!-- ================= MENSAJES ================= -->
   <div id="view-chat" class="hidden">
-    <button class="volver" id="chatVolver">‹ Volver</button>
+    <div class="chathead">
+      <button class="volver" id="chatVolver" aria-label="Volver">‹</button>
+      <div class="t"><b>Tu equipo</b><span id="chatQuienes">Entrenador, médico y nutricionista</span></div>
+      <div class="caras" id="chatCaras"></div>
+    </div>
     <div class="chatwrap">
       <div class="chatlog" id="chatLog"></div>
+      <button class="chatnuevos hidden" id="chatNuevos">↓ Mensajes nuevos</button>
       <div class="chatbar" id="chatBar">
-        <textarea id="chatTexto" rows="1" placeholder="Escríbele a tu equipo…"></textarea>
-        <button id="chatSend" title="Enviar">➤</button>
+        <textarea id="chatTexto" rows="1" maxlength="4000"
+          placeholder="Escríbele a tu equipo…"></textarea>
+        <button id="chatSend" title="Enviar" aria-label="Enviar">➤</button>
       </div>
+      <div class="chatcuenta hidden" id="chatCuenta"></div>
     </div>
   </div>
 
@@ -767,7 +774,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-6";
+const APP_VERSION = "2026.10.08-7";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2887,6 +2894,10 @@ document.getElementById("dcSave").onclick = async ()=>{
    ============================================================ */
 let chatMsgs = [], chatCanal = null, chatPintado = "", chatNombres = {};
 let sinLeerChat = 0;
+/* Lo escrito que todavía no confirmó el servidor. Vive aparte de `chatMsgs`
+   para que un fallo de red no ensucie la conversación de verdad. */
+let chatPend = [];
+let chatEquipo = null;
 
 /* En la bandeja puede escribir cualquiera de tu equipo, así que cada mensaje
    que no es tuyo lleva de quién viene. */
@@ -2923,37 +2934,141 @@ function separadorDia(k){
   return `${cap(DIAS[d.getDay()])} ${d.getDate()} ${MESES[d.getMonth()]}`;
 }
 
-function pintaChat(){
+/* ¿Está mirando el final? Si se fue a leer hacia arriba, un mensaje nuevo
+   no debe arrancarle la pantalla de las manos. */
+function alFinal(log){
+  return log.scrollHeight - log.scrollTop - log.clientHeight < 70;
+}
+
+/* Dos mensajes seguidos del mismo autor en pocos minutos son una sola
+   intervención: se agrupan y solo el último lleva la hora. */
+const MISMO_GRUPO = 5 * 60 * 1000;
+
+function pintaChat(irAlFinal){
   const log = document.getElementById("chatLog");
-  if(!chatMsgs.length){
+  const pegado = alFinal(log);
+  const todo = chatMsgs.concat(chatPend);
+
+  if(!todo.length){
     log.innerHTML = `<div class="empty">Todavía no hay mensajes.<br>
       Escribe lo que necesites: dudas, molestias, cómo te sentiste.<br>
       Lo lee tu equipo: entrenador, médico y nutricionista.</div>`;
+    pintaCaras();
     return;
   }
+
   let ultimoDia = "";
-  log.innerHTML = chatMsgs.map(m=>{
+  log.innerHTML = todo.map((m, i)=>{
     const dia = diaDe(m.creado);
     const sep = dia !== ultimoDia ? `<div class="chatdia">${separadorDia(dia)}</div>` : "";
+    const nuevoDia = dia !== ultimoDia;
     ultimoDia = dia;
-    const mio = m.autor_id === miId();
-    return `${sep}<div class="burb ${mio ? "mia" : ""}" data-msg="${m.id}">
-      ${mio ? "" : firmaDe(m)}
-      <div class="tx">${esc(m.texto)}</div>
-      <div class="hr">${horaCorta(m.creado)}</div></div>`;
-  }).join("");
-  /* Ir al final: en un chat lo último es lo que importa. */
-  log.scrollTop = log.scrollHeight;
+    const mio = m.tmp ? true : m.autor_id === miId();
+    const ant = i > 0 ? todo[i-1] : null, sig = todo[i+1];
+    const mismo = (a, b) => a && b
+      && (a.tmp ? "yo" : a.autor_id) === (b.tmp ? "yo" : b.autor_id)
+      && Math.abs(new Date(b.creado) - new Date(a.creado)) < MISMO_GRUPO
+      && diaDe(a.creado) === diaDe(b.creado);
+    const primero = nuevoDia || !mismo(ant, m);
+    const ultimo  = !mismo(m, sig);
 
-  log.querySelectorAll(".burb.mia").forEach(b=> b.oncontextmenu = async e=>{
-    e.preventDefault();
-    if(!confirm("¿Borrar este mensaje?")) return;
-    try{
-      await Nube.borrarMensaje(b.dataset.msg);
-      chatMsgs = chatMsgs.filter(m => m.id !== b.dataset.msg);
-      pintaChat();
-    }catch(err){ toast(Nube.traduce(err.message)); }
+    const pie = m.estado === "enviando" ? `<div class="hr pend">enviando…</div>`
+      : m.estado === "error" ? `<div class="hr err">No se envió · ${esc(m.motivo || "")}
+          <button class="rein" data-rein="${m.tmp}">Reintentar</button>
+          <button class="rein" data-tirar="${m.tmp}">Descartar</button></div>`
+      : ultimo ? `<div class="hr">${horaCorta(m.creado)}</div>` : "";
+
+    return `${sep}<div class="burb ${mio ? "mia" : ""} ${primero ? "ini" : ""} ${
+        ultimo ? "fin" : ""} ${m.estado === "error" ? "malo" : ""} ${
+        m.estado === "enviando" ? "yendo" : ""}"
+        ${m.id ? `data-msg="${m.id}"` : ""}>
+      ${mio || !primero ? "" : firmaDe(m)}
+      <div class="tx">${esc(m.texto)}</div>
+      ${pie}</div>`;
+  }).join("");
+
+  if(irAlFinal || pegado){
+    log.scrollTop = log.scrollHeight;
+    avisarNuevos(false);
+  }
+  pintaCaras();
+
+  log.querySelectorAll("[data-rein]").forEach(b=> b.onclick = ()=>{
+    const p = chatPend.find(x=>x.tmp === b.dataset.rein);
+    if(p) despacharChat(p);
   });
+  log.querySelectorAll("[data-tirar]").forEach(b=> b.onclick = ()=>{
+    chatPend = chatPend.filter(x=>x.tmp !== b.dataset.tirar);
+    pintaChat();
+  });
+
+  /* Borrar lo propio. El clic derecho no existe en un teléfono: aquí se
+     mantiene pulsado. */
+  log.querySelectorAll(".burb.mia[data-msg]").forEach(b=>{
+    const pedir = ()=>{
+      if(!confirm("¿Borrar este mensaje? Tu equipo dejará de verlo.")) return;
+      borrarMensajeChat(b.dataset.msg);
+    };
+    b.oncontextmenu = e=>{ e.preventDefault(); pedir(); };
+    pulsaLargo(b, pedir);
+  });
+}
+
+async function borrarMensajeChat(id){
+  try{
+    await Nube.borrarMensaje(id);
+    chatMsgs = chatMsgs.filter(m => m.id !== id);
+    pintaChat();
+    toast("Mensaje borrado");
+  }catch(err){ toast(Nube.traduce(err.message)); }
+}
+
+/* Pulsación larga, que es el clic derecho de un teléfono. Se cancela si el
+   dedo se mueve: si estaba haciendo scroll, no quería borrar nada. */
+function pulsaLargo(el, fn, ms = 520){
+  let t = null, x0 = 0, y0 = 0;
+  const parar = ()=>{ clearTimeout(t); t = null; };
+  el.addEventListener("pointerdown", e=>{
+    if(e.pointerType === "mouse") return;      // el ratón ya tiene su menú
+    x0 = e.clientX; y0 = e.clientY;
+    t = setTimeout(()=>{ parar(); fn(); }, ms);
+  });
+  el.addEventListener("pointermove", e=>{
+    if(t && (Math.abs(e.clientX-x0) > 10 || Math.abs(e.clientY-y0) > 10)) parar();
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(ev=> el.addEventListener(ev, parar));
+}
+
+function avisarNuevos(hay){
+  document.getElementById("chatNuevos").classList.toggle("hidden", !hay);
+}
+
+/* Quién lee lo que escribes. Sin esto la bandeja parece un buzón al vacío. */
+function pintaCaras(){
+  const caras = document.getElementById("chatCaras");
+  const quienes = document.getElementById("chatQuienes");
+  if(!caras) return;
+  if(!chatEquipo || !chatEquipo.length){
+    caras.innerHTML = "";
+    quienes.textContent = chatEquipo
+      ? "Todavía no te asignan un equipo"
+      : "Entrenador, médico y nutricionista";
+    return;
+  }
+  caras.innerHTML = chatEquipo.slice(0,3).map(x=>
+    `<span class="cara" title="${esc(x.nombre || x.correo)}">${
+      (ROLES_EQUIPO[x.rol] || {e:"👤"}).e}</span>`).join("");
+  quienes.textContent = chatEquipo.map(x=>{
+    const r = ROLES_EQUIPO[x.rol];
+    return `${String(x.nombre || x.correo).split(" ")[0]}${r ? " · " + r.l.toLowerCase() : ""}`;
+  }).join(" / ");
+}
+
+async function cargarEquipoChat(){
+  if(chatEquipo || !chatListo()) return;
+  try{ chatEquipo = await Nube.equipoDe(miId()); }
+  catch(e){ chatEquipo = []; }
+  pintaCaras();
 }
 
 async function abrirChat(){
@@ -2964,12 +3079,13 @@ async function abrirChat(){
       equipo pueda responderte.<br>Entra con tu correo para usarla.</div>`;
     return;
   }
+  cargarEquipoChat();
   if(chatPintado !== miId()){ log.innerHTML = `<div class="empty">Cargando mensajes…</div>`; }
   try{
     chatMsgs = await Nube.mensajes(miId());
     chatPintado = miId();
     await cargarNombresChat();
-    pintaChat();
+    pintaChat(true);
     await Nube.marcarLeido(miId());
     pintarPipChat(0);
   }catch(e){
@@ -2988,7 +3104,11 @@ function escucharChatVivo(){
     await cargarNombresChat();
     const enChat = !document.getElementById("view-chat").classList.contains("hidden");
     if(enChat){
+      const log = document.getElementById("chatLog");
+      const pegado = alFinal(log);
       pintaChat();
+      /* Si estaba leyendo hacia arriba, se le avisa en vez de arrastrarlo. */
+      if(!pegado && m.autor_id !== miId()) avisarNuevos(true);
       if(m.autor_id !== miId()) Nube.marcarLeido(miId());
     }else if(m.autor_id !== miId()){
       pintarPipChat(sinLeerChat + 1);
@@ -3011,21 +3131,47 @@ async function revisarChat(){
   escucharChatVivo();
 }
 
+/* El mensaje aparece al instante y después se confirma. Con mala señal,
+   que es lo normal en un cerro, escribir y quedarse mirando un botón
+   gris es lo peor que puede pasar. */
 async function enviarChat(){
   const ta = document.getElementById("chatTexto");
   const t = ta.value.trim();
   if(!t) return;
-  const btn = document.getElementById("chatSend");
-  btn.disabled = true;
+  if(!chatListo()){ toast("Entra con tu cuenta para escribir"); return; }
+  const p = {tmp:"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+             texto:t, creado:new Date().toISOString(), estado:"enviando"};
+  chatPend.push(p);
+  ta.value = ""; ta.style.height = "auto";
+  cuentaChat();
+  pintaChat(true);
+  ta.focus();
+  despacharChat(p);
+}
+
+async function despacharChat(p){
+  p.estado = "enviando"; p.motivo = "";
+  pintaChat();
   try{
-    const m = await Nube.enviar(miId(), t);
-    if(m){ chatMsgs.push(m); pintaChat(); }
-    ta.value = ""; ta.style.height = "auto";
+    const m = await Nube.enviar(miId(), p.texto);
+    chatPend = chatPend.filter(x => x !== p);
+    if(m && !chatMsgs.some(x => x.id === m.id)) chatMsgs.push(m);
+    pintaChat(true);
   }catch(e){
-    toast(Nube.traduce(e.message));
-  }finally{
-    btn.disabled = false; ta.focus();
+    p.estado = "error";
+    p.motivo = Nube.traduce(e.message);
+    pintaChat();
   }
+}
+
+/* El límite de la base de datos son 4000 caracteres: mejor avisar antes de
+   llegar que cortar el texto sin explicación. */
+function cuentaChat(){
+  const ta = document.getElementById("chatTexto");
+  const caja = document.getElementById("chatCuenta");
+  const n = ta.value.length;
+  caja.classList.toggle("hidden", n < 3400);
+  if(n >= 3400) caja.textContent = `${n} de 4000 caracteres`;
 }
 
 document.getElementById("benBtn").onclick    = ()=> go("ben");
@@ -3043,9 +3189,18 @@ document.getElementById("verHist").onclick   = ()=> go("hist");
 document.getElementById("histVolver").onclick = ()=> go("stats");
 document.getElementById("benVolver").onclick = ()=> go("hoy");
 document.getElementById("chatBtn").onclick    = ()=> go("chat");
-document.getElementById("chatVolver").onclick = ()=> go("hoy");
+document.getElementById("chatVolver").onclick = ()=> go(vistaAnterior);
 document.getElementById("chatSend").onclick   = enviarChat;
+document.getElementById("chatNuevos").onclick = ()=>{
+  const log = document.getElementById("chatLog");
+  log.scrollTo({top: log.scrollHeight, behavior:"smooth"});
+  avisarNuevos(false);
+};
+document.getElementById("chatLog").addEventListener("scroll", ()=>{
+  if(alFinal(document.getElementById("chatLog"))) avisarNuevos(false);
+});
 document.getElementById("chatTexto").oninput  = e=>{
+  cuentaChat();
   e.target.style.height = "auto";
   e.target.style.height = Math.min(120, Math.max(40, e.target.scrollHeight)) + "px";
 };

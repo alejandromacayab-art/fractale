@@ -419,18 +419,35 @@ nav.tabs button{min-width:0;padding-left:2px;padding-right:2px}
 .chatwrap{display:flex;flex-direction:column;gap:12px;margin-top:4px}
 /* Altura fija: si el log creciera, la página entera scrollearía y el último
    mensaje quedaría bajo la barra de escritura. Aquí solo scrollea el log. */
-.chatlog{display:flex;flex-direction:column;gap:8px;overflow-y:auto;
-  height:calc(100vh - 252px);height:calc(100dvh - 252px);min-height:240px;
-  padding:4px 2px 8px}
+.chatlog{display:flex;flex-direction:column;gap:3px;overflow-y:auto;
+  height:calc(100vh - 285px);height:calc(100dvh - 285px);min-height:220px;
+  padding:4px 2px 8px;overscroll-behavior:contain}
 .chatdia{align-self:center;font-size:10.5px;font-weight:800;text-transform:uppercase;
   letter-spacing:.07em;color:var(--tx3);background:var(--card2);border:1px solid var(--line);
   border-radius:99px;padding:4px 12px;margin:10px 0 4px}
-.burb{max-width:78%;align-self:flex-start;background:var(--card);border:1px solid var(--line);
-  border-radius:16px 16px 16px 5px;padding:10px 13px;box-shadow:var(--glow)}
-.burb.mia{align-self:flex-end;border-radius:16px 16px 5px 16px;
-  background:color-mix(in srgb,var(--accent) 16%,var(--card));border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
-.burb .tx{font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+/* Mensajes seguidos del mismo autor se pegan: las esquinas del lado que
+   los une se cuadran y solo el último lleva la hora. */
+.burb{max-width:80%;align-self:flex-start;background:var(--card);
+  border:1px solid var(--line);border-radius:5px 16px 16px 5px;
+  padding:9px 13px;box-shadow:var(--glow);
+  -webkit-user-select:none;user-select:none}
+.burb.ini{border-top-left-radius:16px;margin-top:9px}
+.burb.fin{border-bottom-left-radius:16px}
+.burb.mia{align-self:flex-end;border-radius:16px 5px 5px 16px;
+  background:color-mix(in srgb,var(--accent) 16%,var(--card));
+  border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+.burb.mia.ini{border-top-right-radius:16px}
+.burb.mia.fin{border-bottom-right-radius:16px}
+.burb.yendo{opacity:.62}
+.burb.malo{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.45)}
+.burb .tx{font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word;
+  -webkit-user-select:text;user-select:text}
 .burb .hr{font-size:10px;color:var(--tx3);text-align:right;margin-top:4px;font-weight:700}
+.burb .hr.pend{color:var(--tx3);font-style:italic}
+.burb .hr.err{color:#fb7185;text-align:left;line-height:1.5}
+.burb .rein{display:inline-block;margin:5px 10px 0 0;padding:4px 10px;border-radius:8px;
+  font-size:11px;font-weight:800;background:var(--card2);border:1px solid var(--line);
+  color:var(--tx2)}
 .chatbar{display:flex;align-items:flex-end;gap:9px;background:var(--card);border:1px solid var(--line);
   border-radius:18px;padding:8px 8px 8px 14px;box-shadow:var(--glow)}
 .chatbar textarea{flex:1;background:none;border:none;outline:none;resize:none;font-size:15px;
@@ -685,3 +702,21 @@ body.sinscroll{overflow:hidden}
   background:var(--accent);color:#04120a;border:none;
   box-shadow:0 2px 10px rgba(0,0,0,.55)}
 .cn-camara:active{transform:scale(.92)}
+
+/* ---------- Cabecera y avisos del chat ---------- */
+.chathead{display:flex;align-items:center;gap:10px;padding:6px 0 10px;
+  border-bottom:1px solid var(--line);margin-bottom:6px}
+.chathead .volver{font-size:24px;line-height:1;padding:0 6px 0 0;color:var(--accent)}
+.chathead .t{min-width:0;flex:1}
+.chathead .t b{display:block;font-size:15px;font-weight:800;letter-spacing:-.02em}
+.chathead .t span{display:block;font-size:11.5px;color:var(--tx3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chathead .caras{display:flex;flex:none}
+.chathead .cara{width:28px;height:28px;margin-left:-8px;border-radius:50%;
+  display:grid;place-items:center;font-size:13px;
+  background:var(--card2);border:1px solid var(--line)}
+.chatnuevos{align-self:center;margin-top:-6px;padding:7px 15px;border-radius:99px;
+  font-size:12px;font-weight:800;background:var(--accent);color:#05070a;
+  box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.chatcuenta{text-align:right;font-size:11px;font-weight:700;color:var(--tx3);
+  margin-top:-6px}
