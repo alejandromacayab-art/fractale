@@ -767,7 +767,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-5";
+const APP_VERSION = "2026.10.08-6";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -2468,6 +2468,8 @@ function renderCarnet(){
         <div class="cn-foto ${f.foto ? "con" : ""}"
           ${f.foto ? `style="background-image:url('${f.foto}')"` : ""}>
           ${f.foto ? "" : `<span class="ini">${esc(inicialesDe(nombre))}</span>`}
+          <button class="cn-camara" id="cnFotoBadge"
+            aria-label="${f.foto ? "Cambiar la foto" : "Añadir una foto"}">📷</button>
         </div>
         <div class="cn-nm">
           <span class="rot">Nombre</span>
@@ -2494,10 +2496,9 @@ function renderCarnet(){
       </div>` : ""}
       <div class="cn-toca">Tócala para mostrarla en grande</div>
     </div>
-    <div class="cn-acciones">
-      <button class="minilink" id="cnFoto">${f.foto ? "Cambiar la foto" : "📷 Añadir mi foto"}</button>
-      ${f.foto ? `<button class="minilink" id="cnQuitarFoto">Quitar la foto</button>` : ""}
-    </div>
+    <button class="btn ${f.foto ? "ghost" : ""}" style="margin-top:12px" id="cnFoto">
+      📷 ${f.foto ? "Cambiar mi foto" : "Añadir mi foto"}</button>
+    ${f.foto ? `<button class="minilink" id="cnQuitarFoto">Quitar la foto</button>` : ""}
 
     <div class="panel" style="margin-top:12px">
       <div class="deb-g">✚ Salud relevante</div>
@@ -2516,7 +2517,11 @@ function renderCarnet(){
       cédula de identidad.</p>`;
 
   document.getElementById("cnEditar").onclick = ()=>{ go("salud"); openFicha("fichaMedica"); };
-  document.getElementById("cnFoto").onclick = ()=> document.getElementById("fotoFile").click();
+  const pedirFoto = ()=> document.getElementById("fotoFile").click();
+  document.getElementById("cnFoto").onclick = pedirFoto;
+  /* El distintivo vive encima de la tarjeta, que entera abre la vista
+     grande: sin esto, tocarlo haría las dos cosas. */
+  document.getElementById("cnFotoBadge").onclick = e=>{ e.stopPropagation(); pedirFoto(); };
   const chica = document.getElementById("carnetChica");
   chica.onclick = abrirCarnetGrande;
   chica.onkeydown = e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); abrirCarnetGrande(); } };

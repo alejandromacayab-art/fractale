@@ -678,3 +678,10 @@ body.sinscroll{overflow:hidden}
 .xl-lista span{font-size:.78em;color:rgba(255,255,255,.72);white-space:nowrap}
 .xl-lista b{display:inline;font-size:inherit;font-weight:800;color:#fff}
 .xl-lista .vacio{color:rgba(255,255,255,.4)}
+/* Distintivo de cámara sobre la foto de la credencial */
+.cn-foto{position:relative}
+.cn-camara{position:absolute;right:5px;bottom:5px;width:27px;height:27px;
+  border-radius:50%;display:grid;place-items:center;font-size:13px;padding:0;
+  background:var(--accent);color:#04120a;border:none;
+  box-shadow:0 2px 10px rgba(0,0,0,.55)}
+.cn-camara:active{transform:scale(.92)}
