@@ -57,7 +57,7 @@ const TIPOS_DOC = {medico:{e:"🩺", l:"Médico"}, nutricional:{e:"🥗", l:"Nut
    la ficha igual. Si cambia allá, cambia aquí. */
 const FICHA_MED = [
   {g:"Identificación y contacto", c:[
-    ["nacimiento","Fecha de nacimiento","date"], ["grupo","Grupo sanguíneo"],
+    ["nacimiento","Fecha de nacimiento","date"], ["rut","RUT"], ["grupo","Grupo sanguíneo"],
     ["estatura","Estatura","cm"], ["prevision","Previsión o seguro"],
     ["contacto","Contacto de emergencia"], ["contacto2","Segundo contacto"],
     ["tratante","Médico o kinesiólogo tratante"]
@@ -96,6 +96,12 @@ const FICHA_NUT = [
     ["objetivoNutri","Objetivo nutricional"], ["notasNutri","Indicaciones del nutricionista"]
   ]}
 ];
+const REL_P = {
+  padre:{l:"Padre", e:"👨"}, madre:{l:"Madre", e:"👩"},
+  pareja:{l:"Esposa o pareja", e:"💞"}, hijo:{l:"Hijo o hija", e:"🧒"},
+  hermano:{l:"Hermano o hermana", e:"🧑"}, otro:{l:"Familiar", e:"👤"}
+};
+const relDeP = r => REL_P[r] || REL_P.otro;
 const SN = {si:"Sí", no:"No", nose:"No lo sé"};
 const lleno = v => String(v ?? "").trim() !== "";
 const fechaLargaP = f => {
@@ -435,6 +441,196 @@ function razonCarga(dias, vol){
 }
 function colorSueno(n){ return !n ? "#6f7887" : n >= 70 ? "#22e07a" : n >= 50 ? "#fbbf24" : "#fb7185"; }
 
+
+/* ============================================================
+   MÓDULOS DE LA APP
+   Entrenamiento y nutrición están archivados mientras no se usen. Se
+   enciende desde aquí y aparece en la app de todos los deportistas.
+   ============================================================ */
+let MODULOS = {entrenamiento:false, nutricion:false};
+const modOn = k => !!MODULOS[k];
+
+async function cargarModulos(){
+  try{ MODULOS = Object.assign({entrenamiento:false, nutricion:false}, await Nube.modulos()); }
+  catch(e){}
+}
+
+/* ============================================================
+   RESUMEN DEL ATLETA
+   Lo primero que se ve al abrir una ficha: un veredicto, cuatro cifras
+   y dos gráficos. Si algo está mal tiene que saltar sin leer la tabla.
+   ============================================================ */
+/* Una serie de n días hasta hoy, con los huecos incluidos: un día sin
+   registrar no es un cero, es un hueco, y en el gráfico se ve distinto. */
+function serieDias(dias, n, valor){
+  const out = [];
+  for(let i = n-1; i >= 0; i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const f = hoyKey(d), r = dias.find(x => x.fecha === f);
+    out.push({f, v: r ? valor(r.datos) : null});
+  }
+  return out;
+}
+
+/* Barras + línea sobre el mismo eje de días. Las barras son la carga del
+   día; la línea, el sueño. Se dibuja a mano porque una librería para dos
+   gráficos no se paga. */
+function graficoMixto(barras, linea, opc = {}){
+  const W = 320, H = 108, B = 18, T = 6;
+  const n = barras.length, paso = W / n, ancho = Math.max(3, paso - 4);
+  const maxB = Math.max(1, ...barras.map(x => Number(x.v) || 0));
+  const altoB = v => H - B - (v / maxB) * (H - B - T);
+  const altoL = v => H - B - (Math.min(100, v) / 100) * (H - B - T);
+
+  const rects = barras.map((x, i) => {
+    const v = Number(x.v) || 0;
+    const y = v ? altoB(v) : H - B - 2;
+    return `<rect x="${(i*paso + (paso-ancho)/2).toFixed(1)}" y="${y.toFixed(1)}"
+      width="${ancho.toFixed(1)}" height="${(H - B - y).toFixed(1)}" rx="2"
+      fill="${v ? (opc.colorBarra || "#22e07a") : "var(--line)"}" ${v ? "" : 'opacity=".6"'}></rect>`;
+  }).join("");
+
+  /* La línea se corta en los días sin dato: inventar continuidad sería mentir. */
+  const col = opc.colorLinea || "#a5b4fc";
+  const tramos = [];
+  let actual = [];
+  linea.forEach((x, i) => {
+    if(x.v == null || !Number(x.v)){ if(actual.length) tramos.push(actual); actual = []; return; }
+    actual.push([i*paso + paso/2, altoL(Number(x.v))]);
+  });
+  if(actual.length) tramos.push(actual);
+  const path = tramos.map(t => t.length === 1
+    ? `<rect x="${(t[0][0]-2).toFixed(1)}" y="${(t[0][1]-2).toFixed(1)}" width="4" height="4"
+         rx="1.5" fill="${col}"></rect>`
+    : `<polyline points="${t.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ")}" fill="none"
+         stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         vector-effect="non-scaling-stroke"></polyline>`).join("");
+
+  return `<svg viewBox="0 0 ${W} ${H-B}" width="100%" height="${H-B}" preserveAspectRatio="none"
+            role="img" aria-label="${esc2(opc.alt || "Gráfico")}">
+    <line x1="0" y1="${H-B-0.5}" x2="${W}" y2="${H-B-0.5}" stroke="var(--line)" stroke-width="1"
+      vector-effect="non-scaling-stroke"></line>
+    ${rects}${path}</svg>
+    <div class="gdias">${barras.map(x=>`<span>${
+      (barras.length <= 14 || Number(x.f.slice(8)) % 3 === 0) ? Number(x.f.slice(8)) : ""}</span>`).join("")}</div>`;
+}
+const esc2 = s => String(s??"").replace(/"/g,"&quot;");
+
+/* Un gráfico de línea solo, para el peso: pocos puntos y muy juntos. */
+function graficoLinea(puntos, color){
+  const W = 320, H = 92, B = 16, T = 8, L = 2;
+  if(puntos.length < 2) return `<div class="empty">Con dos mediciones o más aparece la curva.</div>`;
+  const vs = puntos.map(p => p.v);
+  const lo = Math.min(...vs), hi = Math.max(...vs), rango = (hi - lo) || 1;
+  const paso = (W - L*2) / (puntos.length - 1);
+  const pts = puntos.map((p, i) =>
+    [L + i*paso, H - B - ((p.v - lo)/rango) * (H - B - T)]);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none"
+            role="img" aria-label="Evolución del peso">
+    <polyline points="${pts.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ")}" fill="none"
+      stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      vector-effect="non-scaling-stroke"></polyline>
+    ${pts.map(q=>`<rect x="${(q[0]-2).toFixed(1)}" y="${(q[1]-2).toFixed(1)}" width="4" height="4"
+      rx="1.5" fill="${color}"></rect>`).join("")}
+  </svg>
+  <div class="gdias"><span style="text-align:left">${fechaCorta(puntos[0].f)} · ${un1(puntos[0].v)} kg</span>
+    <span style="text-align:right">${fechaCorta(puntos[puntos.length-1].f)} · ${
+      un1(puntos[puntos.length-1].v)} kg · entre ${un1(lo)} y ${un1(hi)}</span></div>`;
+}
+
+/* Qué hay que mirar hoy, en orden de urgencia. Es la parte que hace que el
+   resumen sirva: las cifras solas no dicen qué hacer. */
+function avisosEstado(d){
+  const a = [];
+  if(d.constancia < 40)
+    a.push({t:"alta", txt:`Solo registra ${d.diasConDato} de los últimos 14 días. Las cifras de abajo valen poco con tan pocos datos.`});
+  else if(d.constancia < 70)
+    a.push({t:"media", txt:`Registra ${d.diasConDato} de 14 días: hay huecos.`});
+  if(d.sueMed && d.sueMed < 50)
+    a.push({t:"alta", txt:`Sueño bajo: ${d.sueMed} de 100 en promedio, ${d.hMed} h por noche.`});
+  else if(d.sueMed && d.sueMed < 70)
+    a.push({t:"media", txt:`Sueño justo: ${d.sueMed} de 100, ${d.hMed} h por noche.`});
+  if(d.ent && d.carga.cr){
+    if(d.carga.r >= 1.5)
+      a.push({t:"alta", txt:`La carga de esta semana es ${d.carga.r.toFixed(2)} veces su media. Zona de riesgo de lesión.`});
+    else if(d.carga.r >= 1.3)
+      a.push({t:"media", txt:`La carga subió rápido (${d.carga.r.toFixed(2)} veces su media).`});
+    else if(d.carga.r < 0.8)
+      a.push({t:"info", txt:`Carga por debajo de lo habitual (${d.carga.r.toFixed(2)}): descanso o desentrenamiento.`});
+  }
+  if(d.diasSinEntrar !== null && d.diasSinEntrar > 7)
+    a.push({t:"alta", txt:`No registra nada desde hace ${d.diasSinEntrar} días.`});
+  if(d.med.ultima){
+    const dd = diasDesde(d.med.ultima.fecha);
+    if(dd > 45) a.push({t:"info", txt:`El peso no se mide desde hace ${dd} días.`});
+  }else{
+    a.push({t:"info", txt:"Sin ninguna medición de peso registrada."});
+  }
+  if(d.animo && d.animo < 2.5)
+    a.push({t:"media", txt:`Ánimo bajo: ${d.animo.toFixed(1)} de 5 en las últimas dos semanas.`});
+  if(d.banderas) a.push({t:"alta", txt:`${d.banderas} ${d.banderas===1?"alerta":"alertas"} en la ficha médica, más abajo.`});
+  return a;
+}
+
+const ORDEN_AVISO = {alta:0, media:1, info:2};
+const COLOR_AVISO = {alta:"#fb7185", media:"#fbbf24", info:"#38bdf8"};
+
+function resumenHTML(d){
+  const avisos = avisosEstado(d).sort((x,y)=>ORDEN_AVISO[x.t]-ORDEN_AVISO[y.t]);
+  const peor = avisos.length ? avisos[0].t : null;
+  const vd = peor === "alta"  ? {c:"#fb7185", e:"⚠️", t:"Requiere atención"}
+           : peor === "media" ? {c:"#fbbf24", e:"👀", t:"Hay que mirarlo"}
+           : peor === "info"  ? {c:"#38bdf8", e:"ℹ️", t:"En orden, con detalles"}
+           :                    {c:"#22e07a", e:"✓",  t:"Todo en orden"};
+
+  /* Las barras son lo que cargó cada día: kilos si se usa el entrenamiento
+     de fuerza, minutos de actividad si no. */
+  const unidad = d.ent ? "kg" : "min";
+  return `
+    <section>
+      <div class="stitle">Estado actual</div>
+      <div class="panel">
+        <div class="vd" style="--c:${vd.c}">
+          <div class="vd-e">${vd.e}</div>
+          <div class="vd-t"><b>${vd.t}</b>
+            <span>Lectura automática de los últimos 14 días</span></div>
+        </div>
+        <div class="stats" style="margin:14px 0 0">
+          <div class="stat"><b style="color:${d.constancia>=70?'#22e07a':d.constancia>=40?'#fbbf24':'#fb7185'}">${
+            d.diasConDato}/14</b><span>Días con registro</span></div>
+          <div class="stat"><b style="color:${colorSueno(d.sueMed)}">${d.sueMed||"–"}</b>
+            <span>Sueño · ${d.hMed||"–"} h</span></div>
+          ${d.ent
+            ? `<div class="stat"><b style="color:${d.zc.c}">${d.carga.cr ? d.carga.r.toFixed(2) : "–"}</b>
+                 <span>${d.carga.cr ? d.zc.t : "Sin carga"}</span></div>`
+            : `<div class="stat"><b style="color:#fb923c">${d.minSem}</b><span>Min de actividad · semana</span></div>`}
+          <div class="stat"><b style="color:#2dd4bf">${d.med.ultima ? un1(d.med.ultima.peso) : "–"}</b>
+            <span>Peso (kg)${d.med.ultima ? " · "+deltaTxt(d.med.ultima.peso, d.med.antes?.peso, null).t : ""}</span></div>
+          <div class="stat"><b>${d.animo ? d.animo.toFixed(1) : "–"}</b><span>Ánimo · de 5</span></div>
+          <div class="stat"><b style="color:${d.banderas?'#fb7185':'#22e07a'}">${d.banderas}</b>
+            <span>Alertas en la ficha</span></div>
+        </div>
+
+        ${avisos.length ? `<div class="avisos">${avisos.slice(0,5).map(x=>
+          `<div class="av" style="--c:${COLOR_AVISO[x.t]}">${esc(x.txt)}</div>`).join("")}</div>`
+        : `<div class="avisos"><div class="av" style="--c:#22e07a">Constancia, sueño y carga dentro de lo esperado.
+             Nada que corregir ahora mismo.</div></div>`}
+
+        <div class="gtit">Carga diaria y sueño · 14 días</div>
+        ${graficoMixto(d.serieCarga, d.serieSueno,
+          {colorBarra: d.ent ? "#22e07a" : "#fb923c", colorLinea:"#a5b4fc",
+           alt:"Carga diaria y puntuación de sueño de los últimos catorce días"})}
+        <div class="gleg">
+          <span><i style="background:${d.ent?'#22e07a':'#fb923c'}"></i>Carga del día (${unidad})</span>
+          <span><i style="background:#a5b4fc"></i>Sueño (0–100)</span>
+        </div>
+
+        <div class="gtit" style="margin-top:16px">Peso · últimas mediciones</div>
+        ${graficoLinea(d.seriePeso, "#2dd4bf")}
+      </div>
+    </section>`;
+}
+
 /* ============================================================
    LISTA DE DEPORTISTAS
    ============================================================ */
@@ -509,14 +705,76 @@ async function verLista(){
         : `<div class="empty">Todavía no tienes deportistas.<br>Invita al primero para empezar.</div>`}
       </div>
       ${soyCoach() ? `<button class="btn" style="margin-top:12px" id="invitar">+ Invitar a alguien</button>
-        <button class="btn ghost" style="margin-top:8px" id="verBen">🎁 Beneficios de las marcas</button>` : ""}
+        <button class="btn ghost" style="margin-top:8px" id="verBen">🎁 Beneficios de las marcas</button>
+        <button class="btn ghost" style="margin-top:8px" id="verMods">⬢ Módulos de la app</button>` : ""}
     </section>`;
 
   document.querySelectorAll("[data-id]").forEach(tr=>tr.onclick=()=>verAtleta(tr.dataset.id));
   if(soyCoach()){
     $("invitar").onclick = abrirInvitar;
     $("verBen").onclick  = verBeneficios;
+    $("verMods").onclick = verModulos;
   }
+}
+
+/* ============================================================
+   MÓDULOS DE LA APP
+   Entrenamiento y nutrición nacieron archivados porque nadie los estaba
+   usando. Desde aquí se encienden y aparecen en la app de todos.
+   ============================================================ */
+const FICHA_MODULOS = [
+  {k:"entrenamiento", e:"🏋️", l:"Entrenamiento de fuerza",
+   q:"Registro de sesiones con series y kilos, tonelaje semanal, carga aguda:crónica y el resumen de entrenamiento en Progreso.",
+   nota:"La actividad física (correr, bici, trekking) se registra siempre, esté esto encendido o no."},
+  {k:"nutricion", e:"🥗", l:"Alimentación diaria",
+   q:"Grupos de alimentos priorizados cada día, recuento de comida chatarra y sus límites.",
+   nota:"La ficha nutricional y los documentos de nutrición no dependen de esto: siguen disponibles."}
+];
+
+async function verModulos(){
+  vista = {tipo:"modulos", id:null};
+  $("main").innerHTML = `<div class="empty">Cargando módulos…</div>`;
+  try{ await cargarModulosEstricto(); }
+  catch(e){ $("main").innerHTML = `
+    <a class="volver" id="volver">‹ Todos los deportistas</a>
+    <div class="empty">${esc(e.message)}<br><br>
+      Si es la primera vez, falta ejecutar <b>base-de-datos/modulos.sql</b> en Supabase.</div>`;
+    $("volver").onclick = verLista; return; }
+
+  $("main").innerHTML = `
+    <a class="volver" id="volver">‹ Todos los deportistas</a>
+    <section>
+      <div class="stitle">Módulos de la app</div>
+      <p style="font-size:13px;color:var(--tx2);margin:0 0 14px;line-height:1.6">
+        Lo que está apagado desaparece de la app de todos los deportistas: no se
+        borra nada, queda archivado y vuelve a aparecer tal cual al encenderlo.</p>
+      <div class="panel">
+        ${FICHA_MODULOS.map(m=>`<div class="sw">
+          <div class="t"><b>${m.e} ${m.l}</b><span>${m.q}</span></div>
+          <button class="knob ${modOn(m.k)?"on":""}" data-mod="${m.k}" role="switch"
+            aria-checked="${modOn(m.k)}" aria-label="${m.l}"></button>
+        </div>
+        <p class="fcnota" style="margin:-4px 0 14px">${m.nota}</p>`).join("")}
+      </div>
+    </section>`;
+
+  $("volver").onclick = verLista;
+  document.querySelectorAll("[data-mod]").forEach(b=> b.onclick = async ()=>{
+    const k = b.dataset.mod, nuevo = !modOn(k);
+    b.disabled = true;
+    try{
+      await Nube.guardarModulo(k, nuevo);
+      MODULOS[k] = nuevo;
+      toast(nuevo ? "Módulo encendido" : "Módulo archivado");
+      verModulos();
+    }catch(e){ toast(Nube.traduce(e.message)); b.disabled = false; }
+  });
+}
+
+/* Igual que cargarModulos, pero aquí sí queremos que el error se vea: si la
+   tabla no existe, el entrenador tiene que saberlo. */
+async function cargarModulosEstricto(){
+  MODULOS = Object.assign({entrenamiento:false, nutricion:false}, await Nube.modulos());
 }
 
 /* ============================================================
@@ -674,6 +932,7 @@ async function verAtleta(id){
   const salud = cfg?.salud || {};
   const fMed = fichaHTML(salud, FICHA_MED), fNut = fichaHTML(salud, FICHA_NUT);
   const flags = banderasHTML(salud);
+  const familia = Array.isArray(salud.familiares) ? salud.familiares : [];
   const carga = razonCarga(dias, vol);
   const zc = zonaDe(carga.r);
 
@@ -683,6 +942,36 @@ async function verAtleta(id){
     const f = hoyKey(d);
     ult14.push({f, r: dias.find(x=>x.fecha===f)});
   }
+
+  /* ---- lo que alimenta el resumen de arriba ---- */
+  const ent = modOn("entrenamiento");
+  const f14 = ult14[0].f;
+  const dias14 = dias.filter(r => r.fecha >= f14);
+  const diasConDato = dias14.filter(r => {
+    const x = r.datos || {};
+    return x.sleep || vol(x) || act(x) || junk(x) || x.mood || String(x.note||"").trim()
+           || Number(x.cuerpo?.peso);
+  }).length;
+  const sue14 = dias14.filter(r=>r.datos?.sleep).map(r=>r.datos.sleep);
+  const sue14Med = sue14.length ? Math.round(sue14.reduce((s,x)=>s+x.score,0)/sue14.length) : 0;
+  const h14Med = sue14.length ? (sue14.reduce((s,x)=>s+x.hours,0)/sue14.length).toFixed(1) : 0;
+  const animos = dias14.map(r=>Number(r.datos?.mood)||0).filter(x=>x>0);
+  const animo = animos.length ? animos.reduce((a,b)=>a+b,0)/animos.length : 0;
+  const min7 = dias.filter(r => r.fecha >= ult14[7].f).reduce((s,r)=>s+act(r.datos), 0);
+  const resumen = {
+    ent,
+    diasConDato, constancia: Math.round(diasConDato/14*100),
+    sueMed: sue14Med, hMed: h14Med, animo,
+    minSem: min7,
+    carga, zc, med,
+    banderas: banderasP(salud).filter(x=>x.t === "alta").length,
+    diasSinEntrar: diasDesde(a?.ultimo_registro),
+    serieCarga: serieDias(dias, 14, d => ent ? vol(d) : act(d)),
+    serieSueno: serieDias(dias, 14, d => d?.sleep?.score || null),
+    seriePeso: dias.filter(r=>Number(r.datos?.cuerpo?.peso) > 0)
+                   .map(r=>({f:r.fecha, v:Number(r.datos.cuerpo.peso)}))
+                   .sort((x,y)=>x.f.localeCompare(y.f))
+  };
 
   $("main").innerHTML = `
     <a class="volver" id="volver">‹ Todos los deportistas</a>
@@ -697,6 +986,8 @@ async function verAtleta(id){
         </div>
       </div>
     </div>
+
+    ${resumenHTML(resumen)}
 
     ${comp ? `<section>
       <div class="stitle">Próxima competencia</div>
@@ -788,6 +1079,19 @@ async function verAtleta(id){
     ${fMed ? `<section><div class="stitle">Ficha médica</div>${fMed}</section>` : ""}
     ${fNut ? `<section><div class="stitle">Ficha nutricional</div>${fNut}</section>` : ""}
 
+    ${familia.length ? `<section>
+      <div class="stitle">Familia declarada</div>
+      <div class="panel">
+        ${familia.map(x=>`<div class="hrow">
+          <div class="m">${relDeP(x.rel).e}</div>
+          <div class="t"><b>${esc(x.nombre)}</b>
+            <span>${relDeP(x.rel).l}${x.rut ? " · RUT " + esc(x.rut) : ""}</span></div>
+        </div>`).join("")}
+        <p class="fcnota" style="margin:10px 0 0">Lo que el deportista declaró en su
+          credencial. Es la lista con la que se verifica un beneficio familiar.</p>
+      </div>
+    </section>` : ""}
+
     <section>
       <div class="stitle">Documentos</div>
       <div class="panel">${
@@ -814,17 +1118,17 @@ async function verAtleta(id){
     <section>
       <div class="stitle">Cargas · últimos 45 días</div>
       <div class="stats">
-        <div class="stat"><b>${kg(kgTot)}</b><span>Kg totales</span></div>
+        ${ent ? `<div class="stat"><b>${kg(kgTot)}</b><span>Kg totales</span></div>
         <div class="stat"><b>${sesiones.length}</b><span>Sesiones</span></div>
-        <div class="stat"><b>${sesiones.length?kg(kgTot/sesiones.length):0}</b><span>Kg por sesión</span></div>
+        <div class="stat"><b>${sesiones.length?kg(kgTot/sesiones.length):0}</b><span>Kg por sesión</span></div>` : ""}
         <div class="stat"><b style="color:${colorSueno(sueMed)}">${sueMed||"–"}</b><span>Sueño · ${hMed||"–"} h</span></div>
         <div class="stat"><b style="color:#fb923c">${dias.reduce((s,r)=>s+act(r.datos),0)}</b><span>Min de actividad</span></div>
         <div class="stat"><b style="color:#fb923c">${Math.round(dias.reduce((s,r)=>s+actKm(r.datos),0)*10)/10}</b><span>Km recorridos</span></div>
-        <div class="stat"><b style="color:${colorChatarra(chat/6)}">${chat}</b><span>Chatarra total</span></div>
-        <div class="stat"><b style="color:${zc.c}">${carga.cr ? carga.r.toFixed(2) : "–"}</b><span>${
-          carga.cr ? zc.t : "Sin carga registrada"}</span></div>
+        ${modOn("nutricion") ? `<div class="stat"><b style="color:${colorChatarra(chat/6)}">${chat}</b><span>Chatarra total</span></div>` : ""}
+        ${ent ? `<div class="stat"><b style="color:${zc.c}">${carga.cr ? carga.r.toFixed(2) : "–"}</b><span>${
+          carga.cr ? zc.t : "Sin carga registrada"}</span></div>` : ""}
       </div>
-      <div class="panel" style="margin-top:12px">
+      ${ent ? `<div class="panel" style="margin-top:12px">
         <div class="chart">
           ${ult14.map(x=>{
             const v = vol(x.r?.datos), alt = v ? Math.max(4, v/maxVol*100) : 3;
@@ -834,7 +1138,7 @@ async function verAtleta(id){
           }).join("")}
         </div>
         <div class="hlbl"><span>Volumen por día · últimos 14 días</span></div>
-      </div>
+      </div>` : ""}
     </section>
 
     <section>
@@ -916,11 +1220,15 @@ $("docFile").onchange = e=>{
   const f = e.target.files?.[0];
   e.target.value = "";
   if(!f || !docPara) return;
+  /* Salud y nutrición trabajan con informes, no con fotos del celular. */
+  if(!(f.type === "application/pdf" || /\.pdf$/i.test(f.name))){
+    toast("Solo se pueden adjuntar archivos PDF"); return;
+  }
   if(f.size > 15*1024*1024){ toast("El archivo pesa más de 15 MB"); return; }
   docArchivo = f;
-  $("dcPara").textContent = `Se añade a la ficha de ${docPara.nombre}. PDF o imagen, hasta 15 MB.`;
+  $("dcPara").textContent = `Se añade a la ficha de ${docPara.nombre}. Solo PDF, hasta 15 MB.`;
   $("dcArchivo").innerHTML = `<div style="display:flex;align-items:center;gap:10px">
-      <div style="font-size:22px">${f.type.includes("pdf") ? "📄" : "🖼"}</div>
+      <div style="font-size:22px">📄</div>
       <div style="min-width:0"><b style="display:block;font-size:13.5px;word-break:break-all">${esc(f.name)}</b>
         <span style="font-size:12px;color:#6f7887">${pesoArchivo(f.size)}</span></div>
     </div>`;
@@ -929,7 +1237,7 @@ $("docFile").onchange = e=>{
   $("dcNotas").value  = "";
   /* Por defecto, el tipo de tu especialidad. */
   const porDefecto = perfil?.rol === "nutricionista" ? "nutricional"
-                   : perfil?.rol === "medico" ? "medico" : "otro";
+                   : "medico";
   document.querySelectorAll("#dcTipo [data-tp]").forEach(b=>
     b.classList.toggle("on", b.dataset.tp === porDefecto));
   $("docModal").classList.add("open");
@@ -947,7 +1255,7 @@ $("dcSave").onclick = async ()=>{
   try{
     await Nube.subirDoc(docArchivo, {
       titulo,
-      tipo:  document.querySelector("#dcTipo [data-tp].on")?.dataset.tp || "otro",
+      tipo:  document.querySelector("#dcTipo [data-tp].on")?.dataset.tp || "medico",
       fecha: $("dcFecha").value || hoyKey(),
       notas: $("dcNotas").value.trim(),
       atletaId: docPara.id
@@ -1096,6 +1404,7 @@ $("themeBtn").onclick = ()=>{
          href="app.html">Ir a mi registro</a></div>`;
     return;
   }
+  await cargarModulos();
   await verLista();
   conectarEnVivo();
   Nube.alCambiarSesion(s=>{ if(!s) location.reload(); });

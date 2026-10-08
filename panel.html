@@ -44,6 +44,32 @@
 tbody tr.cambio{animation:destello 2.2s ease-out}
 @keyframes destello{0%{background:#22e07a2e}100%{background:transparent}}
 @media(max-width:640px){ .ocultar-movil{display:none} .vivo span:last-child{display:none} .vivo{padding:6px}}
+/* veredicto del estado actual */
+.vd{display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:14px;
+  border:1px solid color-mix(in srgb,var(--c) 42%,var(--line));
+  background:color-mix(in srgb,var(--c) 11%,transparent)}
+.vd-e{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:19px;
+  border-radius:12px;background:color-mix(in srgb,var(--c) 18%,transparent);
+  border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.vd-t{min-width:0}
+.vd-t b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.02em;color:var(--c)}
+.vd-t span{display:block;font-size:11.5px;color:var(--tx3)}
+/* qué mirar */
+.avisos{margin-top:14px;display:grid;gap:7px}
+.av{position:relative;padding:9px 12px 9px 26px;border-radius:11px;font-size:12.5px;
+  line-height:1.5;color:var(--tx2);background:var(--card2);border:1px solid var(--line)}
+.av:before{content:"";position:absolute;left:11px;top:14px;width:7px;height:7px;
+  border-radius:50%;background:var(--c)}
+/* gráficos */
+.gtit{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--tx3);margin:18px 0 6px}
+.gleg{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
+.gleg span{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx3)}
+.gleg i{width:9px;height:9px;border-radius:3px;flex:none}
+/* Los días van en HTML, no dentro del SVG: así no se estiran con el gráfico */
+.gdias{display:flex;margin-top:4px}
+.gdias span{flex:1;text-align:center;font-size:9px;color:var(--tx3);
+  font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -192,7 +218,7 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
 <div class="modal" id="docModal">
   <div class="sheet">
     <h3>Subir documento</h3>
-    <p class="sub" id="dcPara">PDF o imagen, hasta 15 MB. Lo verá el deportista y el resto del equipo.</p>
+    <p class="sub" id="dcPara">Solo PDF, hasta 15 MB. Lo verá el deportista y el resto del equipo.</p>
 
     <div class="panel" id="dcArchivo" style="padding:13px;margin-bottom:14px"></div>
 
@@ -201,9 +227,8 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
 
     <label class="f"><span>Tipo</span>
       <div class="tags" id="dcTipo">
-        <button class="tag" data-tp="medico">🩺 Médico</button>
-        <button class="tag" data-tp="nutricional">🥗 Nutricional</button>
-        <button class="tag" data-tp="otro">📄 Otro</button>
+        <button class="tag" data-tp="medico">🩺 Salud</button>
+        <button class="tag" data-tp="nutricional">🥗 Nutrición</button>
       </div></label>
 
     <label class="f"><span>Fecha del documento</span>
@@ -216,7 +241,7 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
     <button class="btn ghost" style="margin-top:8px" id="dcCancel">Cancelar</button>
   </div>
 </div>
-<input type="file" id="docFile" accept="application/pdf,image/png,image/jpeg,image/webp" style="display:none">
+<input type="file" id="docFile" accept="application/pdf,.pdf" style="display:none">
 
 <div class="toast" id="toast"></div>
 

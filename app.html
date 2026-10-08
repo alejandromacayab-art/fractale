@@ -73,6 +73,11 @@
     <div id="objStrip"></div>
 
     <section>
+      <div class="stitle">💬 Habla con tu equipo</div>
+      <div id="chatHoy"></div>
+    </section>
+
+    <section id="secRegistro">
       <div class="stitle">Registro del día</div>
       <div class="grid" id="registro"></div>
     </section>
@@ -80,6 +85,18 @@
     <section>
       <div class="stitle">🎁 Tus beneficios</div>
       <div id="benHoy"></div>
+      <div class="acceso" id="irCarnet">
+        <div class="m">🪪</div>
+        <div class="t"><b>Mi credencial de atleta</b>
+          <span>Identifícate para usar los beneficios</span></div>
+        <div class="fl">›</div>
+      </div>
+      <div class="acceso" id="irFractale">
+        <div class="m">⬢</div>
+        <div class="t"><b>Quiénes somos y tus deberes</b>
+          <span>Qué es Fractale y qué se espera de ti</span></div>
+        <div class="fl">›</div>
+      </div>
     </section>
 
     <section>
@@ -110,11 +127,11 @@
       <div class="panel" id="objLista"></div>
       <button class="btn ghost hidden" style="margin-top:12px" id="addObj">+ Nuevo objetivo</button>
     </section>
-    <section>
+    <section data-mod="entrenamiento">
       <div class="stitle">⚖️ Carga de entrenamiento</div>
       <div class="panel" id="planCarga"></div>
     </section>
-    <section>
+    <section data-mod="entrenamiento">
       <div class="stitle">🏋️ Tonelaje semanal · 12 semanas</div>
       <div class="panel" id="planTonelaje"></div>
     </section>
@@ -128,9 +145,10 @@
       <div class="sleepcard" id="sleepCard"></div>
     </section>
     <section>
-      <div class="stitle">⚖️ Composición corporal</div>
+      <div class="stitle">⚖️ Peso y composición corporal</div>
       <div id="cuerpoResumen"></div>
-      <button class="btn" style="margin-top:12px" id="addMedida">+ Registrar medición</button>
+      <button class="btn" style="margin-top:12px" id="addPeso">⚖️ Anotar solo mi peso</button>
+      <button class="btn ghost" style="margin-top:8px" id="addMedida">+ Medición completa</button>
     </section>
     <section>
       <div class="stitle">📉 Peso · últimas mediciones</div>
@@ -145,10 +163,19 @@
       <div class="panel" id="fichaNutri"></div>
     </section>
     <section>
+      <div class="stitle">🪪 Mi credencial</div>
+      <div class="acceso" id="irCarnet2">
+        <div class="m">🪪</div>
+        <div class="t"><b>Credencial de atleta Fractale</b>
+          <span>Tus datos de salud y tu familia, para identificarte</span></div>
+        <div class="fl">›</div>
+      </div>
+    </section>
+    <section>
       <div class="stitle">📎 Documentos del equipo</div>
       <div class="panel" id="docsPanel"></div>
       <button class="btn" style="margin-top:12px" id="addDoc">+ Subir documento</button>
-      <input type="file" id="docFile" accept="application/pdf,image/png,image/jpeg,image/webp" class="hidden">
+      <input type="file" id="docFile" accept="application/pdf,.pdf" class="hidden">
     </section>
   </div>
 
@@ -171,8 +198,124 @@
       <div class="stitle">🎁 Tus beneficios</div>
       <p class="benintro">Descuentos de las marcas que acompañan a Fractale.
         Son tuyos por ser parte del equipo.</p>
+      <div class="acceso" id="irCarnet4" style="margin-bottom:14px">
+        <div class="m">🪪</div>
+        <div class="t"><b>Mi credencial de atleta</b>
+          <span>Muéstrala al pedir el beneficio</span></div>
+        <div class="fl">›</div>
+      </div>
       <div id="benLista"></div>
       <div id="benColab"></div>
+    </section>
+  </div>
+
+  <!-- ================= CREDENCIAL ================= -->
+  <div id="view-carnet" class="hidden">
+    <button class="volver" id="carnetVolver">‹ Volver</button>
+    <section>
+      <div class="stitle">🪪 Credencial de atleta</div>
+      <div id="carnetBox"></div>
+    </section>
+    <section>
+      <div class="stitle">👨‍👩‍👧 Mi familia</div>
+      <div class="panel" id="familiaPanel"></div>
+      <button class="btn ghost" style="margin-top:12px" id="addFam">+ Añadir familiar</button>
+      <p class="fcnota" style="margin-top:10px">Patagonia Medical extiende el descuento a
+        la familia directa. Quien vaya a usarlo tiene que aparecer en esta lista.</p>
+    </section>
+  </div>
+
+  <!-- ================= FRACTALE ================= -->
+  <div id="view-fractale" class="hidden">
+    <button class="volver" id="fracVolver">‹ Volver</button>
+
+    <section>
+      <div class="stitle">⬢ ¿Quiénes somos?</div>
+      <div class="panel">
+        <p class="qs-kicker">Sport Management · Puerto Montt, Región de Los Lagos</p>
+        <h3 class="qs-h">El éxito está en el sur</h3>
+        <p class="qs-p">El sur de Chile tiene las condiciones geográficas, climáticas y
+          humanas más exigentes del territorio: una cuna natural de resiliencia,
+          disciplina y potencial deportivo de clase mundial. Aun así, el alto
+          rendimiento estuvo siempre condicionado a la centralización.</p>
+        <p class="qs-p"><b>Fractale Sport Management</b> existe para demostrar que no hay
+          que migrar a Santiago para llegar a la élite. Profesionalizamos la carrera
+          del deportista y le damos a las marcas una entrada auténtica y estructurada
+          al deporte del sur.</p>
+        <p class="qs-q">«El alto rendimiento ya no pide permiso en la capital»</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="stitle">Qué hacemos por ti</div>
+      <div class="panel">
+        <div class="hrow"><div class="m">🏅</div><div class="t"><b>Acompañamiento 360°</b>
+          <span>Te liberamos de la carga operativa, administrativa y médica para que
+            gastes tu energía en rendir.</span></div></div>
+        <div class="hrow"><div class="m">🩺</div><div class="t"><b>Equipo de salud</b>
+          <span>Médico y nutricionista con acceso a tu ficha, para decidir con datos
+            y no con corazonadas.</span></div></div>
+        <div class="hrow"><div class="m">🤝</div><div class="t"><b>Marcas y beneficios</b>
+          <span>Gestionamos las alianzas que te dan acceso a exámenes, indumentaria
+            y nutrición.</span></div></div>
+        <div class="hrow"><div class="m">📣</div><div class="t"><b>Visibilidad</b>
+          <span>Contamos tu historia en nuestras redes y frente a las marcas.</span></div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="stitle">📋 Tus deberes como atleta Fractale</div>
+      <p class="benintro">Esto es lo que sostiene el acuerdo. No es burocracia: es lo que
+        le demuestra a las marcas que estar con nosotros vale la pena.</p>
+
+      <div class="panel">
+        <div class="deb-g">📱 En redes sociales</div>
+        <div class="hrow"><div class="m">1</div><div class="t"><b>Etiqueta a Fractale</b>
+          <span>Menciona a <b>@fractale.cl</b> en tus publicaciones de entrenamiento
+            y competencia.</span></div></div>
+        <div class="hrow"><div class="m">2</div><div class="t"><b>Historias cada semana</b>
+          <span>Al menos tres historias por semana entrenando o compitiendo, con la
+            etiqueta puesta.</span></div></div>
+        <div class="hrow"><div class="m">3</div><div class="t"><b>Publica tus resultados</b>
+          <span>Después de competir, dentro de las 48 horas, etiquetando a Fractale y
+            a las marcas que correspondan.</span></div></div>
+        <div class="hrow"><div class="m">4</div><div class="t"><b>Etiqueta a las marcas aliadas</b>
+          <span>Si usas producto de una marca que te da beneficio, se menciona. Es lo
+            que mantiene vivo el beneficio.</span></div></div>
+        <div class="hrow"><div class="m">5</div><div class="t"><b>Indumentaria oficial</b>
+          <span>Cuando la tengas, compite y entrena con ella, y que se vea.</span></div></div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <div class="deb-g">🤝 Con el equipo</div>
+        <div class="hrow"><div class="m">6</div><div class="t"><b>Avisa a tiempo</b>
+          <span>Lesiones, molestias, cambios de calendario o problemas: primero al
+            equipo, por el chat de la app.</span></div></div>
+        <div class="hrow"><div class="m">7</div><div class="t"><b>Ficha de salud al día</b>
+          <span>Mantén tus datos médicos y tus documentos actualizados. Es lo que nos
+            permite cuidarte.</span></div></div>
+        <div class="hrow"><div class="m">8</div><div class="t"><b>Guarda el material</b>
+          <span>Fotos y videos de tus competencias: compártelos con el equipo para
+            poder contar lo que haces.</span></div></div>
+        <div class="hrow"><div class="m">9</div><div class="t"><b>Uso de imagen</b>
+          <span>Fractale puede usar tu imagen en sus redes y en sus presentaciones a
+            marcas, siempre en contexto deportivo.</span></div></div>
+        <div class="hrow"><div class="m">10</div><div class="t"><b>Representación</b>
+          <span>Dentro y fuera de la cancha representas a Fractale y al deporte del
+            sur. Se nota, y se cuida.</span></div></div>
+      </div>
+
+      <p class="fcnota" style="margin-top:12px">Los objetivos concretos que te asigne tu
+        equipo (cuántas historias, cuándo) viven en <b>Plan › Objetivos Fractale</b>.</p>
+    </section>
+
+    <section>
+      <div class="panel">
+        <div class="hrow"><div class="m">📷</div><div class="t"><b>Instagram</b>
+          <span>@fractale.cl</span></div>
+          <a class="mini" href="https://instagram.com/fractale.cl" target="_blank"
+             rel="noopener" style="text-decoration:none">Abrir</a></div>
+      </div>
     </section>
   </div>
 
@@ -191,7 +334,7 @@
       <div class="stitle">Resumen</div>
       <div class="stats" id="statBoxes"></div>
     </section>
-    <section>
+    <section data-mod="entrenamiento">
       <div class="stitle">🏋️ Entrenamiento · últimos 30 días</div>
       <div class="panel" id="trainBox"></div>
     </section>
@@ -218,7 +361,7 @@
       <div class="stitle">😴 Check-in al despertar</div>
       <div class="panel" id="wakePanel"></div>
     </section>
-    <section>
+    <section data-mod="nutricion">
       <div class="stitle">🍔 Límites de comida chatarra</div>
       <div class="panel" id="junkPanel"></div>
     </section>
@@ -226,6 +369,22 @@
       <div class="stitle">🎯 Metas del día</div>
       <div class="panel" id="metasPanel"></div>
     </section>
+    <section>
+      <div class="stitle">⬢ Fractale</div>
+      <div class="acceso" id="irFractale2">
+        <div class="m">⬢</div>
+        <div class="t"><b>Quiénes somos y tus deberes</b>
+          <span>Qué es Fractale y qué se espera de ti</span></div>
+        <div class="fl">›</div>
+      </div>
+      <div class="acceso" id="irCarnet3">
+        <div class="m">🪪</div>
+        <div class="t"><b>Mi credencial de atleta</b>
+          <span>Para identificarte al usar los beneficios</span></div>
+        <div class="fl">›</div>
+      </div>
+    </section>
+
     <section>
       <div class="stitle">Datos</div>
       <div class="panel">
@@ -459,6 +618,35 @@
   </div>
 </div>
 
+<!-- ===== Modal familiar ===== -->
+<div class="modal" id="famModal">
+  <div class="sheet">
+    <h3 id="fmTitle">Familiar</h3>
+    <p class="sub">Aparece en tu credencial. Sirve para que la marca verifique
+      el parentesco cuando el beneficio es familiar.</p>
+
+    <label class="f"><span>Nombre completo</span>
+      <input class="inp" id="fmNombre" placeholder="Ej: María Soto Pérez"></label>
+
+    <label class="f"><span>Parentesco</span>
+      <div class="tags" id="fmRel">
+        <button class="tag" data-rel="padre">Padre</button>
+        <button class="tag" data-rel="madre">Madre</button>
+        <button class="tag" data-rel="pareja">Esposa o pareja</button>
+        <button class="tag" data-rel="hijo">Hijo o hija</button>
+        <button class="tag" data-rel="hermano">Hermano o hermana</button>
+        <button class="tag" data-rel="otro">Otro</button>
+      </div></label>
+
+    <label class="f"><span>RUT <span style="font-weight:400;color:var(--tx3)">· opcional</span></span>
+      <input class="inp" id="fmRut" placeholder="12.345.678-9"></label>
+
+    <button class="btn" id="fmSave">Guardar</button>
+    <button class="btn ghost" style="margin-top:8px" id="fmCancel">Cancelar</button>
+    <button class="btn danger hidden" style="margin-top:8px" id="fmDel">Quitar de la credencial</button>
+  </div>
+</div>
+
 <!-- ===== Modal ficha de salud ===== -->
 <div class="modal" id="fichaModal">
   <div class="sheet">
@@ -474,7 +662,7 @@
 <div class="modal" id="docModal">
   <div class="sheet">
     <h3>Subir documento</h3>
-    <p class="sub">PDF o imagen, hasta 15 MB. Lo verá tu equipo de trabajo.</p>
+    <p class="sub">Solo PDF, hasta 15 MB. Lo verá tu equipo de trabajo.</p>
 
     <div class="panel" id="dcArchivo" style="padding:13px;margin-bottom:14px"></div>
 
@@ -483,9 +671,8 @@
 
     <label class="f"><span>Tipo</span>
       <div class="tags" id="dcTipo">
-        <button class="tag" data-tp="medico">🩺 Médico</button>
-        <button class="tag" data-tp="nutricional">🥗 Nutricional</button>
-        <button class="tag" data-tp="otro">📄 Otro</button>
+        <button class="tag" data-tp="medico">🩺 Salud</button>
+        <button class="tag" data-tp="nutricional">🥗 Nutrición</button>
       </div></label>
 
     <label class="f"><span>Fecha del documento</span>
@@ -576,7 +763,7 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.07-7";
+const APP_VERSION = "2026.10.08-1";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
 const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
 const DEF_SETTINGS = {
@@ -591,7 +778,7 @@ const DEF_SETTINGS = {
    las fichas ya escritas: lo nuevo se suma, no reemplaza. */
 const DEF_SALUD = {
   /* identificación y contacto */
-  nacimiento:"", grupo:"", estatura:"", prevision:"", contacto:"", contacto2:"", tratante:"",
+  nacimiento:"", rut:"", grupo:"", estatura:"", prevision:"", contacto:"", contacto2:"", tratante:"",
   /* alergias */
   alergiaMed:"", alergiaAlim:"", alergias:"",
   /* antecedentes */
@@ -651,6 +838,41 @@ const EX_PRESETS = ["Sentadilla","Press banca","Peso muerto","Dominadas","Remo c
   "Curl bíceps","Extensión tríceps","Prensa","Zancadas","Elevaciones laterales","Fondos","Hip thrust",
   "Jalón al pecho","Abdominales","Gemelos"];
 
+/* ============================================================
+   MÓDULOS DE LA APP
+   Entrenamiento y nutrición están archivados: no se están usando. El
+   entrenador los enciende desde el panel de Fractale y aparecen solos.
+   Se guarda una copia local para que la primera pintada no parpadee
+   ni dependa de que haya red.
+   ============================================================ */
+const MOD_KEY = "wellness.modulos";
+const DEF_MODULOS = {entrenamiento:false, nutricion:false};
+let MODULOS = (()=>{
+  try{ return Object.assign({}, DEF_MODULOS, JSON.parse(localStorage.getItem(MOD_KEY) || "{}")); }
+  catch(e){ return {...DEF_MODULOS}; }
+})();
+const modOn = k => !!MODULOS[k];
+
+async function cargarModulos(){
+  if(!nubeOn() || !sesionUsuario) return;
+  let m;
+  try{ m = await Nube.modulos(); }
+  catch(e){ return; }                       // sin tabla todavía: se queda la copia local
+  const antes = JSON.stringify(MODULOS);
+  MODULOS = Object.assign({}, DEF_MODULOS, m);
+  try{ localStorage.setItem(MOD_KEY, JSON.stringify(MODULOS)); }catch(e){}
+  if(JSON.stringify(MODULOS) !== antes) aplicarModulos();
+}
+
+/* Las secciones enteras se esconden por marcado; lo que se arma en JS se
+   vuelve a pintar. */
+function aplicarModulos(){
+  document.querySelectorAll("[data-mod]").forEach(el=>
+    el.classList.toggle("hidden", !modOn(el.dataset.mod)));
+  renderAll();
+  if(vistaActual && vistaActual !== "hoy") go(vistaActual);
+}
+
 let S = load();
 let cur = todayKey();
 let sk = {h:7.5, q:0, f:0};
@@ -697,6 +919,7 @@ function load(){
       }
       d.comps ||= [];
       d.salud = Object.assign({}, DEF_SALUD, d.salud||{});
+      if(!Array.isArray(d.salud.familiares)) d.salud.familiares = [];
       d.theme ||= "dark";
       d.settings = Object.assign({}, DEF_SETTINGS, d.settings||{});
       d.settings.rem  = Object.assign({}, DEF_SETTINGS.rem,  d.settings.rem||{});
@@ -727,13 +950,14 @@ function load(){
         crudo.settings.metas = Object.assign({}, DEF_SETTINGS.metas, crudo.settings.metas||{});
         crudo.comps ||= [];
         crudo.salud = Object.assign({}, DEF_SALUD, crudo.salud||{});
+        if(!Array.isArray(crudo.salud.familiares)) crudo.salud.familiares = [];
         crudo.theme ||= "dark";
         return crudo;
       }
     }catch(e2){}
   }
   return {v:7, habits: [], logs:{}, comps:[],
-          salud: {...DEF_SALUD}, theme:"dark",
+          salud: {...DEF_SALUD, familiares:[]}, theme:"dark",
           settings: JSON.parse(JSON.stringify(DEF_SETTINGS))};
 }
 /* Firmas para detectar qué cambió de verdad: solo entonces movemos la marca de
@@ -1017,7 +1241,7 @@ function renderHero(){
 
   const chips = [];
   if(l.sleep) chips.push(`<span class="chip sleep">😴 Sueño ${l.sleep.score}</span>`);
-  const kgSem = tonelajeSemana(lunesDe(todayKey())).kg;
+  const kgSem = modOn("entrenamiento") ? tonelajeSemana(lunesDe(todayKey())).kg : 0;
   if(kgSem) chips.push(`<span class="chip">🏋️ ${kg(kgSem)} kg esta semana</span>`);
   const c = proximaComp();
   if(c) chips.push(`<span class="chip hot">🎯 ${diasHasta(c.fecha)} días para ${esc(c.nombre)}</span>`);
@@ -1058,8 +1282,12 @@ const metaFood = () => Number(S.settings.metas?.gruposComida) || 3;
    tarjeta genérica; ahora cada una es lo que es, con su propia meta. */
 function renderRegistro(){
   const l = dayLog(cur);
-  document.getElementById("registro").innerHTML =
-    tarjetaEntreno(l) + tarjetaActividad(l) + tarjetaComida(l);
+  /* La actividad física se registra siempre. Entrenamiento de fuerza y
+     alimentación aparecen solo si Fractale los tiene encendidos. */
+  const html = (modOn("entrenamiento") ? tarjetaEntreno(l) : "")
+             + tarjetaActividad(l)
+             + (modOn("nutricion") ? tarjetaComida(l) : "");
+  document.getElementById("registro").innerHTML = html;
 
   document.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>openWorkout());
   document.querySelectorAll("[data-ac]").forEach(b=>b.onclick=()=>openActividad());
@@ -1147,7 +1375,32 @@ function marcarAnimo(){
 
 function renderToday(){
   renderDate(); renderCompStrip(); renderHero(); renderObjStrip();
-  renderRegistro(); renderBenHoy();
+  renderChatHoy(); renderRegistro(); renderBenHoy();
+}
+
+/* El chat ya vivía detrás del icono de la cabecera, donde nadie lo veía.
+   Aquí se ve si hay alguien escribiendo y se entra con un toque. */
+function renderChatHoy(){
+  const box = document.getElementById("chatHoy");
+  if(!box) return;
+  if(!chatListo()){
+    box.innerHTML = `<div class="panel"><div class="empty">
+      Entra con tu cuenta para hablar con tu equipo.</div></div>`;
+    return;
+  }
+  const n = sinLeerChat;
+  const ult = chatMsgs.length ? chatMsgs[chatMsgs.length-1] : null;
+  const mio = ult && ult.autor_id === miId();
+  const quien = !ult ? "" : mio ? "Tú" : (chatNombres[ult.autor_id]?.nombre || "Tu equipo").split(" ")[0];
+  box.innerHTML = `<div class="chatcard ${n?"nuevo":""}" id="chatHoyBtn">
+    <div class="m">💬${n ? `<span class="n">${n>9?"9+":n}</span>` : ""}</div>
+    <div class="t"><b>${n ? (n===1 ? "Tienes 1 mensaje sin leer" : `Tienes ${n} mensajes sin leer`)
+                        : "Chat con tu equipo"}</b>
+      <span>${ult ? `${esc(quien)}: ${esc(String(ult.texto||"").slice(0,70))}`
+                  : "Médico, nutricionista y entrenador, en línea"}</span></div>
+    <div class="fl">›</div>
+  </div>`;
+  document.getElementById("chatHoyBtn").onclick = ()=> go("chat");
 }
 
 /* ============================================================
@@ -1867,6 +2120,7 @@ const GRUPOS_SANGRE = ["O+","O−","A+","A−","B+","B−","AB+","AB−","No lo 
 const FICHA_MED = [
   {g:"Identificación y contacto", c:[
     {k:"nacimiento", l:"Fecha de nacimiento", t:"date"},
+    {k:"rut",        l:"RUT", ph:"12.345.678-9"},
     {k:"grupo",      l:"Grupo sanguíneo", t:"sel", o:GRUPOS_SANGRE},
     {k:"estatura",   l:"Estatura (cm)", t:"num", ph:"Ej: 178"},
     {k:"prevision",  l:"Previsión o seguro", ph:"Isapre, Fonasa, seguro deportivo"},
@@ -2099,6 +2353,15 @@ function openMedida(fecha){
 ["mdPeso","mdGrasa","mdMusculo"].forEach(id=>
   document.getElementById(id).oninput = calcMed);
 document.getElementById("addMedida").onclick = ()=> openMedida(null);
+/* Anotar el peso tiene que costar un toque: lo demás es opcional y se
+   deja en blanco solo. */
+document.getElementById("addPeso").onclick = ()=>{
+  openMedida(null);
+  document.getElementById("mdGrasa").value   = "";
+  document.getElementById("mdMusculo").value = "";
+  calcMed();
+  setTimeout(()=> document.getElementById("mdPeso").focus(), 120);
+};
 document.getElementById("mdCancel").onclick  = ()=>
   document.getElementById("medModal").classList.remove("open");
 document.getElementById("mdSave").onclick = ()=>{
@@ -2134,6 +2397,150 @@ document.getElementById("mdDel").onclick = ()=>{
   toast("Medición borrada");
 };
 
+/* ============================================================
+   CREDENCIAL DEL DEPORTISTA
+   Una tarjeta para mostrar en el mesón: quién es, qué hay que saber si
+   algo pasa, y quiénes son su familia directa. Patagonia Medical
+   extiende el beneficio a la familia y alguien tiene que poder
+   comprobar el parentesco.
+   ============================================================ */
+const REL = {
+  padre:   {l:"Padre",             e:"👨"},
+  madre:   {l:"Madre",             e:"👩"},
+  pareja:  {l:"Esposa o pareja",   e:"💞"},
+  hijo:    {l:"Hijo o hija",       e:"🧒"},
+  hermano: {l:"Hermano o hermana", e:"🧑"},
+  otro:    {l:"Familiar",          e:"👤"}
+};
+const relDe = r => REL[r] || REL.otro;
+const miNombre = () =>
+  (perfil?.nombre || "").trim() || (sesionUsuario?.user?.email || "").split("@")[0] || "Deportista";
+const inicialesDe = n => String(n||"?").trim().split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+
+function renderCarnet(){
+  const f = S.salud || {};
+  const box = document.getElementById("carnetBox");
+  const nombre = miNombre();
+  /* Solo lo que de verdad hay que leer en treinta segundos. */
+  const filas = [
+    ["🩸", "Grupo sanguíneo", f.grupo],
+    ["🏥", "Previsión",       f.prevision],
+    ["💊", "Alergia a medicamentos", f.alergiaMed],
+    ["🥜", "Alergia alimentaria",    f.alergiaAlim],
+    ["🫀", "Condiciones",     f.condiciones],
+    ["🩹", "Lesión o molestia activa", f.lesionActual],
+    ["📞", "Contacto de emergencia",   f.contacto]
+  ].filter(x => String(x[2] ?? "").trim() !== "");
+  const criticas = new Set(["Alergia a medicamentos","Alergia alimentaria","Lesión o molestia activa"]);
+
+  box.innerHTML = `
+    <div class="carnet">
+      <div class="cn-top">
+        <img src="assets/symbol-dark.png" alt="" class="cn-lg" aria-hidden="true">
+        <span class="cn-rot">Credencial de atleta</span>
+      </div>
+      <div class="cn-id">
+        <div class="cn-ava">${esc(inicialesDe(nombre))}</div>
+        <div class="cn-nm">
+          <b>${esc(nombre)}</b>
+          <span>${f.rut ? "RUT " + esc(f.rut) : esc((sesionUsuario?.user?.email) || "")}</span>
+        </div>
+      </div>
+      <div class="cn-pie">
+        <div><b>${f.nacimiento ? edad(f.nacimiento) + " años" : "—"}</b><span>Edad</span></div>
+        <div><b>${f.grupo ? esc(f.grupo) : "—"}</b><span>Sangre</span></div>
+        <div><b>${f.estatura ? fmt(f.estatura) + " cm" : "—"}</b><span>Estatura</span></div>
+        <div><b>${(()=>{ const m = ultimaMedicion(); return m ? fmt(m.peso) + " kg" : "—"; })()}</b><span>Peso</span></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="deb-g">✚ Salud relevante</div>
+      ${filas.length ? filas.map(([e,l,v])=>`<div class="hrow">
+          <div class="m">${e}</div>
+          <div class="t"><b${criticas.has(l) ? ' style="color:#fb7185"' : ""}>${l}</b>
+            <span>${esc(v)}</span></div>
+        </div>`).join("")
+      : `<div class="empty">Tu ficha médica está vacía.<br>
+           Complétala y aparecerá aquí lo importante.</div>`}
+      <button class="cardbtn" id="cnEditar">Editar mi ficha médica</button>
+    </div>
+
+    <p class="fcnota" style="margin-top:10px">Esta credencial no es un documento oficial:
+      identifica que perteneces a Fractale y resume tu ficha. Lleva siempre tu
+      cédula de identidad.</p>`;
+
+  document.getElementById("cnEditar").onclick = ()=>{ go("salud"); openFicha("fichaMedica"); };
+  renderFamilia();
+}
+
+function renderFamilia(){
+  const box = document.getElementById("familiaPanel");
+  if(!box) return;
+  const fam = Array.isArray(S.salud?.familiares) ? S.salud.familiares : [];
+  box.innerHTML = fam.length
+    ? fam.map(x=>`<div class="hrow">
+        <div class="m">${relDe(x.rel).e}</div>
+        <div class="t"><b>${esc(x.nombre)}</b>
+          <span>${relDe(x.rel).l}${x.rut ? " · RUT " + esc(x.rut) : ""}</span></div>
+        <button class="mini" data-fam="${esc(x.id)}">Editar</button>
+      </div>`).join("")
+    : `<div class="empty">Sin familiares anotados.<br>
+         Añade a quienes vayan a usar los beneficios familiares.</div>`;
+  box.querySelectorAll("[data-fam]").forEach(b=>
+    b.onclick = ()=> openFamiliar(b.dataset.fam));
+}
+
+let famEditando = null;
+
+function openFamiliar(id){
+  shutModals();
+  const fam = S.salud.familiares ||= [];
+  const x = id ? fam.find(y=>y.id === id) : null;
+  famEditando = x ? x.id : null;
+  document.getElementById("fmTitle").textContent = x ? "Editar familiar" : "Añadir familiar";
+  document.getElementById("fmNombre").value = x?.nombre || "";
+  document.getElementById("fmRut").value    = x?.rut || "";
+  const rel = x?.rel || "pareja";
+  document.querySelectorAll("#fmRel [data-rel]").forEach(b=>
+    b.classList.toggle("on", b.dataset.rel === rel));
+  document.getElementById("fmDel").classList.toggle("hidden", !x);
+  document.getElementById("famModal").classList.add("open");
+}
+document.querySelectorAll("#fmRel [data-rel]").forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll("#fmRel [data-rel]").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+});
+document.getElementById("addFam").onclick   = ()=> openFamiliar(null);
+document.getElementById("fmCancel").onclick = ()=>
+  document.getElementById("famModal").classList.remove("open");
+document.getElementById("fmSave").onclick = ()=>{
+  const nombre = document.getElementById("fmNombre").value.trim();
+  if(!nombre){ toast("Escribe el nombre"); return; }
+  const dato = {
+    nombre,
+    rel: document.querySelector("#fmRel [data-rel].on")?.dataset.rel || "otro",
+    rut: document.getElementById("fmRut").value.trim()
+  };
+  const fam = S.salud.familiares ||= [];
+  const x = famEditando ? fam.find(y=>y.id === famEditando) : null;
+  if(x) Object.assign(x, dato);
+  else fam.push({id: "f" + Date.now().toString(36), ...dato});
+  save();
+  document.getElementById("famModal").classList.remove("open");
+  renderFamilia();
+  toast("Familiar guardado");
+};
+document.getElementById("fmDel").onclick = ()=>{
+  if(!famEditando) return;
+  if(!confirm("¿Quitar a esta persona de tu credencial?")) return;
+  S.salud.familiares = (S.salud.familiares || []).filter(y=>y.id !== famEditando);
+  save();
+  document.getElementById("famModal").classList.remove("open");
+  renderFamilia();
+  toast("Familiar quitado");
+};
+
 /* ---------- documentos ----------
    Los archivos viven en la nube, no en el dispositivo: sin cuenta no hay
    dónde guardarlos ni con quién compartirlos. */
@@ -2161,7 +2568,8 @@ async function renderDocs(){
   }
   if(!docsCache.length){
     box.innerHTML = `<div class="empty">Sin documentos todavía.<br>
-      Sube exámenes, informes o pautas en PDF. Tu equipo también puede subirlos.</div>`;
+      Sube exámenes, informes o pautas de salud y nutrición, en PDF.
+      Tu equipo también puede subirlos.</div>`;
     return;
   }
   box.innerHTML = docsCache.map(d=>{
@@ -2201,12 +2609,15 @@ document.getElementById("docFile").onchange = e=>{
   const f = e.target.files?.[0];
   e.target.value = "";
   if(!f) return;
+  /* Salud y nutrición trabajan con informes, no con fotos del celular. */
+  const esPdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+  if(!esPdf){ toast("Solo se pueden adjuntar archivos PDF"); return; }
   if(f.size > 15*1024*1024){ toast("El archivo pesa más de 15 MB"); return; }
   docArchivo = f;
   shutModals();
   document.getElementById("dcArchivo").innerHTML =
     `<div style="display:flex;align-items:center;gap:10px">
-       <div style="font-size:22px">${f.type.includes("pdf") ? "📄" : "🖼"}</div>
+       <div style="font-size:22px">📄</div>
        <div style="min-width:0"><b style="display:block;font-size:13.5px;word-break:break-all">${esc(f.name)}</b>
          <span style="font-size:12px;color:var(--tx3)">${pesoArchivo(f.size)}</span></div>
      </div>`;
@@ -2235,7 +2646,7 @@ document.getElementById("dcSave").onclick = async ()=>{
   try{
     await Nube.subirDoc(docArchivo, {
       titulo,
-      tipo:  document.querySelector("#dcTipo [data-tp].on")?.dataset.tp || "otro",
+      tipo:  document.querySelector("#dcTipo [data-tp].on")?.dataset.tp || "medico",
       fecha: document.getElementById("dcFecha").value || todayKey(),
       notas: document.getElementById("dcNotas").value.trim()
     });
@@ -2256,6 +2667,7 @@ document.getElementById("dcSave").onclick = async ()=>{
    nube, así que sin cuenta no hay bandeja.
    ============================================================ */
 let chatMsgs = [], chatCanal = null, chatPintado = "", chatNombres = {};
+let sinLeerChat = 0;
 
 /* En la bandeja puede escribir cualquiera de tu equipo, así que cada mensaje
    que no es tuyo lleva de quién viene. */
@@ -2360,7 +2772,7 @@ function escucharChatVivo(){
       pintaChat();
       if(m.autor_id !== miId()) Nube.marcarLeido(miId());
     }else if(m.autor_id !== miId()){
-      pintarPipChat(1);
+      pintarPipChat(sinLeerChat + 1);
       const quien = chatNombres[m.autor_id]?.nombre;
       toast(quien ? `💬 Mensaje nuevo de ${String(quien).split(" ")[0]}` : "💬 Mensaje nuevo de tu equipo");
     }
@@ -2368,9 +2780,10 @@ function escucharChatVivo(){
 }
 
 function pintarPipChat(n){
+  sinLeerChat = Math.max(0, Number(n) || 0);
   const b = document.getElementById("chatBtn");
-  if(!b) return;
-  b.innerHTML = n > 0 ? '💬<span class="pip"></span>' : "💬";
+  if(b) b.innerHTML = sinLeerChat > 0 ? '💬<span class="pip"></span>' : "💬";
+  renderChatHoy();
 }
 
 async function revisarChat(){
@@ -2397,6 +2810,16 @@ async function enviarChat(){
 }
 
 document.getElementById("benBtn").onclick    = ()=> go("ben");
+["irCarnet","irCarnet2","irCarnet3","irCarnet4"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.onclick = ()=> go("carnet");
+});
+["irFractale","irFractale2"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.onclick = ()=> go("fractale");
+});
+document.getElementById("carnetVolver").onclick = ()=> go(vistaAnterior);
+document.getElementById("fracVolver").onclick   = ()=> go(vistaAnterior);
 document.getElementById("verHist").onclick   = ()=> go("hist");
 document.getElementById("histVolver").onclick = ()=> go("stats");
 document.getElementById("benVolver").onclick = ()=> go("hoy");
@@ -2471,15 +2894,15 @@ function renderStats(){
   if(registroDe(kk)===0) kk=shift(kk,-1);
   while(registroDe(kk)>0){ gstreak++; kk=shift(kk,-1); }
 
+  const ent = modOn("entrenamiento"), nut = modOn("nutricion");
   document.getElementById("statBoxes").innerHTML = `
     <div class="stat"><b>${registrados}/30</b><span>Días con registro</span></div>
     <div class="stat"><b>${gstreak}</b><span>Días seguidos activo</span></div>
-    <div class="stat"><b>${completos}</b><span>Registros completos</span></div>
     <div class="stat"><b style="color:#a5b4fc">${avgSleep||"–"}</b><span>Sueño promedio</span></div>
-    <div class="stat"><b>${kg(totKg)}</b><span>Kg movidos · 30 días</span></div>
     <div class="stat"><b style="color:#fb923c">${actTot}</b><span>Min de actividad · 30 d</span></div>
-    <div class="stat"><b style="color:${RISK[riskLevel(junkCount(todayKey()), jw)].c}">${jw}</b><span>Chatarra · 7 días</span></div>
-    <div class="stat"><b style="color:${zCarga.c}">${crCarga ? rCarga.toFixed(2) : "–"}</b><span>Carga aguda:crónica</span></div>
+    ${ent ? `<div class="stat"><b>${kg(totKg)}</b><span>Kg movidos · 30 días</span></div>
+    <div class="stat"><b style="color:${zCarga.c}">${crCarga ? rCarga.toFixed(2) : "–"}</b><span>Carga aguda:crónica</span></div>` : ""}
+    ${nut ? `<div class="stat"><b style="color:${RISK[riskLevel(junkCount(todayKey()), jw)].c}">${jw}</b><span>Chatarra · 7 días</span></div>` : ""}
     ${m ? `<div class="stat"><b style="color:#2dd4bf">${fmt(m.peso)}</b><span>Peso (kg) · ${dPeso.txt}</span></div>` : ""}`;
 
   const sesiones = days.filter(d=>wkVolume(S.logs[d]?.workout)>0);
@@ -2770,16 +3193,17 @@ function renderMetas(){
       <span>Minutos al día que cuentan como meta</span></div>
       <input class="inp" id="metaActIn" type="number" min="5" max="600" step="5"
         value="${Number(m.actividadMin)||60}" style="width:96px;text-align:right"></div>
-    <div class="sw"><div class="t"><b>🥗 Alimentación</b>
+    ${modOn("nutricion") ? `<div class="sw"><div class="t"><b>🥗 Alimentación</b>
       <span>Grupos priorizados al día</span></div>
       <input class="inp" id="metaFoodIn" type="number" min="1" max="8" step="1"
-        value="${Number(m.gruposComida)||3}" style="width:96px;text-align:right"></div>`;
+        value="${Number(m.gruposComida)||3}" style="width:96px;text-align:right"></div>` : ""}`;
 
   document.getElementById("metaActIn").onchange = e=>{
     m.actividadMin = clamp(Math.round(Number(e.target.value)||60), 5, 600);
     save(); renderMetas(); renderToday(); toast("Meta de actividad guardada");
   };
-  document.getElementById("metaFoodIn").onchange = e=>{
+  const mf = document.getElementById("metaFoodIn");
+  if(mf) mf.onchange = e=>{
     m.gruposComida = clamp(Math.round(Number(e.target.value)||3), 1, 8);
     save(); renderMetas(); renderToday(); toast("Meta de alimentación guardada");
   };
@@ -3322,6 +3746,7 @@ async function trasEntrar(){
     await syncNow(false);
     renderSettings();
     revisarChat();
+    cargarModulos();
     try{ await cargarObjetivos(); renderObjStrip(); }catch(e){}
   }catch(e){
     syncErr = Nube.traduce(e.message); renderSyncPanel();
@@ -3522,9 +3947,18 @@ function tarjetaBeneficio(b){
 /* ============================================================
    NAVEGACIÓN Y EVENTOS
    ============================================================ */
+const VISTAS = ["hoy","plan","salud","chat","ben","carnet","fractale","hist","stats","set"];
+let vistaActual = "hoy";
+/* Desde dónde se entró a una pantalla sin pestaña, para que el «volver»
+   devuelva al lugar correcto. */
+let vistaAnterior = "hoy";
+
 function go(v){
-  ["hoy","plan","salud","chat","ben","hist","stats","set"].forEach(x=>
-    document.getElementById("view-"+x).classList.toggle("hidden", x!==v));
+  if(!VISTAS.includes(v)) return;
+  const sinPestana = ["ben","carnet","fractale","chat","hist"];
+  if(sinPestana.includes(v) && v !== vistaActual) vistaAnterior = vistaActual;
+  vistaActual = v;
+  VISTAS.forEach(x=> document.getElementById("view-"+x).classList.toggle("hidden", x!==v));
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
   document.getElementById("datebar").classList.toggle("hidden", v!=="hoy");
   document.body.classList.toggle("enchat", v==="chat");
@@ -3532,9 +3966,11 @@ function go(v){
   if(v==="salud") renderSalud();
   if(v==="chat") abrirChat();
   if(v==="ben") renderBeneficios();
+  if(v==="carnet") renderCarnet();
   if(v==="hist") renderHist();
   if(v==="stats") renderStats();
   if(v==="set") renderSettings();
+  if(v!=="chat") window.scrollTo({top:0});
 }
 function renderAll(){ renderToday(); renderMood(); renderBanner(); }
 
@@ -3645,6 +4081,7 @@ addEventListener("pagehide", ()=>{ clearTimeout(syncTimer); syncNow(false); });
    INIT
    ============================================================ */
 applyTheme();
+aplicarModulos();              // esconde lo archivado antes de la primera pintada
 renderAll();
 go("hoy");
 initSW();

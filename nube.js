@@ -208,6 +208,26 @@ async function borrarBeneficio(id){
   if(error) throw new Error(traduce(error.message));
 }
 
+/* ---------------- módulos de la app ----------------
+   Qué partes de la app están en uso. Son globales: el entrenador las
+   enciende una vez y todos los deportistas las ven aparecer. */
+async function modulos(){
+  if(!sb) return {};
+  const {data, error} = await sb.from("modulos").select("clave,activo");
+  if(error) throw new Error(traduce(error.message));
+  const out = {};
+  (data || []).forEach(r => out[r.clave] = !!r.activo);
+  return out;
+}
+
+async function guardarModulo(clave, activo){
+  if(!sb) throw new Error("Sin conexión con la base de datos.");
+  const {error} = await sb.from("modulos")
+    .update({activo: !!activo, actualizado: new Date().toISOString()})
+    .eq("clave", clave);
+  if(error) throw new Error(traduce(error.message));
+}
+
 /* ---------------- objetivos ----------------
    El equipo asigna, el deportista marca. Editar el objetivo solo puede quien
    lo escribió; marcarlo, solo el deportista. */
@@ -480,6 +500,7 @@ global.Nube = {
   mensajes, enviar, borrarMensaje, sinLeer, marcarLeido, escucharChat,
   objetivos, hechos, guardarObjetivo, borrarObjetivo, marcarObjetivo, desmarcarObjetivo,
   beneficios, guardarBeneficio, borrarBeneficio,
+  modulos, guardarModulo,
   misAtletas, diasDe, configDe, invitaciones, invitar, quitarInvitacion,
   equipoDe, staffDisponible, asignar, quitarDelEquipo, nombresDe, ROLES_STAFF,
   escuchar, dejarDeEscuchar, traduce

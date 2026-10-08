@@ -5,6 +5,15 @@
 | Archivo | Qué es |
 |---|---|
 | `esquema.sql` | Todo el modelo de datos y los permisos. Se ejecuta una vez. |
+| `registro-abierto.sql` | Deja que cualquiera con el enlace cree su cuenta. |
+| `salud.sql` | Ficha médica, nutricional y documentos. |
+| `chat.sql` | Mensajes entre el deportista y su equipo. |
+| `objetivos.sql` | Objetivos Fractale y lo que el deportista va marcando. |
+| `equipo.sql` | Qué profesionales ven a qué deportista. |
+| `beneficios.sql` | Descuentos de las marcas aliadas. |
+| `modulos.sql` | Interruptores de entrenamiento y nutrición. |
+
+Se ejecutan en ese orden, cada uno una sola vez.
 
 ## Cómo se monta (una sola vez, ~5 minutos)
 
