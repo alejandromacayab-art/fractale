@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0B1521">
+<meta name="theme-color" content="#f5f5f7">
 <title>Panel · Fractale</title>
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -12,13 +12,13 @@
 .wrap{max-width:1100px}
 .tabla{width:100%;border-collapse:collapse}
 .tabla th{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);
-  text-align:left;padding:0 10px 10px;font-weight:800;white-space:nowrap}
+  text-align:left;padding:0 10px 10px;font-weight:700;white-space:nowrap}
 .tabla td{padding:12px 10px;border-top:1px solid var(--line);font-size:14px;vertical-align:middle}
 .tabla tbody tr{cursor:pointer}
 .tabla tbody tr:hover{background:var(--card2)}
 .who{display:flex;align-items:center;gap:10px;min-width:0}
 .ava{width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;
-  font-weight:800;font-size:14px;background:var(--card2);border:1px solid var(--line)}
+  font-weight:700;font-size:14px;background:var(--card2);border:1px solid var(--line)}
 .who b{display:block;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .who span{font-size:11.5px;color:var(--tx3)}
 .num{font-weight:700;font-variant-numeric:tabular-nums}
@@ -29,7 +29,7 @@
   padding:14px;box-shadow:var(--glow);margin-bottom:10px}
 .dhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .dhead b{font-size:14px}
-.dhead .pill{margin-left:auto;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;
+.dhead .pill{margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;
   background:var(--card2);border:1px solid var(--line);color:var(--tx2)}
 .ex{font-size:12.5px;color:var(--tx2);padding:3px 0}
 .ex b{color:var(--tx)}
@@ -37,12 +37,12 @@
   padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);
   color:var(--tx3);white-space:nowrap}
 .vivo .punto{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex:none}
-.vivo.on{border-color:#22e07a55;background:#22e07a12;color:#4ade80}
-.vivo.on .punto{background:#22e07a;animation:latido 2s ease-in-out infinite}
+.vivo.on{background:color-mix(in srgb,var(--ok) 13%,transparent);color:var(--ok)}
+.vivo.on .punto{background:#34c759;animation:latido 2s ease-in-out infinite}
 @keyframes latido{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
 @media(prefers-reduced-motion:reduce){.vivo.on .punto{animation:none}}
 tbody tr.cambio{animation:destello 2.2s ease-out}
-@keyframes destello{0%{background:#22e07a2e}100%{background:transparent}}
+@keyframes destello{0%{background:#34c7592e}100%{background:transparent}}
 @media(max-width:640px){ .ocultar-movil{display:none} .vivo span:last-child{display:none} .vivo{padding:6px}}
 /* bandeja de mensajes */
 .bzfila{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;
@@ -54,7 +54,7 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bzfila .t span{display:block;font-size:12.5px;color:var(--tx3);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bzfila.nueva .t b{font-weight:800}
+.bzfila.nueva .t b{font-weight:700}
 .bzfila.nueva .t span{color:var(--tx2);font-weight:600}
 .bzfila .meta{flex:none;text-align:right;display:grid;gap:5px;justify-items:end}
 .bzfila .cuando{font-size:11px;color:var(--tx3);white-space:nowrap}
@@ -68,7 +68,7 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
 .acceso .t span{display:block;font-size:12px;color:var(--tx3);line-height:1.35}
 .acceso .fl{color:var(--tx3);font-size:20px;flex:none}
 /* acuse de lectura */
-.burb .acuse{font-weight:800;color:var(--tx3)}
+.burb .acuse{font-weight:700;color:var(--tx3)}
 .burb .acuse.leido{color:var(--accent)}
 /* veredicto del estado actual */
 .vd{display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:14px;
@@ -78,7 +78,7 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
   border-radius:12px;background:color-mix(in srgb,var(--c) 18%,transparent);
   border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
 .vd-t{min-width:0}
-.vd-t b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.02em;color:var(--c)}
+.vd-t b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.02em;color:var(--c)}
 .vd-t span{display:block;font-size:11.5px;color:var(--tx3)}
 /* qué mirar */
 .avisos{margin-top:14px;display:grid;gap:7px}
@@ -87,7 +87,7 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
 .av:before{content:"";position:absolute;left:11px;top:14px;width:7px;height:7px;
   border-radius:50%;background:var(--c)}
 /* gráficos */
-.gtit{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+.gtit{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
   color:var(--tx3);margin:18px 0 6px}
 .gleg{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
 .gleg span{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx3)}
@@ -96,6 +96,11 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
 .gdias{display:flex;margin-top:4px}
 .gdias span{flex:1;text-align:center;font-size:9px;color:var(--tx3);
   font-variant-numeric:tabular-nums}
+.lg-login-d,.lg-login-l{display:block}
+:root[data-theme="light"] .lg-login-d{display:none}
+:root[data-theme="dark"] .lg-login-l{display:none}
+.vivo{border:none;background:var(--card);box-shadow:var(--glow)}
+.tabla tbody tr:hover{background:var(--card2)}
 </style>
 </head>
 <body>
@@ -110,9 +115,9 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
       </div>
       <div class="spacer"></div>
       <span class="vivo" id="vivo"><span class="punto"></span><span id="vivoTxt">conectando…</span></span>
-      <button class="iconbtn" id="bandejaBtn" title="Mensajes">💬</button>
-      <a class="iconbtn" href="app.html" title="Mi registro" style="text-decoration:none">◎</a>
-      <button class="iconbtn" id="themeBtn" title="Tema">☀️</button>
+      <button class="iconbtn" id="bandejaBtn" title="Mensajes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5c0 4.1-3.6 7.3-8 7.3-1.1 0-2.2-.2-3.2-.6L4.5 19.5l1.2-3.4C4.6 14.8 4 13.2 4 11.5 4 7.4 7.6 4.2 12 4.2s8 3.2 8 7.3z"/></svg></button>
+      <a class="iconbtn" href="app.html" title="Mi registro" style="text-decoration:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c.8-3.8 3.9-5.6 7.5-5.6s6.7 1.8 7.5 5.6"/></svg></a>
+      <button class="iconbtn" id="themeBtn" title="Tema"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A7.8 7.8 0 1 1 9.4 4.5a6.3 6.3 0 0 0 10.1 10.1z"/></svg></button>
     </div>
   </div>
 </header>
@@ -125,7 +130,8 @@ tbody tr.cambio{animation:destello 2.2s ease-out}
 <div id="login" class="hidden" style="position:fixed;inset:0;z-index:300;background:var(--bg);
      display:flex;align-items:center;justify-content:center;padding:24px">
   <div style="width:100%;max-width:380px;text-align:center">
-    <img src="assets/logo-dark.png" alt="Fractale" style="width:190px;max-width:60%;margin:0 auto 22px;display:block">
+    <img src="assets/logo-dark.png" class="lg-login-d" alt="Fractale" style="width:190px;max-width:60%;margin:0 auto 22px">
+    <img src="assets/logo-light.png" class="lg-login-l" alt="Fractale" style="width:190px;max-width:60%;margin:0 auto 22px">
     <div id="p1">
       <h2 style="margin:0 0 6px;font-size:20px;letter-spacing:-.03em">Panel del entrenador</h2>
       <p style="margin:0 0 20px;color:var(--tx2);font-size:13.5px">Entra con tu correo y contraseña.</p>

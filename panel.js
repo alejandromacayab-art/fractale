@@ -33,12 +33,12 @@ const iniciales = n => String(n||"?").trim().split(/\s+/).slice(0,2).map(w=>w[0]
 /* ---------------- semáforos ---------------- */
 function estadoActividad(dias){
   if(dias === null)  return {t:"nunca entró", c:"#6f7887"};
-  if(dias <= 1)      return {t:"al día",      c:"#22e07a"};
-  if(dias <= 3)      return {t:`hace ${dias} días`, c:"#22e07a"};
-  if(dias <= 7)      return {t:`hace ${dias} días`, c:"#fbbf24"};
-  return {t:`hace ${dias} días`, c:"#fb7185"};
+  if(dias <= 1)      return {t:"al día",      c:"#34c759"};
+  if(dias <= 3)      return {t:`hace ${dias} días`, c:"#34c759"};
+  if(dias <= 7)      return {t:`hace ${dias} días`, c:"#ff9500"};
+  return {t:`hace ${dias} días`, c:"#ff3b30"};
 }
-function colorChatarra(n){ return n >= 5 ? "#fb7185" : n >= 3 ? "#fbbf24" : "#22e07a"; }
+function colorChatarra(n){ return n >= 5 ? "#ff3b30" : n >= 3 ? "#ff9500" : "#34c759"; }
 
 /* ---------------- equipo ---------------- */
 const ROLES = {
@@ -156,7 +156,7 @@ function deltaTxt(actual, antes, mejorSube){
   if(d === 0) return {t:"sin cambio", c:"#6f7887"};
   const bueno = mejorSube === null ? null : (mejorSube ? d > 0 : d < 0);
   return {t:`${d>0?"▲":"▼"} ${Math.abs(d)}`,
-          c: bueno === null ? "#a7b2c2" : bueno ? "#22e07a" : "#fb7185"};
+          c: bueno === null ? "#a7b2c2" : bueno ? "#34c759" : "#ff3b30"};
 }
 function fichaHTML(salud, secs){
   const cuerpo = secs.map(sec=>{
@@ -165,7 +165,7 @@ function fichaHTML(salud, secs){
     return `<div class="fcgrupo">${sec.g}</div>` + llenos.map(([k,l,t])=>{
       const rojo = t === "sn" ? salud[k] === "si" : t === "!";
       return `<div class="fcrow"><span>${l}</span>
-        <b${rojo ? ' style="color:#fb7185"' : ""}>${esc(valorFichaP(salud[k], t, k))}</b></div>`;
+        <b${rojo ? ' style="color:#ff3b30"' : ""}>${esc(valorFichaP(salud[k], t, k))}</b></div>`;
     }).join("");
   }).join("");
   return cuerpo ? `<div class="panel">${cuerpo}</div>` : "";
@@ -182,10 +182,10 @@ function banderasHTML(salud){
    El entrenador asigna y edita lo que él escribió; marcar es cosa del
    deportista, así que aquí no hay botón para tildar. */
 const CAT_OBJ = {
-  redes:       {e:"📱", l:"Redes",       c:"#e879f9"},
-  rendimiento: {e:"🏋️", l:"Rendimiento", c:"#22e07a"},
-  equipo:      {e:"🤝", l:"Equipo",      c:"#38bdf8"},
-  otro:        {e:"⭐️", l:"Otro",        c:"#fbbf24"}
+  redes:       {e:"📱", l:"Redes",       c:"#ff2d55"},
+  rendimiento: {e:"🏋️", l:"Rendimiento", c:"#34c759"},
+  equipo:      {e:"🤝", l:"Equipo",      c:"#007aff"},
+  otro:        {e:"⭐️", l:"Otro",        c:"#ff9500"}
 };
 const CADENCIAS = {semanal:"por semana", mensual:"por mes", unica:"una vez"};
 
@@ -219,7 +219,7 @@ function objetivosHTML(objs, hechos){
       <div class="objtick ${a.listo ? "on" : ""}">${a.listo ? "✓" : "·"}</div>
       <div class="objtx"><b>${esc(o.titulo)}</b>
         <span>${cat.e} ${cat.l} · ${periodo}${
-          vencido ? ' · <em style="color:#fb7185;font-style:normal;font-weight:800">vencido</em>' : ""}${
+          vencido ? ' · <em style="color:#ff3b30;font-style:normal;font-weight:700">vencido</em>' : ""}${
           mio ? "" : " · se lo puso él"}</span>
         ${o.detalle ? `<span class="det">${esc(o.detalle)}</span>` : ""}
         ${o.cadencia === "unica" ? "" : `<div class="objdots">${
@@ -447,10 +447,10 @@ function proximaComp(cfg){
   return cs.find(c => faltan(c.fecha) >= 0) || null;
 }
 const ZONAS = [
-  {max:0.80, c:"#38bdf8", t:"Carga baja"},
-  {max:1.30, c:"#22e07a", t:"Zona óptima"},
-  {max:1.50, c:"#fbbf24", t:"Carga alta"},
-  {max:99,   c:"#fb7185", t:"Riesgo de lesión"}
+  {max:0.80, c:"#007aff", t:"Carga baja"},
+  {max:1.30, c:"#34c759", t:"Zona óptima"},
+  {max:1.50, c:"#ff9500", t:"Carga alta"},
+  {max:99,   c:"#ff3b30", t:"Riesgo de lesión"}
 ];
 const zonaDe = r => ZONAS.find(z => r < z.max) || ZONAS[ZONAS.length-1];
 /* Aguda = últimos 7 días. Crónica = media semanal de los últimos 28. */
@@ -466,7 +466,7 @@ function razonCarga(dias, vol){
   const ag = suma(7), cr = suma(28)/4;
   return {ag, cr, r: cr > 0 ? ag/cr : 0};
 }
-function colorSueno(n){ return !n ? "#6f7887" : n >= 70 ? "#22e07a" : n >= 50 ? "#fbbf24" : "#fb7185"; }
+function colorSueno(n){ return !n ? "#6f7887" : n >= 70 ? "#34c759" : n >= 50 ? "#ff9500" : "#ff3b30"; }
 
 
 /* ============================================================
@@ -514,11 +514,11 @@ function graficoMixto(barras, linea, opc = {}){
     const y = v ? altoB(v) : H - B - 2;
     return `<rect x="${(i*paso + (paso-ancho)/2).toFixed(1)}" y="${y.toFixed(1)}"
       width="${ancho.toFixed(1)}" height="${(H - B - y).toFixed(1)}" rx="2"
-      fill="${v ? (opc.colorBarra || "#22e07a") : "var(--line)"}" ${v ? "" : 'opacity=".6"'}></rect>`;
+      fill="${v ? (opc.colorBarra || "#34c759") : "var(--line)"}" ${v ? "" : 'opacity=".6"'}></rect>`;
   }).join("");
 
   /* La línea se corta en los días sin dato: inventar continuidad sería mentir. */
-  const col = opc.colorLinea || "#a5b4fc";
+  const col = opc.colorLinea || "#5e5ce6";
   const tramos = [];
   let actual = [];
   linea.forEach((x, i) => {
@@ -600,15 +600,15 @@ function avisosEstado(d){
 }
 
 const ORDEN_AVISO = {alta:0, media:1, info:2};
-const COLOR_AVISO = {alta:"#fb7185", media:"#fbbf24", info:"#38bdf8"};
+const COLOR_AVISO = {alta:"#ff3b30", media:"#ff9500", info:"#007aff"};
 
 function resumenHTML(d){
   const avisos = avisosEstado(d).sort((x,y)=>ORDEN_AVISO[x.t]-ORDEN_AVISO[y.t]);
   const peor = avisos.length ? avisos[0].t : null;
-  const vd = peor === "alta"  ? {c:"#fb7185", e:"⚠️", t:"Requiere atención"}
-           : peor === "media" ? {c:"#fbbf24", e:"👀", t:"Hay que mirarlo"}
-           : peor === "info"  ? {c:"#38bdf8", e:"ℹ️", t:"En orden, con detalles"}
-           :                    {c:"#22e07a", e:"✓",  t:"Todo en orden"};
+  const vd = peor === "alta"  ? {c:"#ff3b30", e:"⚠️", t:"Requiere atención"}
+           : peor === "media" ? {c:"#ff9500", e:"👀", t:"Hay que mirarlo"}
+           : peor === "info"  ? {c:"#007aff", e:"ℹ️", t:"En orden, con detalles"}
+           :                    {c:"#34c759", e:"✓",  t:"Todo en orden"};
 
   /* Las barras son lo que cargó cada día: kilos si se usa el entrenamiento
      de fuerza, minutos de actividad si no. */
@@ -623,37 +623,37 @@ function resumenHTML(d){
             <span>Lectura automática de los últimos 14 días</span></div>
         </div>
         <div class="stats" style="margin:14px 0 0">
-          <div class="stat"><b style="color:${d.constancia>=70?'#22e07a':d.constancia>=40?'#fbbf24':'#fb7185'}">${
+          <div class="stat"><b style="color:${d.constancia>=70?'#34c759':d.constancia>=40?'#ff9500':'#ff3b30'}">${
             d.diasConDato}/14</b><span>Días con registro</span></div>
           <div class="stat"><b style="color:${colorSueno(d.sueMed)}">${d.sueMed||"–"}</b>
             <span>Sueño · ${d.hMed||"–"} h</span></div>
           ${d.ent
             ? `<div class="stat"><b style="color:${d.zc.c}">${d.carga.cr ? d.carga.r.toFixed(2) : "–"}</b>
                  <span>${d.carga.cr ? d.zc.t : "Sin carga"}</span></div>`
-            : `<div class="stat"><b style="color:#fb923c">${d.minSem}</b><span>Min de actividad · semana</span></div>`}
-          <div class="stat"><b style="color:#2dd4bf">${d.med.ultima ? un1(d.med.ultima.peso) : "–"}</b>
+            : `<div class="stat"><b style="color:#ff9500">${d.minSem}</b><span>Min de actividad · semana</span></div>`}
+          <div class="stat"><b style="color:#30b0c7">${d.med.ultima ? un1(d.med.ultima.peso) : "–"}</b>
             <span>Peso (kg)${d.med.ultima ? " · "+deltaTxt(d.med.ultima.peso, d.med.antes?.peso, null).t : ""}</span></div>
           <div class="stat"><b>${d.animo ? d.animo.toFixed(1) : "–"}</b><span>Ánimo · de 5</span></div>
-          <div class="stat"><b style="color:${d.banderas?'#fb7185':'#22e07a'}">${d.banderas}</b>
+          <div class="stat"><b style="color:${d.banderas?'#ff3b30':'#34c759'}">${d.banderas}</b>
             <span>Alertas en la ficha</span></div>
         </div>
 
         ${avisos.length ? `<div class="avisos">${avisos.slice(0,5).map(x=>
           `<div class="av" style="--c:${COLOR_AVISO[x.t]}">${esc(x.txt)}</div>`).join("")}</div>`
-        : `<div class="avisos"><div class="av" style="--c:#22e07a">Constancia, sueño y carga dentro de lo esperado.
+        : `<div class="avisos"><div class="av" style="--c:#34c759">Constancia, sueño y carga dentro de lo esperado.
              Nada que corregir ahora mismo.</div></div>`}
 
         <div class="gtit">Carga diaria y sueño · 14 días</div>
         ${graficoMixto(d.serieCarga, d.serieSueno,
-          {colorBarra: d.ent ? "#22e07a" : "#fb923c", colorLinea:"#a5b4fc",
+          {colorBarra: d.ent ? "#34c759" : "#ff9500", colorLinea:"#5e5ce6",
            alt:"Carga diaria y puntuación de sueño de los últimos catorce días"})}
         <div class="gleg">
-          <span><i style="background:${d.ent?'#22e07a':'#fb923c'}"></i>Carga del día (${unidad})</span>
-          <span><i style="background:#a5b4fc"></i>Sueño (0–100)</span>
+          <span><i style="background:${d.ent?'#34c759':'#ff9500'}"></i>Carga del día (${unidad})</span>
+          <span><i style="background:#5e5ce6"></i>Sueño (0–100)</span>
         </div>
 
         <div class="gtit" style="margin-top:16px">Peso · últimas mediciones</div>
-        ${graficoLinea(d.seriePeso, "#2dd4bf")}
+        ${graficoLinea(d.seriePeso, "#30b0c7")}
       </div>
     </section>`;
 }
@@ -688,13 +688,13 @@ async function verLista(){
       <div class="stitle">Resumen del grupo · últimos 30 días</div>
       <div class="stats">
         <div class="stat"><b>${n}</b><span>Deportistas</span></div>
-        <div class="stat"><b style="color:${activos===n&&n?'#22e07a':'#fbbf24'}">${activos}/${n}</b><span>Al día (3 días o menos)</span></div>
+        <div class="stat"><b style="color:${activos===n&&n?'#34c759':'#ff9500'}">${activos}/${n}</b><span>Al día (3 días o menos)</span></div>
         <div class="stat"><b>${kg(kgTot)}</b><span>Kg movidos entre todos</span></div>
         <div class="stat"><b>${ses}</b><span>Sesiones de fuerza</span></div>
         <div class="stat"><b style="color:${colorSueno(sueMed)}">${sueMed||"–"}</b><span>Sueño promedio</span></div>
         <div class="stat"><b style="color:${colorChatarra(chat/Math.max(1,n))}">${chat}</b><span>Chatarra · 7 días</span></div>
         ${Object.values(pendientes).some(v=>v) ? `<div class="stat">
-          <b style="color:#22e07a">${Object.values(pendientes).reduce((a,b)=>a+b,0)}</b>
+          <b style="color:#34c759">${Object.values(pendientes).reduce((a,b)=>a+b,0)}</b>
           <span>Mensajes sin leer</span></div>` : ""}
       </div>
     </section>
@@ -871,7 +871,8 @@ function pintarAvisoMensajes(){
   const b = $("bandejaBtn");
   if(!b) return;
   const total = Object.values(sinLeerTotal).reduce((a, n)=> a + Number(n || 0), 0);
-  b.innerHTML = total ? `💬<span class="pip"></span>` : "💬";
+  const IC_CHAT = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5c0 4.1-3.6 7.3-8 7.3-1.1 0-2.2-.2-3.2-.6L4.5 19.5l1.2-3.4C4.6 14.8 4 13.2 4 11.5 4 7.4 7.6 4.2 12 4.2s8 3.2 8 7.3z"/></svg>';
+  b.innerHTML = IC_CHAT + (total ? '<span class="pip"></span>' : "");
   b.title = total ? `${total} ${total === 1 ? "mensaje" : "mensajes"} sin leer` : "Mensajes";
 }
 
@@ -997,7 +998,7 @@ async function verBeneficios(){
   $("main").innerHTML = `
     <a class="volver" id="benVolver">‹ Todos los deportistas</a>
     <section>
-      <div class="stitle">🎁 Beneficios de las marcas</div>
+      <div class="stitle">Beneficios de las marcas</div>
       <div class="panel">
         ${bens.length ? bens.map(b=>`
           <div class="hrow" data-ben="${b.id}" style="cursor:pointer">
@@ -1194,7 +1195,7 @@ async function verAtleta(id){
       <div class="stitle">Próxima competencia</div>
       <div class="panel" style="display:flex;align-items:center;gap:15px">
         <div style="width:70px;flex:none;text-align:center">
-          <b style="display:block;font-size:30px;font-weight:800;letter-spacing:-.05em;line-height:1">${
+          <b style="display:block;font-size:30px;font-weight:700;letter-spacing:-.05em;line-height:1">${
             faltan(comp.fecha) === 0 ? "¡Hoy!" : faltan(comp.fecha)}</b>
           <span style="font-size:10px;color:#6f7887;text-transform:uppercase;letter-spacing:.07em">${
             faltan(comp.fecha) === 0 ? "es el día" : faltan(comp.fecha) === 1 ? "día" : "días"}</span>
@@ -1222,7 +1223,7 @@ async function verAtleta(id){
             <div class="t"><b>${esc(m.nombre || m.correo)}</b>
               <span>${rotulo(m.rol).l}${m.id === perfil?.id ? " · eres tú" : ""}</span></div>
             ${soyCoach() && m.id !== perfil?.id
-              ? `<button class="mini" data-quitar-staff="${m.id}" style="color:#fb7185">Quitar</button>` : ""}
+              ? `<button class="mini" data-quitar-staff="${m.id}" style="color:#ff3b30">Quitar</button>` : ""}
           </div>`).join("")}
         ${soyCoach() && !equipoError ? (()=>{
           const libres = staffTodos.filter(x => !miEquipo.some(m => m.id === x.id));
@@ -1262,7 +1263,7 @@ async function verAtleta(id){
     ${med.ultima ? `<section>
       <div class="stitle">Composición corporal</div>
       <div class="stats">
-        <div class="stat"><b style="color:#2dd4bf">${un1(med.ultima.peso)}</b><span>Peso (kg) · ${fechaCorta(med.ultima.fecha)}</span></div>
+        <div class="stat"><b style="color:#30b0c7">${un1(med.ultima.peso)}</b><span>Peso (kg) · ${fechaCorta(med.ultima.fecha)}</span></div>
         <div class="stat"><b style="color:${deltaTxt(med.ultima.peso, med.antes?.peso, null).c}">${
           deltaTxt(med.ultima.peso, med.antes?.peso, null).t}</b><span>Peso vs 30 d</span></div>
         ${Number(med.ultima.grasa) ? `<div class="stat"><b>${un1(med.ultima.grasa)}%</b><span>Grasa · ${
@@ -1310,7 +1311,7 @@ async function verAtleta(id){
                 <span>${t.l} · ${fechaCorta(d.fecha)}${d.tam ? " · "+pesoArchivo(d.tam) : ""} · ${quien}</span></div>
               <button class="mini" data-doc="${esc(d.ruta)}">Abrir</button>
               ${d.autor?.id === perfil?.id
-                ? `<button class="mini" data-borrar-doc="${d.id}" style="color:#fb7185">✕</button>` : ""}
+                ? `<button class="mini" data-borrar-doc="${d.id}" style="color:#ff3b30">✕</button>` : ""}
             </div>${d.notas ? `<p style="font-size:12px;color:#6f7887;margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
           }).join("")}</div>
       ${docsError ? "" : `<button class="mini" style="margin-top:12px" id="addDoc">+ Subir documento</button>`}
@@ -1323,8 +1324,8 @@ async function verAtleta(id){
         <div class="stat"><b>${sesiones.length}</b><span>Sesiones</span></div>
         <div class="stat"><b>${sesiones.length?kg(kgTot/sesiones.length):0}</b><span>Kg por sesión</span></div>` : ""}
         <div class="stat"><b style="color:${colorSueno(sueMed)}">${sueMed||"–"}</b><span>Sueño · ${hMed||"–"} h</span></div>
-        <div class="stat"><b style="color:#fb923c">${dias.reduce((s,r)=>s+act(r.datos),0)}</b><span>Min de actividad</span></div>
-        <div class="stat"><b style="color:#fb923c">${Math.round(dias.reduce((s,r)=>s+actKm(r.datos),0)*10)/10}</b><span>Km recorridos</span></div>
+        <div class="stat"><b style="color:#ff9500">${dias.reduce((s,r)=>s+act(r.datos),0)}</b><span>Min de actividad</span></div>
+        <div class="stat"><b style="color:#ff9500">${Math.round(dias.reduce((s,r)=>s+actKm(r.datos),0)*10)/10}</b><span>Km recorridos</span></div>
         ${modOn("nutricion") ? `<div class="stat"><b style="color:${colorChatarra(chat/6)}">${chat}</b><span>Chatarra total</span></div>` : ""}
         ${ent ? `<div class="stat"><b style="color:${zc.c}">${carga.cr ? carga.r.toFixed(2) : "–"}</b><span>${
           carga.cr ? zc.t : "Sin carga registrada"}</span></div>` : ""}
@@ -1356,8 +1357,8 @@ async function verAtleta(id){
             ${s ? `<span class="pill" style="color:${colorSueno(s.score)}">😴 ${s.score} · ${s.hours} h</span>` : ""}
             ${grupos ? `<span class="pill">🥗 ${grupos} grupos</span>` : ""}
             ${j ? `<span class="pill" style="color:${colorChatarra(j)}">🍔 ${j}</span>` : ""}
-            ${act(d) ? `<span class="pill" style="color:#fb923c">🏃 ${act(d)} min${actKm(d)?` · ${actKm(d)} km`:""}</span>` : ""}
-            ${v ? `<span class="pill" style="color:#4ade80">🏋️ ${kg(v)} kg</span>` : ""}
+            ${act(d) ? `<span class="pill" style="color:#ff9500">🏃 ${act(d)} min${actKm(d)?` · ${actKm(d)} km`:""}</span>` : ""}
+            ${v ? `<span class="pill" style="color:#34c759">🏋️ ${kg(v)} kg</span>` : ""}
           </div>
           ${ejercicios.map(e=>`<div class="ex"><b>${esc(e.name||"Ejercicio")}</b> · ${
             (e.sets||[]).filter(x=>Number(x.w)&&Number(x.r))
@@ -1580,14 +1581,15 @@ $("go").onclick = async ()=>{
 $("themeBtn").onclick = ()=>{
   const d = document.documentElement.dataset.theme === "dark";
   document.documentElement.dataset.theme = d ? "light" : "dark";
-  $("themeBtn").textContent = d ? "🌙" : "☀️";
+  $("themeBtn").innerHTML = d ? '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A7.8 7.8 0 1 1 9.4 4.5a6.3 6.3 0 0 0 10.1 10.1z"/></svg>' : '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2M12 19.2v2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M2.8 12h2M19.2 12h2M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></svg>';
   try{ const w = JSON.parse(localStorage.getItem("wellness.v1")||"{}"); w.theme = d?"light":"dark";
        localStorage.setItem("wellness.v1", JSON.stringify(w)); }catch(e){}
 };
 
 (async function init(){
   try{ const w = JSON.parse(localStorage.getItem("wellness.v1")||"{}");
-       if(w.theme) document.documentElement.dataset.theme = w.theme; }catch(e){}
+       if(w.theme) document.documentElement.dataset.theme = w.theme;
+       if(w.theme==="dark") $("themeBtn").innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2M12 19.2v2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M2.8 12h2M19.2 12h2M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></svg>'; }catch(e){}
 
   if(!Nube.activa()){
     $("main").innerHTML = `<div class="empty">

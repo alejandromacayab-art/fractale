@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0E0E11">
+<meta name="theme-color" content="#f5f5f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Fractale · Registro personal</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
@@ -23,10 +23,10 @@
         <img src="assets/symbol-light.png" alt="" class="lg-light" aria-hidden="true">
       </div>
       <div class="spacer"></div>
-      <button class="iconbtn" id="benBtn" title="Beneficios">🎁</button>
-      <button class="iconbtn" id="chatBtn" title="Mensajes">💬</button>
-      <button class="iconbtn" id="bellBtn" title="Recordatorios">🔔</button>
-      <button class="iconbtn" id="themeBtn" title="Tema">☀️</button>
+      <button class="iconbtn" id="benBtn" title="Beneficios"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="17" height="4.5" rx="1.2"/><path d="M5 12.5V20h14v-7.5M12 8v12M12 8C10.5 4.5 7 4.5 7 6.6 7 8 9.5 8 12 8zm0 0c1.5-3.5 5-3.5 5-1.4C17 8 14.5 8 12 8z"/></svg></button>
+      <button class="iconbtn" id="chatBtn" title="Mensajes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5c0 4.1-3.6 7.3-8 7.3-1.1 0-2.2-.2-3.2-.6L4.5 19.5l1.2-3.4C4.6 14.8 4 13.2 4 11.5 4 7.4 7.6 4.2 12 4.2s8 3.2 8 7.3z"/></svg></button>
+      <button class="iconbtn" id="bellBtn" title="Recordatorios"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 1.8H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></button>
+      <button class="iconbtn" id="themeBtn" title="Tema"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2M12 19.2v2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M2.8 12h2M19.2 12h2M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></svg></button>
     </div>
     <div class="datebar" id="datebar">
       <button class="nav" id="prevD">‹</button>
@@ -54,7 +54,7 @@
       <div class="ring">
         <svg width="92" height="92">
           <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#22e07a"/><stop offset="100%" stop-color="#38bdf8"/>
+            <stop offset="0%" stop-color="#34c759"/><stop offset="100%" stop-color="#007aff"/>
           </linearGradient></defs>
           <circle cx="46" cy="46" r="38" fill="none" stroke="var(--line)" stroke-width="9"/>
           <circle id="ringFg" cx="46" cy="46" r="38" fill="none" stroke="url(#g1)" stroke-width="9"
@@ -73,7 +73,7 @@
     <div id="objStrip"></div>
 
     <section>
-      <div class="stitle">💬 Habla con tu equipo</div>
+      <div class="stitle">Habla con tu equipo</div>
       <div id="chatHoy"></div>
     </section>
 
@@ -83,7 +83,7 @@
     </section>
 
     <section>
-      <div class="stitle">🎁 Tus beneficios</div>
+      <div class="stitle">Tus beneficios</div>
       <div id="benHoy"></div>
       <div class="acceso" id="irCarnet">
         <div class="m">🪪</div>
@@ -100,7 +100,7 @@
     </section>
 
     <section>
-      <div class="stitle">📝 Notas del día</div>
+      <div class="stitle">Notas del día</div>
       <div class="panel">
         <textarea id="note" class="inp" rows="3" placeholder="¿Cómo te sentiste hoy? Energía, ánimo, entrenamiento…" style="resize:vertical"></textarea>
         <div class="row" style="margin-top:11px">
@@ -114,25 +114,25 @@
   <!-- ================= PLAN ================= -->
   <div id="view-plan" class="hidden">
     <section>
-      <div class="stitle">🎯 Próxima competencia</div>
+      <div class="stitle">Próxima competencia</div>
       <div id="planProxima"></div>
     </section>
     <section>
-      <div class="stitle">📅 Calendario de competencias</div>
+      <div class="stitle">Calendario de competencias</div>
       <div class="panel" id="planLista"></div>
       <button class="btn" style="margin-top:12px" id="addComp">+ Añadir competencia</button>
     </section>
     <section>
-      <div class="stitle">✅ Objetivos Fractale</div>
+      <div class="stitle">Objetivos Fractale</div>
       <div class="panel" id="objLista"></div>
       <button class="btn ghost hidden" style="margin-top:12px" id="addObj">+ Nuevo objetivo</button>
     </section>
     <section data-mod="entrenamiento">
-      <div class="stitle">⚖️ Carga de entrenamiento</div>
+      <div class="stitle">Carga de entrenamiento</div>
       <div class="panel" id="planCarga"></div>
     </section>
     <section data-mod="entrenamiento">
-      <div class="stitle">🏋️ Tonelaje semanal · 12 semanas</div>
+      <div class="stitle">Tonelaje semanal · 12 semanas</div>
       <div class="panel" id="planTonelaje"></div>
     </section>
   </div>
@@ -141,11 +141,11 @@
   <div id="view-salud" class="hidden">
     <div id="saludFlags"></div>
     <section>
-      <div class="stitle">😴 Al despertar</div>
+      <div class="stitle">Al despertar</div>
       <div class="sleepcard" id="sleepCard"></div>
     </section>
     <section>
-      <div class="stitle">⚖️ Peso y composición corporal</div>
+      <div class="stitle">Peso y composición corporal</div>
       <div id="cuerpoResumen"></div>
       <div class="panel pesorapido">
         <label class="f" style="margin:0;flex:1"><span>Anotar mi peso de hoy</span>
@@ -156,20 +156,20 @@
       <button class="btn ghost" style="margin-top:10px" id="addMedida">+ Medición completa (grasa y músculo)</button>
     </section>
     <section>
-      <div class="stitle">📉 Peso · últimas mediciones</div>
+      <div class="stitle">Peso · últimas mediciones</div>
       <div class="panel" id="cuerpoGrafico"></div>
     </section>
     <section>
-      <div class="stitle">🥗 Informes nutricionales</div>
+      <div class="stitle">Informes nutricionales</div>
       <div class="panel" id="docsNutri"></div>
       <button class="btn ghost" style="margin-top:12px" id="addDocNutri">+ Adjuntar informe nutricional</button>
     </section>
     <section>
-      <div class="stitle">🩺 Ficha médica</div>
+      <div class="stitle">Ficha médica</div>
       <div class="panel" id="fichaMedica"></div>
     </section>
     <section>
-      <div class="stitle">📎 Documentos médicos</div>
+      <div class="stitle">Documentos médicos</div>
       <div class="panel" id="docsMed"></div>
       <button class="btn ghost" style="margin-top:12px" id="addDocMed">+ Adjuntar documento médico</button>
       <input type="file" id="docFile" accept="application/pdf,.pdf" class="hidden">
@@ -199,7 +199,7 @@
   <div id="view-ben" class="hidden">
     <button class="volver" id="benVolver">‹ Volver</button>
     <section>
-      <div class="stitle">🎁 Tus beneficios</div>
+      <div class="stitle">Tus beneficios</div>
       <p class="benintro">Descuentos de las marcas que acompañan a Fractale.
         Son tuyos por ser parte del equipo.</p>
       <div class="acceso" id="irCarnet4" style="margin-bottom:14px">
@@ -217,12 +217,12 @@
   <div id="view-carnet" class="hidden">
     <button class="volver" id="carnetVolver">‹ Volver</button>
     <section>
-      <div class="stitle">🪪 Credencial de atleta</div>
+      <div class="stitle">Credencial de atleta</div>
       <div id="carnetBox"></div>
       <input type="file" id="fotoFile" accept="image/*" class="hidden">
     </section>
     <section>
-      <div class="stitle">👨‍👩‍👧 Mi familia</div>
+      <div class="stitle">Mi familia</div>
       <div class="panel" id="familiaPanel"></div>
       <button class="btn ghost" style="margin-top:12px" id="addFam">+ Añadir familiar</button>
       <p class="fcnota" style="margin-top:10px">Patagonia Medical extiende el descuento a
@@ -235,7 +235,7 @@
     <button class="volver" id="fracVolver">‹ Volver</button>
 
     <section>
-      <div class="stitle">⬢ ¿Quiénes somos?</div>
+      <div class="stitle">¿Quiénes somos?</div>
       <div class="panel">
         <p class="qs-kicker">Sport Management · Puerto Montt, Región de Los Lagos</p>
         <h3 class="qs-h">El éxito está en el sur</h3>
@@ -269,7 +269,7 @@
     </section>
 
     <section>
-      <div class="stitle">📋 Tus deberes como atleta Fractale</div>
+      <div class="stitle">Tus deberes como atleta Fractale</div>
       <p class="benintro">Esto es lo que sostiene el acuerdo. No es burocracia: es lo que
         le demuestra a las marcas que estar con nosotros vale la pena.</p>
 
@@ -340,7 +340,7 @@
       <div class="stats" id="statBoxes"></div>
     </section>
     <section data-mod="entrenamiento">
-      <div class="stitle">🏋️ Entrenamiento · últimos 30 días</div>
+      <div class="stitle">Entrenamiento · últimos 30 días</div>
       <div class="panel" id="trainBox"></div>
     </section>
     <section>
@@ -351,31 +351,31 @@
   <!-- ================= AJUSTES ================= -->
   <div id="view-set" class="hidden">
     <section>
-      <div class="stitle">☁️ Sincronización entre dispositivos</div>
+      <div class="stitle">Sincronización entre dispositivos</div>
       <div class="panel" id="syncPanel"></div>
     </section>
     <section>
-      <div class="stitle">📲 App en el celular</div>
+      <div class="stitle">App en el celular</div>
       <div class="panel" id="installPanel"></div>
     </section>
     <section>
-      <div class="stitle">🔔 Recordatorios</div>
+      <div class="stitle">Recordatorios</div>
       <div class="panel" id="remPanel"></div>
     </section>
     <section>
-      <div class="stitle">😴 Check-in al despertar</div>
+      <div class="stitle">Check-in al despertar</div>
       <div class="panel" id="wakePanel"></div>
     </section>
     <section data-mod="nutricion">
-      <div class="stitle">🍔 Límites de comida chatarra</div>
+      <div class="stitle">Límites de comida chatarra</div>
       <div class="panel" id="junkPanel"></div>
     </section>
     <section>
-      <div class="stitle">🎯 Metas del día</div>
+      <div class="stitle">Metas del día</div>
       <div class="panel" id="metasPanel"></div>
     </section>
     <section>
-      <div class="stitle">⬢ Fractale</div>
+      <div class="stitle">Fractale</div>
       <div class="acceso" id="irFractale2">
         <div class="m">⬢</div>
         <div class="t"><b>Quiénes somos y tus deberes</b>
@@ -407,11 +407,11 @@
 </main>
 
 <nav class="tabs">
-  <button data-v="hoy" class="on"><i>◎</i>Hoy</button>
-  <button data-v="plan"><i>◈</i>Plan</button>
-  <button data-v="salud"><i>✚</i>Salud</button>
-  <button data-v="stats"><i>◑</i>Progreso</button>
-  <button data-v="set"><i>⚙</i>Ajustes</button>
+  <button data-v="hoy" class="on"><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6"/></svg></i>Hoy</button>
+  <button data-v="plan"><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="5" width="16.8" height="15.4" rx="3"/><path d="M3.6 9.8h16.8M8 3.2v3.6M16 3.2v3.6"/></svg></i>Plan</button>
+  <button data-v="salud"><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.6-4.6-7.6-10.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.6 2.7C19.6 15.4 12 20 12 20z"/></svg></i>Salud</button>
+  <button data-v="stats"><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-7M10 20V5M15 20v-9.5M20 20V8.5"/></svg></i>Progreso</button>
+  <button data-v="set"><i><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8l1.6 2.3 2.7-.7.6 2.7 2.6 1-1 2.6 1.7 2.2-2.3 1.6.3 2.8-2.8.2-1.2 2.5-2.5-1.2-2.5 1.2-1.2-2.5-2.8-.2.3-2.8L3 13.8l1.7-2.2-1-2.6 2.6-1 .6-2.7 2.7.7z"/></svg></i>Ajustes</button>
 </nav>
 
 <!-- ===== Modal check-in de sueño ===== -->
@@ -426,7 +426,7 @@
         <span style="font-size:12px;color:var(--tx3)" id="skHrsHint"></span>
         <div class="stepper">
           <button class="sbtn" id="skMinus">−</button>
-          <button class="sbtn plus" id="skPlus" style="--a:#a78bfa">+</button>
+          <button class="sbtn plus" id="skPlus" style="--a:#af52de">+</button>
         </div>
       </div>
     </label>
@@ -774,9 +774,13 @@ const KEY = "wellness.v1";
    Sin ella la app funciona igual, pero los avisos solo llegan
    mientras la app esté abierta.
    ============================================================ */
-const APP_VERSION = "2026.10.08-8";
+const APP_VERSION = "2026.10.26-1";
 const PUSH_PUBLIC_KEY = "BJx1G7nRgN8WV4TTBKjVS6qZpZEV-FM65a4ObaIJQEYkLOZrKxtIvnzfsd0BIuIxKzSJqbFCJtVnfQ0qGOmVd7o";
-const COLORS = ["#22e07a","#38bdf8","#a78bfa","#fb7185","#fbbf24","#f97316","#2dd4bf","#e879f9"];
+const ICONO_CHAT='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5c0 4.1-3.6 7.3-8 7.3-1.1 0-2.2-.2-3.2-.6L4.5 19.5l1.2-3.4C4.6 14.8 4 13.2 4 11.5 4 7.4 7.6 4.2 12 4.2s8 3.2 8 7.3z"/></svg>', ICONO_CAMPANA='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 1.8H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="pip"></span>', ICONO_SIN_CAMPANA='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 5.9A6 6 0 0 1 18 11v4M6 11v5.5l-1.6 1.8H17M10 20.5a2.2 2.2 0 0 0 4 0M3.5 3.5l17 17"/></svg>', ICONO_SOL='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2M12 19.2v2M5.5 5.5l1.4 1.4M17.1 17.1l1.4 1.4M2.8 12h2M19.2 12h2M5.5 18.5l1.4-1.4M17.1 6.9l1.4-1.4"/></svg>', ICONO_LUNA='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A7.8 7.8 0 1 1 9.4 4.5a6.3 6.3 0 0 0 10.1 10.1z"/></svg>';
+/* Los hábitos guardados conservan los colores neón de antes: se pintan con su par de iOS. */
+const TONO_IOS = {"#22e07a":"#34c759","#4ade80":"#34c759","#38bdf8":"#007aff","#2dd4bf":"#30b0c7","#fbbf24":"#ff9500","#fb7185":"#ff3b30","#f87171":"#ff3b30","#f97316":"#ff9500","#fb923c":"#ff9500","#a78bfa":"#af52de","#a5b4fc":"#5e5ce6","#e879f9":"#ff2d55","#818cf8":"#5e5ce6","#6f7b8c":"#8e8e93","#f5f6f8":"#f5f5f7","#0e0e11":"#f5f5f7","#0b1521":"#f5f5f7"};
+const tono = c => TONO_IOS[String(c||'').toLowerCase()] || c;
+const COLORS = ["#34c759","#007aff","#af52de","#ff3b30","#ff9500","#5e5ce6","#30b0c7","#ff2d55"];
 const DEF_SETTINGS = {
   rem:{on:false, from:"08:00", to:"22:00", every:120, lastAt:0},
   wake:{on:true, goalHours:8, lastAsked:""},
@@ -907,13 +911,13 @@ function load(){
       if(d.v < 3){                                     // migración: entrenamiento, comida y hábitos nuevos
         mv("entren", {type:"workout", goal:1, unit:""});
         mv("comida", {type:"food", goal:3, unit:"grupos", step:1});
-        mv("medit",  {id:"leer", name:"Leer", emoji:"📖", type:"amount", goal:10, unit:"páginas", step:2, color:"#a78bfa"});
-        mv("estirar",{id:"personal", name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#fb7185"});
+        mv("medit",  {id:"leer", name:"Leer", emoji:"📖", type:"amount", goal:10, unit:"páginas", step:2, color:"#af52de"});
+        mv("estirar",{id:"personal", name:"Trabajo personal", emoji:"🚀", type:"amount", goal:60, unit:"min", step:15, color:"#ff3b30"});
         d.v = 3;
       }
       if(d.v < 4){                                     // correr pasa a actividad física
         mv("correr", {id:"activi", name:"Actividad física", emoji:"🏃",
-                      type:"activity", goal:60, unit:"min", step:5, color:"#f97316"});
+                      type:"activity", goal:60, unit:"min", step:5, color:"#ff9500"});
         d.v = 4;
       }
       if(d.v < 5){ d.comps ||= []; d.v = 5; }          // calendario de competencias y carga
@@ -931,7 +935,8 @@ function load(){
       d.comps ||= [];
       d.salud = Object.assign({}, DEF_SALUD, d.salud||{});
       if(!Array.isArray(d.salud.familiares)) d.salud.familiares = [];
-      d.theme ||= "dark";
+      d.theme ||= "light";
+      if(!d.estilo){ d.theme = "light"; d.estilo = "apple"; }   // rediseño: pasa una vez al tema claro
       d.settings = Object.assign({}, DEF_SETTINGS, d.settings||{});
       d.settings.rem  = Object.assign({}, DEF_SETTINGS.rem,  d.settings.rem||{});
       d.settings.wake = Object.assign({}, DEF_SETTINGS.wake, d.settings.wake||{});
@@ -962,13 +967,13 @@ function load(){
         crudo.comps ||= [];
         crudo.salud = Object.assign({}, DEF_SALUD, crudo.salud||{});
         if(!Array.isArray(crudo.salud.familiares)) crudo.salud.familiares = [];
-        crudo.theme ||= "dark";
+        crudo.theme ||= "light";
         return crudo;
       }
     }catch(e2){}
   }
   return {v:7, habits: [], logs:{}, comps:[],
-          salud: {...DEF_SALUD, familiares:[]}, theme:"dark",
+          salud: {...DEF_SALUD, familiares:[]}, theme:"light", estilo:"apple",
           settings: JSON.parse(JSON.stringify(DEF_SETTINGS))};
 }
 /* Firmas para detectar qué cambió de verdad: solo entonces movemos la marca de
@@ -1034,11 +1039,11 @@ function sleepScore({hours,quality,feel}){
   return Math.round(100*(0.40*hs + 0.35*qs + 0.25*fs));
 }
 function scoreVerdict(s){
-  if(s>=85) return {t:"Sueño excelente", c:"#22e07a"};
-  if(s>=70) return {t:"Buen descanso",   c:"#38bdf8"};
-  if(s>=50) return {t:"Descanso regular",c:"#fbbf24"};
-  if(s>0)   return {t:"Dormiste poco",   c:"#fb7185"};
-  return {t:"Sin registro", c:"#6f7b8c"};
+  if(s>=85) return {t:"Sueño excelente", c:"#34c759"};
+  if(s>=70) return {t:"Buen descanso",   c:"#007aff"};
+  if(s>=50) return {t:"Descanso regular",c:"#ff9500"};
+  if(s>0)   return {t:"Dormiste poco",   c:"#ff3b30"};
+  return {t:"Sin registro", c:"#8e8e93"};
 }
 const QUAL = [{e:"😖",l:"Pésima"},{e:"😕",l:"Mala"},{e:"😐",l:"Normal"},{e:"🙂",l:"Buena"},{e:"😴",l:"Óptima"}];
 const FEEL = [{e:"🥱",l:"Agotado"},{e:"😪",l:"Cansado"},{e:"😐",l:"Neutral"},{e:"🙂",l:"Bien"},{e:"⚡️",l:"Full"}];
@@ -1310,7 +1315,7 @@ function renderRegistro(){
 }
 
 function marco(color, emoji, nombre, sub, cuerpo, pct){
-  return `<div class="hcard ${pct>=1?"done":""}" style="--a:${color}">
+  return `<div class="hcard ${pct>=1?"done":""}" style="--a:${tono(color)}">
     <div class="hh">
       <div class="emoji">${emoji}</div>
       <div style="min-width:0"><div class="hname">${nombre}</div>
@@ -1331,7 +1336,7 @@ function tarjetaEntreno(l){
       ? `${wkExN(l.workout)} ejercicio${wkExN(l.workout)===1?"":"s"} · ${wkSets(l.workout)} serie${wkSets(l.workout)===1?"":"s"}`
       : "Sin entrenamiento registrado"}</div>
     <button class="cardbtn" data-wk="1">${v>0?"Editar sesión":"Registrar entrenamiento"}</button>`;
-  return marco("#22e07a", "🏋️", "Entrenamiento", "Sesión de fuerza", cuerpo, v>0 ? 1 : 0);
+  return marco("#34c759", "🏋️", "Entrenamiento", "Sesión de fuerza", cuerpo, v>0 ? 1 : 0);
 }
 
 function tarjetaActividad(l){
@@ -1347,7 +1352,7 @@ function tarjetaActividad(l){
         }).join(" · ")
       : "Sin actividad registrada"}</div>
     <button class="cardbtn" data-ac="1">${t ? "Editar actividad" : "Registrar actividad"}</button>`;
-  return marco("#f97316", "🏃", "Actividad física", `Meta: ${fmt(meta)} min`, cuerpo, t/meta);
+  return marco("#ff9500", "🏃", "Actividad física", `Meta: ${fmt(meta)} min`, cuerpo, t/meta);
 }
 
 function tarjetaComida(l){
@@ -1361,7 +1366,7 @@ function tarjetaComida(l){
       ? l.food.groups.map(k=>FOOD_GROUPS.find(f=>f.k===k)?.e||"").join(" ")
       : "Sin alimentos priorizados"} · ${w} en 7 días</div>
     <button class="cardbtn" data-fd="1">Registrar alimentación</button>`;
-  return marco("#2dd4bf", "🥗", "Alimentación", `Meta: ${meta} grupos`, cuerpo, g/meta);
+  return marco("#30b0c7", "🥗", "Alimentación", `Meta: ${meta} grupos`, cuerpo, g/meta);
 }
 
 
@@ -1574,10 +1579,10 @@ function cargaCronica(){
   return t / 4;
 }
 const ZONAS = [
-  {max:0.80, c:"#38bdf8", e:"🌤", t:"Carga baja",     s:"Estás entrenando menos que tu media. Bien si vienes de competir o lesionado."},
-  {max:1.30, c:"#22e07a", e:"✅", t:"Zona óptima",    s:"La progresión es sostenible. Aquí es donde se construye forma."},
-  {max:1.50, c:"#fbbf24", e:"⚠️", t:"Carga alta",     s:"Subiste rápido. Vigila el sueño y las molestias esta semana."},
-  {max:99,   c:"#fb7185", e:"🚨", t:"Riesgo de lesión",s:"Salto demasiado brusco. Baja el volumen unos días."}
+  {max:0.80, c:"#007aff", e:"🌤", t:"Carga baja",     s:"Estás entrenando menos que tu media. Bien si vienes de competir o lesionado."},
+  {max:1.30, c:"#34c759", e:"✅", t:"Zona óptima",    s:"La progresión es sostenible. Aquí es donde se construye forma."},
+  {max:1.50, c:"#ff9500", e:"⚠️", t:"Carga alta",     s:"Subiste rápido. Vigila el sueño y las molestias esta semana."},
+  {max:99,   c:"#ff3b30", e:"🚨", t:"Riesgo de lesión",s:"Salto demasiado brusco. Baja el volumen unos días."}
 ];
 const zonaDe = r => ZONAS.find(z => r < z.max) || ZONAS[ZONAS.length-1];
 
@@ -1716,7 +1721,7 @@ function renderTonelaje(){
       <div><b>${actual.ses}</b><span>Sesiones</span></div>
     </div>
     ${meta ? `<div class="meter"><i style="width:${clamp(actual.kg/meta,0,1)*100}%;background:${
-        actual.kg>=meta ? "var(--accent)" : "#38bdf8"}"></i></div>
+        actual.kg>=meta ? "var(--accent)" : "#007aff"}"></i></div>
       <div class="mini-lbl"><span>${kg(actual.kg)} kg</span><span>Meta: ${kg(meta)} kg</span></div>` : ""}`;
 }
 
@@ -1787,10 +1792,10 @@ document.getElementById("cpDel").onclick = ()=>{
    es que alguien más los ponga y los vea.
    ============================================================ */
 const CAT_OBJ = {
-  redes:       {e:"📱", l:"Redes",       c:"#e879f9"},
-  rendimiento: {e:"🏋️", l:"Rendimiento", c:"#22e07a"},
-  equipo:      {e:"🤝", l:"Equipo",      c:"#38bdf8"},
-  otro:        {e:"⭐️", l:"Otro",        c:"#fbbf24"}
+  redes:       {e:"📱", l:"Redes",       c:"#ff2d55"},
+  rendimiento: {e:"🏋️", l:"Rendimiento", c:"#34c759"},
+  equipo:      {e:"🤝", l:"Equipo",      c:"#007aff"},
+  otro:        {e:"⭐️", l:"Otro",        c:"#ff9500"}
 };
 const CADENCIAS = {semanal:"por semana", mensual:"por mes", unica:"una vez"};
 
@@ -1873,7 +1878,7 @@ function pintaListaObjetivos(){
       <div class="objtx">
         <b>${esc(o.titulo)}</b>
         <span>${cat.e} ${cat.l} · ${periodoTxt(o)}${
-          vencido ? ` · <em style="color:#fb7185;font-style:normal;font-weight:800">vencido</em>` : ""}${
+          vencido ? ` · <em style="color:#ff3b30;font-style:normal;font-weight:700">vencido</em>` : ""}${
           mio ? "" : " · lo puso tu equipo"}</span>
         ${o.detalle ? `<span class="det">${esc(o.detalle)}</span>` : ""}
         ${o.cadencia === "unica" ? "" : `<div class="objdots">${
@@ -1920,7 +1925,7 @@ function renderObjStrip(){
   const faltan = objPendientes();
   if(!faltan.length){ box.innerHTML = ""; return; }
   box.innerHTML = `<section style="margin:14px 0 0">
-    <div class="stitle">✅ Objetivos pendientes</div>
+    <div class="stitle">Objetivos pendientes</div>
     <div class="panel" style="padding:6px 16px">${faltan.slice(0,4).map(o=>{
       const a = avance(o), cat = CAT_OBJ[o.categoria] || CAT_OBJ.otro;
       return `<div class="objrow" style="--a:${cat.c}">
@@ -2054,7 +2059,7 @@ function delta(actual, antes, mejorSube){
   const bueno = mejorSube === null ? null : (mejorSube ? d > 0 : d < 0);
   return {
     txt: `${flecha(d)} ${fmt(Math.abs(d))}`,
-    c: bueno === null ? "var(--tx2)" : bueno ? "#22e07a" : "#fb7185"
+    c: bueno === null ? "var(--tx2)" : bueno ? "#34c759" : "#ff3b30"
   };
 }
 
@@ -2078,7 +2083,7 @@ function renderCuerpo(){
 
   box.innerHTML = `<div class="panel">
     <div class="sl-top">
-      <div class="sl-score" style="color:#2dd4bf;border-color:#2dd4bf55;background:#2dd4bf18;font-size:26px">⚖️</div>
+      <div class="sl-score" style="color:#30b0c7;border-color:#30b0c755;background:#30b0c718;font-size:26px">⚖️</div>
       <div class="sl-t"><b>${fmt(m.peso)} kg</b>
         <span>Medido ${dias === 0 ? "hoy" : dias === 1 ? "ayer" : `hace ${dias} días`}${
           dias > 30 ? " · conviene actualizar" : ""}</span></div>
@@ -2245,7 +2250,7 @@ function pintaFicha(id, secs, vacio){
       const v = valorFicha(c);
       const rojo = c.t === "sn" ? S.salud[c.k] === "si" : c.alerta;
       return `<div class="fcrow"><span>${c.l}</span>
-        <b${rojo ? ' style="color:#fb7185"' : ""}>${esc(v)}</b></div>`;
+        <b${rojo ? ' style="color:#ff3b30"' : ""}>${esc(v)}</b></div>`;
     }).join("");
   }).join("");
 
@@ -2348,7 +2353,7 @@ function calcMed(){
            <div><b>${d.magraKg} kg</b><span>Masa magra</span></div>` : ""}
     ${m ? `<div><b>${d.musculoKg} kg</b><span>Músculo</span></div>` : ""}
   </div>${g && m && g + m > 100
-    ? `<div style="font-size:12px;color:#fb7185;font-weight:700;margin-top:9px">
+    ? `<div style="font-size:12px;color:#ff3b30;font-weight:700;margin-top:9px">
         Grasa y músculo suman más de 100 %. Revisa los números.</div>` : ""}`;
 }
 
@@ -2511,7 +2516,7 @@ function renderCarnet(){
       <div class="deb-g">✚ Salud relevante</div>
       ${filas.length ? filas.map(([e,l,v])=>`<div class="hrow">
           <div class="m">${e}</div>
-          <div class="t"><b${criticas.has(l) ? ' style="color:#fb7185"' : ""}>${l}</b>
+          <div class="t"><b${criticas.has(l) ? ' style="color:#ff3b30"' : ""}>${l}</b>
             <span>${esc(v)}</span></div>
         </div>`).join("")
       : `<div class="empty">Tu ficha médica está vacía.<br>
@@ -2801,7 +2806,7 @@ function filasDoc(lista){
         <span>${t.l} · ${f.getDate()} ${MESES[f.getMonth()]} ${f.getFullYear()}${
           d.tam ? " · "+pesoArchivo(d.tam) : ""}${quien}</span></div>
       <button class="mini" data-abrir="${d.id}">Abrir</button>
-      ${mio ? `<button class="mini" data-borrar="${d.id}" style="color:#fb7185">✕</button>` : ""}
+      ${mio ? `<button class="mini" data-borrar="${d.id}" style="color:#ff3b30">✕</button>` : ""}
     </div>${d.notas ? `<p style="font-size:12px;color:var(--tx3);margin:0 0 10px 45px">${esc(d.notas)}</p>` : ""}`;
   }).join("");
 }
@@ -3163,7 +3168,7 @@ function escucharChatVivo(){
 function pintarPipChat(n){
   sinLeerChat = Math.max(0, Number(n) || 0);
   const b = document.getElementById("chatBtn");
-  if(b) b.innerHTML = sinLeerChat > 0 ? '💬<span class="pip"></span>' : "💬";
+  if(b) b.innerHTML = ICONO_CHAT + (sinLeerChat > 0 ? '<span class="pip"></span>' : "");
   renderChatHoy();
 }
 
@@ -3274,12 +3279,12 @@ function renderHist(){
   document.getElementById("histList").innerHTML = rows.map(d=>{
     const n = registroDe(d), p = n/4*100, dt = parseKey(d), l = S.logs[d];
     const mood = l?.mood ? " "+["","😞","😕","😐","🙂","😄"][l.mood] : "";
-    const slp  = l?.sleep ? ` <span style="color:#a5b4fc;font-weight:700">😴${l.sleep.score}</span>` : "";
+    const slp  = l?.sleep ? ` <span style="color:#5e5ce6;font-weight:700">😴${l.sleep.score}</span>` : "";
     const vol  = wkVolume(l?.workout);
-    const trn  = vol ? ` <span style="color:#4ade80;font-weight:700">🏋️${kg(vol)}</span>` : "";
-    const jk   = junkCount(d) ? ` <span style="color:#fb7185;font-weight:700">🍔${junkCount(d)}</span>` : "";
+    const trn  = vol ? ` <span style="color:#34c759;font-weight:700">🏋️${kg(vol)}</span>` : "";
+    const jk   = junkCount(d) ? ` <span style="color:#ff3b30;font-weight:700">🍔${junkCount(d)}</span>` : "";
     const act  = acTotal(l||{actividad:{items:{}}});
-    const ac   = act ? ` <span style="color:#fb923c;font-weight:700">🏃${act}′</span>` : "";
+    const ac   = act ? ` <span style="color:#ff9500;font-weight:700">🏃${act}′</span>` : "";
     return `<div class="hist" data-go="${d}">
       <div class="hd">${cap(DIAS[dt.getDay()].slice(0,3))} ${dt.getDate()} ${MESES[dt.getMonth()]}${mood}${slp}${trn}${ac}${jk}</div>
       <div class="hp"><i style="width:${p}%"></i></div><div class="hn">${n}/4</div></div>`;
@@ -3314,12 +3319,12 @@ function renderStats(){
   document.getElementById("statBoxes").innerHTML = `
     <div class="stat"><b>${registrados}/30</b><span>Días con registro</span></div>
     <div class="stat"><b>${gstreak}</b><span>Días seguidos activo</span></div>
-    <div class="stat"><b style="color:#a5b4fc">${avgSleep||"–"}</b><span>Sueño promedio</span></div>
-    <div class="stat"><b style="color:#fb923c">${actTot}</b><span>Min de actividad · 30 d</span></div>
+    <div class="stat"><b style="color:#5e5ce6">${avgSleep||"–"}</b><span>Sueño promedio</span></div>
+    <div class="stat"><b style="color:#ff9500">${actTot}</b><span>Min de actividad · 30 d</span></div>
     ${ent ? `<div class="stat"><b>${kg(totKg)}</b><span>Kg movidos · 30 días</span></div>
     <div class="stat"><b style="color:${zCarga.c}">${crCarga ? rCarga.toFixed(2) : "–"}</b><span>Carga aguda:crónica</span></div>` : ""}
     ${nut ? `<div class="stat"><b style="color:${RISK[riskLevel(junkCount(todayKey()), jw)].c}">${jw}</b><span>Chatarra · 7 días</span></div>` : ""}
-    ${m ? `<div class="stat"><b style="color:#2dd4bf">${fmt(m.peso)}</b><span>Peso (kg) · ${dPeso.txt}</span></div>` : ""}`;
+    ${m ? `<div class="stat"><b style="color:#30b0c7">${fmt(m.peso)}</b><span>Peso (kg) · ${dPeso.txt}</span></div>` : ""}`;
 
   const sesiones = days.filter(d=>wkVolume(S.logs[d]?.workout)>0);
   const mejor = sesiones.length ? Math.max(...sesiones.map(d=>wkVolume(S.logs[d].workout))) : 0;
@@ -3344,9 +3349,9 @@ function renderStats(){
 function renderRem(){
   const r = S.settings.rem, c = S.settings.screens, st = notifState();
   const estado = st==="granted" ? `<span style="color:var(--accent)">permitidas ✓</span>`
-    : st==="denied" ? `<span style="color:#f87171">bloqueadas en el navegador</span>`
-    : st==="unsupported" ? `<span style="color:#f87171">no soportadas aquí</span>`
-    : `<span style="color:#fbbf24">falta dar permiso</span>`;
+    : st==="denied" ? `<span style="color:#ff3b30">bloqueadas en el navegador</span>`
+    : st==="unsupported" ? `<span style="color:#ff3b30">no soportadas aquí</span>`
+    : `<span style="color:#ff9500">falta dar permiso</span>`;
   document.getElementById("remPanel").innerHTML = `
     <div class="sw">
       <div class="t"><b>Avisos durante el día</b><span>Notificaciones: ${estado}</span></div>
@@ -3418,8 +3423,8 @@ function renderJunk(){
   document.getElementById("junkPanel").innerHTML = `
     <p style="font-size:13px;color:var(--tx2);margin:0 0 14px">
       Una <b>porción</b> = una comida o bebida chatarra (un combo, una bebida azucarada, un postre…).
-      Cuando superes estos números la app te marca <b style="color:#fbbf24">precaución</b> o
-      <b style="color:#fb7185">riesgo</b> en la tarjeta de alimentación.</p>
+      Cuando superes estos números la app te marca <b style="color:#ff9500">precaución</b> o
+      <b style="color:#ff3b30">riesgo</b> en la tarjeta de alimentación.</p>
     <div class="two">
       <label class="f"><span>Precaución · día</span><input class="inp" type="number" min="1" max="10" id="jDW" value="${j.dayWarn}"></label>
       <label class="f"><span>Riesgo · día</span><input class="inp" type="number" min="1" max="10" id="jDR" value="${j.dayRisk}"></label>
@@ -3447,8 +3452,8 @@ async function renderInstall(){
   if(location.protocol === "file:"){
     box.innerHTML = `
       <div class="risk rk-warn" style="margin:0 0 12px">
-        <div class="lv" style="background:#fbbf241f">📁</div>
-        <div><b style="color:#fbbf24">Abriste el archivo directamente</b>
+        <div class="lv" style="background:#ff95001f">📁</div>
+        <div><b style="color:#ff9500">Abriste el archivo directamente</b>
           <span>Para instalarla en el celular y recibir alertas, la app tiene que estar publicada en una dirección https.</span></div>
       </div>
       <p style="font-size:13px;color:var(--tx2);margin:0">Sigue los pasos del archivo <b>README.md</b> que está junto a esta app.</p>`;
@@ -3456,10 +3461,10 @@ async function renderInstall(){
   }
 
   const estado = standalone
-    ? `<div class="risk rk-ok" style="margin:0 0 14px"><div class="lv" style="background:#22e07a1f">✅</div>
-         <div><b style="color:#22e07a">Instalada en el dispositivo</b><span>Estás usando la app en modo pantalla completa.</span></div></div>`
-    : `<div class="risk rk-warn" style="margin:0 0 14px"><div class="lv" style="background:#fbbf241f">📲</div>
-         <div><b style="color:#fbbf24">Aún no está instalada</b>
+    ? `<div class="risk rk-ok" style="margin:0 0 14px"><div class="lv" style="background:#34c7591f">✅</div>
+         <div><b style="color:#34c759">Instalada en el dispositivo</b><span>Estás usando la app en modo pantalla completa.</span></div></div>`
+    : `<div class="risk rk-warn" style="margin:0 0 14px"><div class="lv" style="background:#ff95001f">📲</div>
+         <div><b style="color:#ff9500">Aún no está instalada</b>
            <span>${isIOS
              ? "En iPhone las alertas solo funcionan si la agregas a la pantalla de inicio."
              : "Instálala para recibir alertas y abrirla como una app."}</span></div></div>`;
@@ -3478,12 +3483,12 @@ async function renderInstall(){
        </ol>`;
 
   const pushBlock = !PUSH_PUBLIC_KEY
-    ? `<div class="risk rk-warn" style="margin:14px 0 0"><div class="lv" style="background:#fbbf241f">🔑</div>
-         <div><b style="color:#fbbf24">Servidor de alertas sin configurar</b>
+    ? `<div class="risk rk-warn" style="margin:14px 0 0"><div class="lv" style="background:#ff95001f">🔑</div>
+         <div><b style="color:#ff9500">Servidor de alertas sin configurar</b>
            <span>Falta pegar la clave pública VAPID en app.html. Está explicado en el README.</span></div></div>`
     : sub
-      ? `<div class="risk rk-ok" style="margin:14px 0 0"><div class="lv" style="background:#22e07a1f">🔔</div>
-           <div><b style="color:#22e07a">Alertas del celular activas</b>
+      ? `<div class="risk rk-ok" style="margin:14px 0 0"><div class="lv" style="background:#34c7591f">🔔</div>
+           <div><b style="color:#34c759">Alertas del celular activas</b>
              <span>Llegan aunque la app esté cerrada.</span></div></div>
          <button class="btn ghost" style="margin-top:10px" id="copySub">Copiar suscripción (para el servidor)</button>
          <button class="btn danger" style="margin-top:8px" id="unsub">Desactivar alertas del celular</button>
@@ -3533,8 +3538,8 @@ function renderSyncPanel(){
   if(!nubeOn()){
     box.innerHTML = `
       <div class="risk rk-warn" style="margin:0">
-        <div class="lv" style="background:#fbbf241f">📵</div>
-        <div><b style="color:#fbbf24">Sin conectar</b>
+        <div class="lv" style="background:#ff95001f">📵</div>
+        <div><b style="color:#ff9500">Sin conectar</b>
           <span>Tus datos están solo en este dispositivo. Falta configurar la base de datos
           en <b>config.js</b>.</span></div>
       </div>`;
@@ -3764,7 +3769,7 @@ function listaActividad(){
               <button class="sbtn" data-am="${k}">−</button>
               <input inputmode="numeric" data-amin="${k}" value="${v.min}">
               <span class="u">min</span>
-              <button class="sbtn plus" data-ap="${k}" style="--a:#f97316">+</button>
+              <button class="sbtn plus" data-ap="${k}" style="--a:#ff9500">+</button>
             </div>
             ${CON_KM.has(k) ? `<div class="grupo km">
               <input inputmode="decimal" data-akm="${k}" value="${v.km||""}" placeholder="0">
@@ -3826,9 +3831,9 @@ function riskLevel(day, week){
   return 0;
 }
 const RISK = [
-  {cls:"rk-ok",   bd:"bd-ok",   e:"✅", t:"En control",  c:"#22e07a"},
-  {cls:"rk-warn", bd:"bd-warn", e:"⚠️", t:"Precaución",  c:"#fbbf24"},
-  {cls:"rk-bad",  bd:"bd-bad",  e:"🚨", t:"Zona de riesgo", c:"#fb7185"}
+  {cls:"rk-ok",   bd:"bd-ok",   e:"✅", t:"En control",  c:"#34c759"},
+  {cls:"rk-warn", bd:"bd-warn", e:"⚠️", t:"Precaución",  c:"#ff9500"},
+  {cls:"rk-bad",  bd:"bd-bad",  e:"🚨", t:"Zona de riesgo", c:"#ff3b30"}
 ];
 
 function openFood(){
@@ -3873,7 +3878,7 @@ function listaChatarra(){
         <div class="n">${esc(j.l)}</div>
         <div class="stepper">
           <button class="sbtn" data-jm="${i}">−</button>
-          <div style="min-width:26px;text-align:center;font-weight:800" data-jn="${i}">${j.n}</div>
+          <div style="min-width:26px;text-align:center;font-weight:700" data-jn="${i}">${j.n}</div>
           <button class="sbtn" data-jp="${i}">+</button>
         </div></div>`).join("")
     : `<div class="empty" style="padding:16px">Sin comida chatarra hoy 🎉</div>`;
@@ -4396,7 +4401,7 @@ function renderBanner(){
             && !S.settings.rem.on && !sessionStorage.getItem("bannerOff");
   document.getElementById("permBanner").classList.toggle("hidden", !show);
   document.getElementById("bellBtn").innerHTML = S.settings.rem.on
-    ? '🔔<span class="pip"></span>' : '🔕';
+    ? ICONO_CAMPANA : ICONO_SIN_CAMPANA;
 }
 document.getElementById("permYes").onclick = async ()=>{
   const ok = await askNotifPermission();
@@ -4468,8 +4473,8 @@ document.getElementById("wipeBtn").onclick=()=>{
 
 function applyTheme(){
   document.documentElement.dataset.theme = S.theme;
-  document.getElementById("themeBtn").textContent = S.theme==="dark" ? "☀️":"🌙";
-  document.querySelector('meta[name=theme-color]').content = S.theme==="dark" ? "#000000":"#f5f6f8";
+  document.getElementById("themeBtn").innerHTML = S.theme==="dark" ? ICONO_SOL : ICONO_LUNA;
+  document.querySelector('meta[name=theme-color]').content = S.theme==="dark" ? "#000000":"#f5f5f7";
 }
 document.getElementById("themeBtn").onclick=()=>{ S.theme = S.theme==="dark"?"light":"dark"; save(); applyTheme(); };
 
