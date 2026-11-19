@@ -9,7 +9,7 @@ notificaciones y la sincronización.
 ### 1. Ponle tu marca
 
 ```bash
-cd "/Users/alejandromacaya/Desktop/FRACTALE"
+cd "/Users/alejandromacaya/Desktop/03 FRACTALE/FRACTALE"
 python3 personalizar.py --nombre "Mi Marca" --logo ~/Desktop/mi-logo.png
 ```
 
@@ -103,3 +103,33 @@ convierte los registros existentes en vez de romperlos.
   protege los datos son los permisos por fila del esquema.
 - En iPhone las notificaciones solo funcionan con la app instalada en la pantalla
   de inicio, con iOS 16.4 o superior.
+
+---
+
+## Desde noviembre de 2026: el sitio corre sobre Next.js
+
+La portada dejó de ser un `index.html` suelto y ahora es una aplicación Next.js
+(App Router), para poder alojar el módulo de inscripciones, que necesita servidor.
+
+```bash
+npm install     # una sola vez
+npm run dev     # http://localhost:3000
+npm run build   # comprobar antes de desplegar
+```
+
+Qué hay dónde:
+
+| Carpeta | Qué contiene |
+|---|---|
+| `app/` | La portada (`page.tsx`), `/inscripcion`, `/terminos`, `/admin`, `/ticket`, `/baja` y las rutas `api/`. |
+| `app/globals.css` | Los estilos de la portada, antes dentro del `<style>` de `index.html`. |
+| `lib/` | Clientes de Supabase (service role) y de Resend. Solo servidor. |
+| `middleware.ts` | Contraseña (Basic Auth) sobre `/admin` y `/api/admin`. |
+| `public/` | La PWA del deportista tal cual: `app.html`, `panel.html`, `estilos.css`, `nube.js`, `sw.js`, `config.js`, `assets/`, `icons/`. |
+| `supabase/migrations/` | El SQL del módulo de inscripciones. **Se ejecuta a mano** en Supabase. |
+
+Las variables de entorno están en `.env.example`; copia ese archivo a `.env.local`
+y complétalo. Ver `INSCRIPCIONES.md` para el detalle del módulo.
+
+**Ojo con el despliegue:** GitHub Pages solo sirve archivos estáticos, así que el
+sitio ya no puede publicarse ahí. Hay que desplegarlo en Vercel.

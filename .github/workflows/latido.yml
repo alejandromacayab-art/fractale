@@ -23,8 +23,8 @@ jobs:
           set -euo pipefail
 
           # Se leen del propio config.js para que no haya dos sitios que mantener.
-          URL=$(node -e 'global.window={};require("./config.js");process.stdout.write(window.APP_CONFIG.url||"")')
-          KEY=$(node -e 'global.window={};require("./config.js");process.stdout.write(window.APP_CONFIG.key||"")')
+          URL=$(node -e 'global.window={};require("./public/config.js");process.stdout.write(window.APP_CONFIG.url||"")')
+          KEY=$(node -e 'global.window={};require("./public/config.js");process.stdout.write(window.APP_CONFIG.key||"")')
 
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
             echo "config.js no tiene url o key. Nada que despertar."

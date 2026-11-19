@@ -11,3 +11,13 @@ push/CLAVES-SECRETAS.txt
 # copias en un archivo, generadas por .claude/compartir.py y artefacto.py
 .claude/portada.html
 .claude/artefacto.html
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# variables de entorno (las reales nunca se suben)
+.env
+.env.local
+.env*.local
